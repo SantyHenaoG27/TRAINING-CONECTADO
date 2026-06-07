@@ -1186,6 +1186,8 @@
     // queremos reintentarla en cada loadFlights() y quedar en un bucle.
     const autoCompleteAttempted = new Set();
 
+    const FINISHED_GRACE_MS = 3 * 60 * 1000; // sin telemetría nueva por 3+ min ⇒ vuelo terminado
+
     // Si ya existe telemetría de un vuelo asociado a la asignación (assignment_id
     // se estampa en flight_telemetry al volar) y ese vuelo terminó hace rato, lo
     // damos por completado automáticamente — sin esperar a que el estudiante lo
@@ -1196,7 +1198,6 @@
         (f.estado === 'pendiente' || f.estado === 'en_progreso') && !autoCompleteAttempted.has(f.id));
       if (!candidates.length || !summaries || !summaries.length) return false;
 
-      const FINISHED_GRACE_MS = 3 * 60 * 1000; // sin telemetría nueva por 3+ min ⇒ vuelo terminado
       const now = Date.now();
       const finishedAssignmentIds = new Set(
         summaries
@@ -1223,6 +1224,45 @@
         window.currentUser.active_assignment_id = null;
       }
 
+      return true;
+    }
+
+    // Respaldo para cuando la asignación activa sigue marcada como "Volando
+    // ahora" pero su telemetría nunca quedó etiquetada con ese assignment_id
+    // (p. ej. el estudiante la seleccionó después de haber empezado a volar) —
+    // en ese caso autoCompleteFinishedAssignments nunca la detecta y la
+    // selección queda pegada para siempre. Aquí usamos la inactividad de la
+    // sesión del simulador vinculado (flight_sessions.last_seen) como señal
+    // alterna de que el vuelo terminó, y simplemente liberamos la selección
+    // (sin marcar la asignación como completada — eso requiere evidencia real
+    // de que se voló, vía el botón "Marcar como completado").
+    async function releaseStaleSelection(flights) {
+      const activeId = window.currentUser.active_assignment_id;
+      if (!activeId || autoCompleteAttempted.has(`stale:${activeId}`)) return false;
+
+      const active = flights.find(f => f.id === activeId &&
+        (f.estado === 'pendiente' || f.estado === 'en_progreso'));
+      if (!active) return false;
+
+      const code = window.currentUser.session_code;
+      if (!code) return false;
+
+      const { data: session } = await supabaseClient
+        .from('flight_sessions')
+        .select('last_seen')
+        .eq('session_code', code)
+        .maybeSingle();
+      if (!session || (Date.now() - new Date(session.last_seen).getTime()) <= FINISHED_GRACE_MS) return false;
+
+      autoCompleteAttempted.add(`stale:${activeId}`);
+
+      const { error } = await supabaseClient
+        .from('profiles')
+        .update({ active_assignment_id: null })
+        .eq('id', window.currentUser.id);
+      if (error) return false;
+
+      window.currentUser.active_assignment_id = null;
       return true;
     }
 
@@ -1254,7 +1294,8 @@
       // esa asignación — evita marcar vuelos que nunca se realizaron.
       flownAssignmentIds = new Set(summaries.filter(s => s.assignment_id).map(s => s.assignment_id));
 
-      const updated = await autoCompleteFinishedAssignments(data, summaries);
+      const updated = await autoCompleteFinishedAssignments(data, summaries)
+        || await releaseStaleSelection(data);
       if (updated) { return loadFlights(); }
 
 
