@@ -697,6 +697,21 @@
       color: #94a3b8;
       margin-top: 2px;
     }
+    /* ── TOOLTIP AL PASAR EL MOUSE SOBRE LA TRAYECTORIA DEL MAPA DE RUTA ── */
+    .route-hover-popup .maplibregl-popup-content {
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-family: var(--font-mono);
+      color: #f8fafc;
+      box-shadow: none;
+    }
+    .route-hover-popup .maplibregl-popup-tip { display: none; }
+    .route-hover-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .route-hover-row + .route-hover-row { margin-top: 4px; }
+    .route-hover-row span { color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em; font-size: 9px; }
+    .route-hover-row strong { color: #38bdf8; font-size: 13px; margin-left: auto; }
     @media (max-width: 900px) {
       .flight-detail-grid { grid-template-columns: 1fr; }
       .flight-map-wrap { min-height: 320px; }
@@ -1265,6 +1280,8 @@
     let studentHistoryFlights = [];
     let studentRouteMap = null;
     let studentRouteMapReady = false;
+    let studentRouteHoverBound = false;
+    let studentRouteHoverPopup = null;
     let performanceChartPoints = [];
     let performanceChartLayout = null;
     let performanceChartHoverIndex = null;
@@ -1513,7 +1530,7 @@
 
       let detailQuery = supabaseClient
         .from('flight_telemetry')
-        .select('sim_time, altitude_ft, ias_kt, latitude, longitude, student_id, session_code')
+        .select('sim_time, altitude_ft, ias_kt, heading_deg, latitude, longitude, student_id, session_code')
         .eq('flight_id', flight.detail_filter_value)
         .order('sim_time', { ascending: true })
         .limit(3000);
@@ -1538,6 +1555,7 @@
 
     function closeStudentFlightDetail() {
       document.getElementById('studentFlightDetailModal').classList.add('hidden-panel');
+      if (studentRouteHoverPopup) studentRouteHoverPopup.remove();
     }
 
     function setStudentRouteMapStatus(message, hidden = false) {
@@ -1580,6 +1598,7 @@
       if (!studentRouteMap || !studentRouteMapReady || studentRouteMap.getSource('student-route-line')) return;
       studentRouteMap.addSource('student-route-line', { type: 'geojson', data: studentRouteLineGeoJSON([]) });
       studentRouteMap.addSource('student-route-points', { type: 'geojson', data: studentRoutePointsGeoJSON([]) });
+      studentRouteMap.addSource('student-route-track', { type: 'geojson', data: studentRouteTrackGeoJSON([]) });
       studentRouteMap.addLayer({
         id: 'student-route-line-glow',
         type: 'line',
@@ -1603,13 +1622,66 @@
           'circle-stroke-width': 2,
         },
       });
+
+      // Capa invisible de puntos de la trayectoria, solo para detectar el
+      // punto más cercano al cursor y mostrar su velocidad/rumbo al pasar el mouse.
+      studentRouteMap.addLayer({
+        id: 'student-route-track-hit',
+        type: 'circle',
+        source: 'student-route-track',
+        paint: { 'circle-radius': 9, 'circle-opacity': 0, 'circle-stroke-width': 0 },
+      });
+
+      setupStudentRouteHoverInteraction();
+    }
+
+    function setupStudentRouteHoverInteraction() {
+      if (!studentRouteMap || studentRouteHoverBound) return;
+      studentRouteHoverBound = true;
+      const hitLayer = 'student-route-track-hit';
+
+      studentRouteMap.on('mousemove', hitLayer, (e) => {
+        if (!e.features?.length) return;
+        studentRouteMap.getCanvas().style.cursor = 'crosshair';
+
+        let nearest = null;
+        let nearestDist = Infinity;
+        e.features.forEach(f => {
+          const screenPos = studentRouteMap.project(f.geometry.coordinates);
+          const dist = Math.hypot(screenPos.x - e.point.x, screenPos.y - e.point.y);
+          if (dist < nearestDist) { nearestDist = dist; nearest = f; }
+        });
+        if (!nearest) return;
+
+        const ias = Number(nearest.properties.ias_kt);
+        const hdg = Number(nearest.properties.heading_deg);
+        const html = `
+          <div class="route-hover-row"><span>Velocidad</span><strong>${Number.isFinite(ias) ? Math.round(ias) + ' KT' : '—'}</strong></div>
+          <div class="route-hover-row"><span>Rumbo</span><strong>${Number.isFinite(hdg) ? Math.round(hdg) + '°' : '—'}</strong></div>
+        `;
+
+        if (!studentRouteHoverPopup) {
+          studentRouteHoverPopup = new maplibregl.Popup({
+            closeButton: false,
+            closeOnClick: false,
+            offset: 14,
+            className: 'route-hover-popup',
+          });
+        }
+        studentRouteHoverPopup.setLngLat(nearest.geometry.coordinates).setHTML(html).addTo(studentRouteMap);
+      });
+
+      studentRouteMap.on('mouseleave', hitLayer, () => {
+        studentRouteMap.getCanvas().style.cursor = '';
+        if (studentRouteHoverPopup) studentRouteHoverPopup.remove();
+      });
     }
 
     function renderStudentRouteMap(points) {
       const coordinates = getStudentRouteCoordinates(points);
       updateStudentRouteSummary(coordinates);
       if (!coordinates.length) {
-        updateStudentRouteSources([]);
+        updateStudentRouteSources([], []);
         setStudentRouteMapStatus('Sin coordenadas para mostrar la trayectoria');
         return;
       }
@@ -1621,7 +1693,7 @@
       }
       const draw = () => {
         setupStudentRouteLayers();
-        updateStudentRouteSources(coordinates);
+        updateStudentRouteSources(coordinates, points);
         fitStudentRouteBounds(coordinates);
         setStudentRouteMapStatus('', true);
       };
@@ -1629,10 +1701,11 @@
       else map.once('load', draw);
     }
 
-    function updateStudentRouteSources(coordinates) {
+    function updateStudentRouteSources(coordinates, points) {
       if (!studentRouteMap || !studentRouteMapReady || !studentRouteMap.getSource('student-route-line')) return;
       studentRouteMap.getSource('student-route-line').setData(studentRouteLineGeoJSON(coordinates));
       studentRouteMap.getSource('student-route-points').setData(studentRoutePointsGeoJSON(coordinates));
+      studentRouteMap.getSource('student-route-track').setData(studentRouteTrackGeoJSON(points || []));
     }
 
     function studentRouteLineGeoJSON(coordinates) {
@@ -1646,6 +1719,32 @@
       return {
         type: 'FeatureCollection',
         features: points.map(p => ({ type: 'Feature', properties: { kind: p.kind }, geometry: { type: 'Point', coordinates: p.coord } })),
+      };
+    }
+
+    // Un punto por cada lectura de telemetría con su velocidad y rumbo —
+    // alimenta la capa invisible que detecta el punto más cercano al cursor
+    // para mostrar el tooltip al pasar el mouse sobre la trayectoria.
+    function studentRouteTrackGeoJSON(points) {
+      return {
+        type: 'FeatureCollection',
+        features: points
+          .map(p => {
+            const lng = Number(p.longitude);
+            const lat = Number(p.latitude);
+            if (!Number.isFinite(lng) || !Number.isFinite(lat) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
+            const ias = Number(p.ias_kt);
+            const hdg = Number(p.heading_deg);
+            return {
+              type: 'Feature',
+              properties: {
+                ias_kt: Number.isFinite(ias) ? ias : null,
+                heading_deg: Number.isFinite(hdg) ? hdg : null,
+              },
+              geometry: { type: 'Point', coordinates: [lng, lat] },
+            };
+          })
+          .filter(Boolean),
       };
     }
 
