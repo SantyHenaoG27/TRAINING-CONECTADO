@@ -1470,13 +1470,11 @@
       if (sessionsRes.error || telemetryRes.error) return null;
 
       const activeSessions = (sessionsRes.data || [])
-        .filter(s => now - new Date(s.last_seen).getTime() < activeWindowMs)
-        .filter(s => !s.on_ground);
+        .filter(s => now - new Date(s.last_seen).getTime() < activeWindowMs);
       const activeCodes = new Set(activeSessions.map(s => s.session_code));
 
       const activePoints = (telemetryRes.data || [])
-        .filter(p => activeCodes.has(p.session_code))
-        .filter(p => !p.on_ground);
+        .filter(p => activeCodes.has(p.session_code));
 
       const latestFlightBySession = new Map();
       activePoints.forEach(p => {
@@ -2361,13 +2359,11 @@
       });
 
       const activeSessions = (sessionsRes.data || [])
-        .filter(s => now - new Date(s.last_seen).getTime() < activeWindowMs)
-        .filter(s => !s.on_ground);
+        .filter(s => now - new Date(s.last_seen).getTime() < activeWindowMs);
       const activeCodes = new Set(activeSessions.map(s => s.session_code));
 
       const activePoints = (telemetryRes.data || [])
-        .filter(p => activeCodes.has(p.session_code))
-        .filter(p => !p.on_ground);
+        .filter(p => activeCodes.has(p.session_code));
 
       // Si el estudiante carga un vuelo nuevo (otro aeropuerto, otra ruta) sin
       // cerrar el simulador, el plugin genera un flight_id distinto pero la
@@ -2494,6 +2490,7 @@
         flight_id: flightId,
         session_code: last.session_code,
         student: studentsByCode[last.session_code] || null,
+        on_ground: !!last.on_ground,
         last_seen_ms: new Date(session.last_seen).getTime(),
         last_signal: timeSince(session.last_seen),
         duration_seconds: Number.isFinite(startedMs) && Number.isFinite(lastMs)
@@ -2516,6 +2513,8 @@
       const liveLabel = f.last_signal === 'ahora' ? 'En vivo' : `Señal ${f.last_signal}`;
       const mapOpen = activeFlightMapsOpen.has(f.flight_id);
       const mapId = `activeRouteMap-${domSafeId(f.flight_id)}`;
+      const statusCls = f.on_ground ? 'status-pending' : 'status-live';
+      const statusLabel = f.on_ground ? 'En tierra' : 'En vuelo';
 
       return `
         <article class="live-card" data-flight-id="${escAttr(f.flight_id)}">
@@ -2524,7 +2523,7 @@
               <div class="live-route">${escSim(studentName)}</div>
               <div class="live-subroute">${escSim(f.session_code)} · ${escSim(f.flight_id)}</div>
             </div>
-            <span class="status-badge status-live">En vuelo</span>
+            <span class="status-badge ${statusCls}" data-field="status-badge">${statusLabel}</span>
           </div>
           <div class="live-card-body">
             ${renderTelemetryPair('Altitud', f.altitude_ft, 'FT', false, 'altitude')}
@@ -2577,6 +2576,12 @@
       const liveLabel = f.last_signal === 'ahora' ? 'En vivo' : `Señal ${f.last_signal}`;
       const labelEl = article.querySelector('[data-field="live-label"]');
       if (labelEl) labelEl.textContent = liveLabel;
+
+      const badgeEl = article.querySelector('[data-field="status-badge"]');
+      if (badgeEl) {
+        badgeEl.className = `status-badge ${f.on_ground ? 'status-pending' : 'status-live'}`;
+        badgeEl.textContent = f.on_ground ? 'En tierra' : 'En vuelo';
+      }
     }
 
     function toggleActiveFlightMap(flightId) {
