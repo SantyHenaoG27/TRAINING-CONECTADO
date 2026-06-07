@@ -132,6 +132,10 @@ select {
   color: #fff;
 }
 
+.dashboard-page.is-student-embedded .return-access {
+  display: none;
+}
+
 .tech-label,
 .metric-label,
 .field span,

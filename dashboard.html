@@ -10,6 +10,11 @@
     <script src="src/scripts/dashboard.js?v=51" defer></script>
   </head>
   <body class="dashboard-page">
+    <script>
+      if (new URLSearchParams(window.location.search).get("embedded") === "student") {
+        document.body.classList.add("is-student-embedded");
+      }
+    </script>
     <main class="shell">
       <header class="topbar dashboard-topbar">
         <div>
