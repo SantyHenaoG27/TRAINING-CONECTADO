@@ -1,0 +1,34 @@
+-- Aggregates flight_telemetry by flight_id so the reports list doesn't need
+-- to pull every recorded point just to show one row per flight.
+create or replace function public.flight_summaries()
+returns table (
+  flight_id text,
+  session_code text,
+  started_at timestamptz,
+  ended_at timestamptz,
+  duration_seconds numeric,
+  max_altitude_ft numeric,
+  max_ias_kt numeric,
+  point_count bigint
+)
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select
+    flight_id,
+    session_code,
+    min(sim_time) as started_at,
+    max(sim_time) as ended_at,
+    extract(epoch from (max(sim_time) - min(sim_time))) as duration_seconds,
+    max(altitude_ft) as max_altitude_ft,
+    max(ias_kt) as max_ias_kt,
+    count(*) as point_count
+  from flight_telemetry
+  where flight_id is not null
+  group by flight_id, session_code
+  order by min(sim_time) desc;
+$$;
+
+grant execute on function public.flight_summaries() to authenticated;

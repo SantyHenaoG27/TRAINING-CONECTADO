@@ -49,6 +49,7 @@ async function writeTelemetry(p) {
     .from('flight_telemetry')
     .insert({
       session_code:  p.sessionCode,
+      flight_id:     p.flightId,
       latitude:      p.latitude,
       longitude:     p.longitude,
       altitude_ft:   p.altitudeFt,
@@ -91,6 +92,12 @@ const server = http.createServer((req, res) => {
       if (!payload.sessionCode) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: false, error: 'sessionCode requerido' }));
+        return;
+      }
+
+      if (!payload.flightId) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'flightId requerido' }));
         return;
       }
 

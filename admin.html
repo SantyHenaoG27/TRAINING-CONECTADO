@@ -5,6 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>IFR TRAINING COL | Panel Instructor</title>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" />
   <style>body { visibility: hidden; }</style>
   <style>
     :root {
@@ -313,12 +314,51 @@
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
+    .live-subroute {
+      margin-top: 3px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
     .live-route .sep { color: var(--magenta); margin: 0 5px; }
     .live-card-body { padding: 14px 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .telemetry-pair { display: flex; flex-direction: column; gap: 2px; }
     .tele-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
     .tele-value { font-family: var(--font-display); font-size: 18px; color: var(--fg); }
     .tele-unit { font-family: var(--font-mono); font-size: 9px; color: var(--muted); }
+    .live-progress {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+    .live-map-toggle {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .live-route-map-wrap {
+      grid-column: 1 / -1;
+      min-height: 240px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      position: relative;
+      overflow: hidden;
+    }
+    .live-route-map {
+      position: absolute;
+      inset: 0;
+    }
+    .live-route-map-wrap .maplibregl-ctrl-attrib {
+      background: rgba(13,13,15,0.72);
+      color: var(--muted);
+      font-size: 10px;
+    }
+    .live-route-map-wrap .maplibregl-ctrl-attrib a { color: var(--fg-2); }
     .live-card-foot {
       padding: 10px 18px;
       background: rgba(0,0,0,0.18);
@@ -541,6 +581,114 @@
     }
     .tag-type { color: var(--magenta); border-color: rgba(232,121,249,0.3); background: rgba(232,121,249,0.06); }
     .tag-info { color: var(--muted); border-color: var(--border); }
+
+    /* REPORTES */
+    .report-session {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--fg);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .report-meta {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .flight-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      background: rgba(0,0,0,0.72);
+    }
+    .hidden-panel { display: none; }
+    .flight-modal {
+      width: min(980px, 100%);
+      max-height: calc(100vh - 56px);
+      overflow-y: auto;
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 28px 84px rgba(0,0,0,0.54);
+      padding: 24px;
+    }
+    .flight-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .flight-chart-wrap {
+      margin-top: 18px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 16px;
+    }
+    .flight-chart-wrap canvas {
+      display: block;
+      width: 100%;
+      height: 260px;
+    }
+    .flight-detail-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      gap: 16px;
+      margin-top: 18px;
+      align-items: stretch;
+    }
+    .flight-map-wrap {
+      min-height: 360px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .flight-route-map {
+      position: absolute;
+      inset: 0;
+    }
+    .flight-map-empty {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(13,13,15,0.86);
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    .flight-map-empty.is-hidden { display: none; }
+    .flight-map-summary {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      z-index: 3;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-width: calc(100% - 24px);
+    }
+    .flight-map-summary .tag { background: rgba(13,13,15,0.82); }
+    .flight-route-map .maplibregl-ctrl-attrib {
+      background: rgba(13,13,15,0.72);
+      color: var(--muted);
+      font-size: 10px;
+    }
+    .flight-route-map .maplibregl-ctrl-attrib a { color: var(--fg-2); }
+    @media (max-width: 900px) {
+      .flight-detail-grid { grid-template-columns: 1fr; }
+      .flight-map-wrap { min-height: 320px; }
+    }
   </style>
 </head>
 <body>
@@ -704,8 +852,7 @@
           </div>
         </div>
 
-        <!-- Placeholder: sin vuelos activos -->
-        <div class="no-live">
+        <div class="no-live" id="activeFlightsEmpty">
           <div class="no-live-icon">✈</div>
           <div class="no-live-text">Sin vuelos activos en este momento</div>
           <div style="font-family:var(--font-mono);font-size:10px;color:var(--border-soft);margin-top:8px;letter-spacing:0.1em;text-transform:uppercase;">
@@ -713,39 +860,7 @@
           </div>
         </div>
 
-        <!-- Live cards — se mostrarán cuando el plugin envíe datos -->
-        <!--
-        <div class="live-grid">
-          <div class="live-card">
-            <div class="live-card-head">
-              <div class="live-route">SKBO <span class="sep">→</span> SKPE</div>
-              <span class="status-badge status-live">En vuelo</span>
-            </div>
-            <div class="live-card-body">
-              <div class="telemetry-pair">
-                <div class="tele-label">Altitud</div>
-                <div class="tele-value">8 450 <span class="tele-unit">FT</span></div>
-              </div>
-              <div class="telemetry-pair">
-                <div class="tele-label">IAS</div>
-                <div class="tele-value">132 <span class="tele-unit">KT</span></div>
-              </div>
-              <div class="telemetry-pair">
-                <div class="tele-label">Rumbo</div>
-                <div class="tele-value">187 <span class="tele-unit">°</span></div>
-              </div>
-              <div class="telemetry-pair">
-                <div class="tele-label">V/S</div>
-                <div class="tele-value">+0 <span class="tele-unit">FT/MIN</span></div>
-              </div>
-            </div>
-            <div class="live-card-foot">
-              <div class="live-indicator"><div class="live-dot"></div> En vivo</div>
-              <span style="font-family:var(--font-mono);font-size:10px;color:var(--muted);">Juan García</span>
-            </div>
-          </div>
-        </div>
-        -->
+        <div class="live-grid hidden-panel" id="activeFlightsGrid"></div>
       </div>
 
       <!-- ════ TAB: ASIGNAR VUELO ════ -->
@@ -829,20 +944,21 @@
             <div class="tech-label">Panel / Instructor / Reportes</div>
             <h1 class="panel-title">Reportes del Curso</h1>
           </div>
+          <button class="btn-outline" onclick="loadReportes()">↺ Actualizar</button>
         </div>
 
         <div class="stats-row" style="grid-template-columns:repeat(3,1fr);">
           <div class="stat-card">
-            <div class="stat-label">Vuelos este mes</div>
-            <div class="stat-value" style="color:var(--accent);">06</div>
+            <div class="stat-label">Vuelos registrados</div>
+            <div class="stat-value" id="repTotalFlights" style="color:var(--accent);">—</div>
           </div>
           <div class="stat-card">
             <div class="stat-label">Total horas registradas</div>
-            <div class="stat-value" style="color:var(--magenta);">8.4 <span style="font-family:var(--font-mono);font-size:14px;color:var(--muted);">H</span></div>
+            <div class="stat-value" style="color:var(--magenta);"><span id="repTotalHours">—</span> <span style="font-family:var(--font-mono);font-size:14px;color:var(--muted);">H</span></div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Tasa de completado</div>
-            <div class="stat-value" style="color:var(--success);">73 <span style="font-family:var(--font-mono);font-size:14px;color:var(--muted);">%</span></div>
+            <div class="stat-label">Estudiantes con vuelos</div>
+            <div class="stat-value" id="repStudentCount" style="color:var(--success);">—</div>
           </div>
         </div>
 
@@ -851,46 +967,17 @@
             <thead>
               <tr>
                 <th>Estudiante</th>
-                <th>Ruta</th>
-                <th>Tipo</th>
-                <th>Duración</th>
+                <th>Sesión</th>
                 <th>Fecha</th>
-                <th>Resultado</th>
+                <th>Duración</th>
+                <th>Altitud máx</th>
+                <th>IAS máx</th>
+                <th>Puntos</th>
+                <th></th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td><span class="student-name">María Ospina</span></td>
-                <td><span style="font-family:var(--font-display);font-size:14px;text-transform:uppercase;">SKBO → SKCL</span></td>
-                <td><span class="tag tag-type">ILS</span></td>
-                <td><span style="font-family:var(--font-mono);font-size:12px;">1h 28min</span></td>
-                <td><span style="font-family:var(--font-mono);font-size:11px;">03 Jun 2025</span></td>
-                <td><span class="status-badge status-active">Completado</span></td>
-              </tr>
-              <tr>
-                <td><span class="student-name">Juan García</span></td>
-                <td><span style="font-family:var(--font-display);font-size:14px;text-transform:uppercase;">SKBO → SKCL</span></td>
-                <td><span class="tag tag-type">ILS</span></td>
-                <td><span style="font-family:var(--font-mono);font-size:12px;">1h 12min</span></td>
-                <td><span style="font-family:var(--font-mono);font-size:11px;">28 May 2025</span></td>
-                <td><span class="status-badge status-active">Completado</span></td>
-              </tr>
-              <tr>
-                <td><span class="student-name">Carlos Martínez</span></td>
-                <td><span style="font-family:var(--font-display);font-size:14px;text-transform:uppercase;">SKRG → SKBO</span></td>
-                <td><span class="tag tag-type">RNAV</span></td>
-                <td><span style="font-family:var(--font-mono);font-size:12px;">0h 55min</span></td>
-                <td><span style="font-family:var(--font-mono);font-size:11px;">01 Jun 2025</span></td>
-                <td><span class="status-badge status-active">Completado</span></td>
-              </tr>
-              <tr>
-                <td><span class="student-name">Juan García</span></td>
-                <td><span style="font-family:var(--font-display);font-size:14px;text-transform:uppercase;">SKRG → SKBO</span></td>
-                <td><span class="tag tag-type">RNAV</span></td>
-                <td><span style="font-family:var(--font-mono);font-size:12px;">0h 58min</span></td>
-                <td><span style="font-family:var(--font-mono);font-size:11px;">22 May 2025</span></td>
-                <td><span class="status-badge status-active">Completado</span></td>
-              </tr>
+            <tbody id="repFlightsBody">
+              <tr><td colspan="8" class="flights-loading">Cargando vuelos...</td></tr>
             </tbody>
           </table>
         </div>
@@ -899,7 +986,56 @@
     </div>
   </div>
 
+  <!-- ════ MODAL: DETALLE DE VUELO ════ -->
+  <div id="flightDetailModal" class="flight-modal-overlay hidden-panel" onclick="if(event.target===this) closeFlightDetail()">
+    <div class="flight-modal">
+      <div class="flight-modal-head">
+        <div>
+          <div class="tech-label">Detalle del vuelo</div>
+          <h2 class="panel-title" id="fdTitle" style="font-size:20px;">—</h2>
+        </div>
+        <button class="btn-outline" onclick="closeFlightDetail()">✕ Cerrar</button>
+      </div>
+
+      <div class="stats-row" style="grid-template-columns:repeat(4,1fr);margin-top:12px;">
+        <div class="stat-card">
+          <div class="stat-label">Altitud máxima</div>
+          <div class="stat-value" id="fdMaxAlt" style="color:var(--accent);font-size:22px;">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">IAS máxima</div>
+          <div class="stat-value" id="fdMaxIas" style="color:var(--magenta);font-size:22px;">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Duración total</div>
+          <div class="stat-value" id="fdDuration" style="color:var(--success);font-size:22px;">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Puntos grabados</div>
+          <div class="stat-value" id="fdPoints" style="color:var(--amber);font-size:22px;">—</div>
+        </div>
+      </div>
+
+      <div class="flight-detail-grid">
+        <div class="flight-map-wrap">
+          <div id="fdRouteMap" class="flight-route-map" aria-label="Mapa de ruta recorrida"></div>
+          <div id="fdRouteMapEmpty" class="flight-map-empty">Cargando ruta recorrida...</div>
+          <div class="flight-map-summary">
+            <span class="tag tag-info">Inicio <strong id="fdRouteStart">--</strong></span>
+            <span class="tag tag-info">Fin <strong id="fdRouteEnd">--</strong></span>
+            <span class="tag tag-type">Distancia <strong id="fdRouteDistance">--</strong></span>
+          </div>
+        </div>
+
+        <div class="flight-chart-wrap">
+          <canvas id="fdAltitudeChart" height="110"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
   <script src="src/scripts/supabase-client.js"></script>
   <script>const REQUIRED_ROLE = 'admin';</script>
   <script src="src/scripts/auth-guard.js"></script>
@@ -910,7 +1046,10 @@
       document.querySelectorAll('.page-tab').forEach(b => b.classList.remove('active'));
       document.getElementById('panel-' + name).classList.add('active');
       if (btn) btn.classList.add('active');
+      if (name === 'vuelos-activos') startActiveFlightsLive();
+      else stopActiveFlightsLive();
       if (name === 'simuladores') loadSimuladores();
+      if (name === 'reportes') loadReportes();
     }
 
     // ── MULTI-SELECT ESTUDIANTES ──
@@ -1058,6 +1197,317 @@
       document.querySelector('#studentTrigger .trigger-label').textContent = 'Seleccionar estudiante(s)';
     }
 
+    // ── VUELOS ACTIVOS ────────────────────────────────────────────────────────
+    let activeFlightsTimer = null;
+    let activeFlightsChannel = null;
+    let activeFlightsLoading = false;
+    const activeFlightMapsOpen = new Set();
+    const activeFlightMaps = new Map();
+
+    function startActiveFlightsLive() {
+      loadActiveFlights();
+      if (!activeFlightsTimer) {
+        activeFlightsTimer = setInterval(loadActiveFlights, 3000);
+      }
+      if (!activeFlightsChannel && supabaseClient?.channel) {
+        activeFlightsChannel = supabaseClient
+          .channel('admin-active-flight-telemetry')
+          .on(
+            'postgres_changes',
+            { event: 'INSERT', schema: 'public', table: 'flight_telemetry' },
+            () => loadActiveFlights()
+          )
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'flight_sessions' },
+            () => loadActiveFlights()
+          )
+          .subscribe();
+      }
+    }
+
+    function stopActiveFlightsLive() {
+      if (activeFlightsTimer) {
+        clearInterval(activeFlightsTimer);
+        activeFlightsTimer = null;
+      }
+      if (activeFlightsChannel && supabaseClient?.removeChannel) {
+        supabaseClient.removeChannel(activeFlightsChannel);
+        activeFlightsChannel = null;
+      }
+      activeFlightMaps.forEach(map => map.remove());
+      activeFlightMaps.clear();
+    }
+
+    async function loadActiveFlights() {
+      if (activeFlightsLoading) return;
+      activeFlightsLoading = true;
+
+      const empty = document.getElementById('activeFlightsEmpty');
+      const grid = document.getElementById('activeFlightsGrid');
+      const now = Date.now();
+      const activeWindowMs = 15000;
+
+      const [sessionsRes, studentsRes, telemetryRes] = await Promise.all([
+        supabaseClient.from('flight_sessions').select('*').order('last_seen', { ascending: false }),
+        supabaseClient.from('profiles').select('id, nombre, email, session_code').eq('role', 'estudiante'),
+        supabaseClient
+          .from('flight_telemetry')
+          .select('session_code, flight_id, sim_time, altitude_ft, ias_kt, heading_deg, vs_fpm, latitude, longitude, on_ground')
+          .not('flight_id', 'is', null)
+          .neq('flight_id', '')
+          .order('sim_time', { ascending: false })
+          .limit(2000),
+      ]);
+
+      activeFlightsLoading = false;
+
+      if (sessionsRes.error || telemetryRes.error) {
+        empty.classList.remove('hidden-panel');
+        grid.classList.add('hidden-panel');
+        empty.querySelector('.no-live-text').textContent = 'No se pudieron cargar vuelos activos';
+        return;
+      }
+
+      const studentsByCode = {};
+      (studentsRes.data || []).forEach(s => {
+        if (s.session_code) studentsByCode[s.session_code] = s;
+      });
+
+      const activeSessions = (sessionsRes.data || [])
+        .filter(s => now - new Date(s.last_seen).getTime() < activeWindowMs)
+        .filter(s => !s.on_ground);
+      const activeCodes = new Set(activeSessions.map(s => s.session_code));
+
+      const activePoints = (telemetryRes.data || [])
+        .filter(p => activeCodes.has(p.session_code))
+        .filter(p => !p.on_ground);
+      const cards = buildActiveFlightCards(activePoints, activeSessions, studentsByCode, now);
+
+      if (!cards.length) {
+        empty.classList.remove('hidden-panel');
+        grid.classList.add('hidden-panel');
+        empty.querySelector('.no-live-text').textContent = 'Sin vuelos activos en este momento';
+        grid.innerHTML = '';
+        return;
+      }
+
+      empty.classList.add('hidden-panel');
+      grid.classList.remove('hidden-panel');
+      grid.innerHTML = cards.map(renderActiveFlightCard).join('');
+      syncActiveFlightMaps(cards);
+    }
+
+    function buildActiveFlightCards(points, sessions, studentsByCode, now) {
+      const sessionsByCode = {};
+      sessions.forEach(s => { sessionsByCode[s.session_code] = s; });
+
+      const byFlightId = new Map();
+      points.forEach(p => {
+        if (!p.flight_id) return;
+        if (!byFlightId.has(p.flight_id)) byFlightId.set(p.flight_id, []);
+        byFlightId.get(p.flight_id).push(p);
+      });
+
+      return [...byFlightId.entries()]
+        .map(([flightId, group]) => summarizeActiveFlight(flightId, group, sessionsByCode, studentsByCode, now))
+        .filter(Boolean)
+        .sort((a, b) => b.last_seen_ms - a.last_seen_ms);
+    }
+
+    function summarizeActiveFlight(flightId, group, sessionsByCode, studentsByCode, now) {
+      const sorted = [...group].sort((a, b) => new Date(a.sim_time) - new Date(b.sim_time));
+      if (!sorted.length) return null;
+
+      const first = sorted[0];
+      const last = sorted[sorted.length - 1];
+      const session = sessionsByCode[last.session_code];
+      if (!session) return null;
+
+      const startedMs = new Date(first.sim_time).getTime();
+      const lastMs = new Date(last.sim_time).getTime();
+      const maxAlt = Math.max(...sorted.map(p => Number(p.altitude_ft)).filter(Number.isFinite));
+      const maxIas = Math.max(...sorted.map(p => Number(p.ias_kt)).filter(Number.isFinite));
+      const coords = getRouteCoordinates(sorted);
+
+      return {
+        flight_id: flightId,
+        session_code: last.session_code,
+        student: studentsByCode[last.session_code] || null,
+        last_seen_ms: new Date(session.last_seen).getTime(),
+        last_signal: timeSince(session.last_seen),
+        duration_seconds: Number.isFinite(startedMs) && Number.isFinite(lastMs)
+          ? Math.max(0, (Math.min(now, lastMs) - startedMs) / 1000)
+          : 0,
+        altitude_ft: Number(last.altitude_ft),
+        ias_kt: Number(last.ias_kt),
+        heading_deg: Number(last.heading_deg),
+        vs_fpm: Number(last.vs_fpm),
+        max_altitude_ft: Number.isFinite(maxAlt) ? maxAlt : null,
+        max_ias_kt: Number.isFinite(maxIas) ? maxIas : null,
+        point_count: sorted.length,
+        distance_nm: coords.length > 1 ? routeDistanceNm(coords) : 0,
+        coordinates: coords,
+      };
+    }
+
+    function renderActiveFlightCard(f) {
+      const studentName = f.student?.nombre || 'Sin estudiante asignado';
+      const liveLabel = f.last_signal === 'ahora' ? 'En vivo' : `Señal ${f.last_signal}`;
+      const mapOpen = activeFlightMapsOpen.has(f.flight_id);
+      const mapId = `activeRouteMap-${domSafeId(f.flight_id)}`;
+
+      return `
+        <article class="live-card">
+          <div class="live-card-head">
+            <div>
+              <div class="live-route">${escSim(studentName)}</div>
+              <div class="live-subroute">${escSim(f.session_code)} · ${escSim(f.flight_id)}</div>
+            </div>
+            <span class="status-badge status-live">En vuelo</span>
+          </div>
+          <div class="live-card-body">
+            ${renderTelemetryPair('Altitud', f.altitude_ft, 'FT')}
+            ${renderTelemetryPair('IAS', f.ias_kt, 'KT')}
+            ${renderTelemetryPair('Rumbo', f.heading_deg, '°')}
+            ${renderTelemetryPair('V/S', f.vs_fpm, 'FT/MIN', true)}
+            <div class="live-progress">
+              ${renderTelemetryPair('Duración', formatDuration(f.duration_seconds), '')}
+              ${renderTelemetryPair('Puntos', Number(f.point_count || 0).toLocaleString('es-CO'), '')}
+              ${renderTelemetryPair('Distancia', f.distance_nm.toFixed(1), 'NM')}
+              ${renderTelemetryPair('Alt máx', f.max_altitude_ft, 'FT')}
+              ${renderTelemetryPair('IAS máx', f.max_ias_kt, 'KT')}
+              ${renderTelemetryPair('Última señal', f.last_signal, '')}
+            </div>
+            <div class="live-map-toggle">
+              <button class="btn-outline" onclick="toggleActiveFlightMap('${escAttr(f.flight_id)}')">${mapOpen ? 'Ocultar mapa' : 'Ver mapa'}</button>
+            </div>
+            ${mapOpen ? `<div class="live-route-map-wrap"><div class="live-route-map" id="${mapId}" aria-label="Mapa en vivo del vuelo activo"></div></div>` : ''}
+          </div>
+          <div class="live-card-foot">
+            <div class="live-indicator"><div class="live-dot"></div> ${escSim(liveLabel)}</div>
+            <span style="font-family:var(--font-mono);font-size:10px;color:var(--muted);">${escSim(f.session_code)}</span>
+          </div>
+        </article>`;
+    }
+
+    function toggleActiveFlightMap(flightId) {
+      if (activeFlightMapsOpen.has(flightId)) {
+        activeFlightMapsOpen.delete(flightId);
+        removeActiveFlightMap(flightId);
+      } else {
+        activeFlightMapsOpen.add(flightId);
+      }
+      loadActiveFlights();
+    }
+
+    function syncActiveFlightMaps(cards) {
+      const activeIds = new Set(cards.map(c => c.flight_id));
+      [...activeFlightMapsOpen].forEach(id => {
+        if (!activeIds.has(id)) {
+          activeFlightMapsOpen.delete(id);
+          removeActiveFlightMap(id);
+        }
+      });
+
+      cards.forEach(card => {
+        if (activeFlightMapsOpen.has(card.flight_id)) {
+          renderActiveFlightMap(card.flight_id, card.coordinates || []);
+        }
+      });
+    }
+
+    function renderActiveFlightMap(flightId, coordinates) {
+      const container = document.getElementById(`activeRouteMap-${domSafeId(flightId)}`);
+      if (!container || typeof maplibregl === 'undefined') return;
+
+      removeActiveFlightMap(flightId);
+
+      const center = coordinates[coordinates.length - 1] || coordinates[0] || [-74.2973, 4.5709];
+      const map = new maplibregl.Map({
+        container,
+        style: FLIGHT_ROUTE_STYLE_URL,
+        center,
+        zoom: coordinates.length > 1 ? 9 : 6,
+        attributionControl: true,
+      });
+      activeFlightMaps.set(flightId, map);
+
+      map.on('load', () => {
+        map.addSource('active-flight-route', {
+          type: 'geojson',
+          data: routeLineGeoJSON(coordinates),
+        });
+        map.addSource('active-flight-points', {
+          type: 'geojson',
+          data: routePointsGeoJSON(coordinates),
+        });
+        map.addLayer({
+          id: 'active-flight-route-glow',
+          type: 'line',
+          source: 'active-flight-route',
+          paint: { 'line-color': '#e879f9', 'line-width': 8, 'line-opacity': 0.24 },
+        });
+        map.addLayer({
+          id: 'active-flight-route-main',
+          type: 'line',
+          source: 'active-flight-route',
+          paint: { 'line-color': '#38bdf8', 'line-width': 3.5, 'line-opacity': 0.95 },
+        });
+        map.addLayer({
+          id: 'active-flight-route-points',
+          type: 'circle',
+          source: 'active-flight-points',
+          paint: {
+            'circle-radius': ['case', ['==', ['get', 'kind'], 'start'], 5, 6],
+            'circle-color': ['case', ['==', ['get', 'kind'], 'start'], '#22c55e', '#f59e0b'],
+            'circle-stroke-color': '#0d0d0f',
+            'circle-stroke-width': 2,
+          },
+        });
+        fitActiveFlightMap(map, coordinates);
+      });
+    }
+
+    function removeActiveFlightMap(flightId) {
+      const map = activeFlightMaps.get(flightId);
+      if (map) {
+        map.remove();
+        activeFlightMaps.delete(flightId);
+      }
+    }
+
+    function fitActiveFlightMap(map, coordinates) {
+      if (!coordinates.length) return;
+      if (coordinates.length === 1) {
+        map.easeTo({ center: coordinates[0], zoom: 13, duration: 300 });
+        return;
+      }
+
+      const bounds = coordinates.reduce(
+        (b, coord) => b.extend(coord),
+        new maplibregl.LngLatBounds(coordinates[0], coordinates[0])
+      );
+      map.fitBounds(bounds, { padding: 34, maxZoom: 14, duration: 400 });
+    }
+
+    function domSafeId(value) {
+      return String(value || '').replace(/[^a-zA-Z0-9_-]/g, '_');
+    }
+
+    function renderTelemetryPair(label, value, unit, signed = false) {
+      let display = value;
+      if (typeof value === 'number') {
+        display = Number.isFinite(value) ? Math.round(value).toLocaleString('es-CO') : '—';
+        if (signed && Number.isFinite(value) && value > 0) display = `+${display}`;
+      }
+      return `
+        <div class="telemetry-pair">
+          <div class="tele-label">${escSim(label)}</div>
+          <div class="tele-value">${escSim(display)} ${unit ? `<span class="tele-unit">${escSim(unit)}</span>` : ''}</div>
+        </div>`;
+    }
+
     // ── PANEL SIMULADORES ─────────────────────────────────────────────────────
     async function loadSimuladores() {
       const container = document.getElementById('simSessionsList');
@@ -1150,6 +1600,591 @@
       if (diff <  60) return `hace ${diff}s`;
       if (diff < 3600) return `hace ${Math.floor(diff / 60)}min`;
       return `hace ${Math.floor(diff / 3600)}h`;
+    }
+
+    let reportFlights = [];
+    let reportStudentsByCode = {};
+    let flightRouteMap = null;
+    let flightRouteMapReady = false;
+    const FLIGHT_ROUTE_STYLE_URL = 'https://tiles.openfreemap.org/styles/dark';
+
+    async function loadReportes() {
+      const body = document.getElementById('repFlightsBody');
+      body.innerHTML = '<tr><td colspan="8" class="flights-loading">Cargando vuelos...</td></tr>';
+
+      const [summaryRes, telemetryRes, studentsRes] = await Promise.all([
+        supabaseClient.rpc('flight_summaries'),
+        supabaseClient
+          .from('flight_telemetry')
+          .select('session_code, flight_id, sim_time, altitude_ft, ias_kt')
+          .not('flight_id', 'is', null)
+          .neq('flight_id', '')
+          .order('sim_time', { ascending: false })
+          .limit(10000),
+        supabaseClient
+          .from('profiles')
+          .select('id, nombre, email, session_code')
+          .eq('role', 'estudiante'),
+      ]);
+
+      if (summaryRes.error && telemetryRes.error) {
+        body.innerHTML = `<tr><td colspan="8" class="flights-loading">Error al cargar reportes: ${escSim(summaryRes.error.message || telemetryRes.error.message)}</td></tr>`;
+        resetReportStats();
+        return;
+      }
+
+      const students = studentsRes.data || [];
+      reportStudentsByCode = {};
+      students.forEach(s => {
+        if (s.session_code) reportStudentsByCode[s.session_code] = s;
+      });
+
+      const summaryFlights = summaryRes.error ? [] : (summaryRes.data || [])
+        .filter(f => f.flight_id)
+        .map(normalizeSummaryReport);
+      const directFlights = telemetryRes.error ? [] : buildFlightIdReports(telemetryRes.data || []);
+      const flightsById = new Map();
+      summaryFlights.forEach(f => flightsById.set(f.flight_id, f));
+      directFlights.forEach(f => flightsById.set(f.flight_id, f));
+
+      reportFlights = [...flightsById.values()]
+        .sort((a, b) => new Date(b.started_at) - new Date(a.started_at));
+
+      reportFlights = reportFlights.map(f => ({
+        ...f,
+        student: reportStudentsByCode[f.session_code] || null,
+      }));
+
+      renderReportStats(reportFlights);
+      renderReportRows(reportFlights);
+    }
+
+    function normalizeSummaryReport(f) {
+      return {
+        ...f,
+        report_key: f.flight_id,
+        detail_filter_value: f.flight_id,
+        detail_started_at: f.started_at,
+        detail_ended_at: f.ended_at,
+      };
+    }
+
+    function buildFlightIdReports(points) {
+      const byFlightId = new Map();
+      points.forEach(p => {
+        if (!p.flight_id) return;
+        if (!byFlightId.has(p.flight_id)) byFlightId.set(p.flight_id, []);
+        byFlightId.get(p.flight_id).push(p);
+      });
+
+      return [...byFlightId.entries()]
+        .map(([flightId, group]) => summarizeFlightIdGroup(flightId, group))
+        .filter(Boolean);
+    }
+
+    function summarizeFlightIdGroup(flightId, group) {
+      const sorted = [...group].sort((a, b) => new Date(a.sim_time) - new Date(b.sim_time));
+      if (!sorted.length) return null;
+
+      const first = sorted[0];
+      const last = sorted[sorted.length - 1];
+      const startedAt = first.sim_time;
+      const endedAt = last.sim_time;
+      const startedMs = new Date(startedAt).getTime();
+      const endedMs = new Date(endedAt).getTime();
+      const maxAlt = Math.max(...sorted.map(p => Number(p.altitude_ft)).filter(Number.isFinite));
+      const maxIas = Math.max(...sorted.map(p => Number(p.ias_kt)).filter(Number.isFinite));
+
+      return normalizeSummaryReport({
+        flight_id: flightId,
+        session_code: first.session_code,
+        started_at: startedAt,
+        ended_at: endedAt,
+        duration_seconds: Number.isFinite(startedMs) && Number.isFinite(endedMs)
+          ? Math.max(0, (endedMs - startedMs) / 1000)
+          : 0,
+        max_altitude_ft: Number.isFinite(maxAlt) ? maxAlt : null,
+        max_ias_kt: Number.isFinite(maxIas) ? maxIas : null,
+        point_count: sorted.length,
+      });
+    }
+
+    function renderReportStats(flights) {
+      const totalSeconds = flights.reduce((sum, f) => sum + Number(f.duration_seconds || 0), 0);
+      const studentCount = new Set(flights.map(f => f.student?.id || f.session_code).filter(Boolean)).size;
+
+      document.getElementById('repTotalFlights').textContent = flights.length;
+      document.getElementById('repTotalHours').textContent = (totalSeconds / 3600).toFixed(1);
+      document.getElementById('repStudentCount').textContent = studentCount;
+    }
+
+    function resetReportStats() {
+      document.getElementById('repTotalFlights').textContent = '—';
+      document.getElementById('repTotalHours').textContent = '—';
+      document.getElementById('repStudentCount').textContent = '—';
+    }
+
+    function renderReportRows(flights) {
+      const body = document.getElementById('repFlightsBody');
+
+      if (!flights.length) {
+        body.innerHTML = '<tr><td colspan="8" class="flights-loading">No hay vuelos registrados todavía.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = flights.map(f => {
+        const studentName = f.student?.nombre || 'Sin estudiante asignado';
+        const startedAt = formatDateTime(f.started_at);
+        const duration = formatDuration(f.duration_seconds);
+        const maxAlt = formatNumber(f.max_altitude_ft, ' FT');
+        const maxIas = formatNumber(f.max_ias_kt, ' KT');
+        const points = Number(f.point_count || 0).toLocaleString('es-CO');
+
+        return `
+          <tr>
+            <td>
+              <div class="student-name">${escSim(studentName)}</div>
+              <div class="student-email">${escSim(f.student?.email || f.session_code || '—')}</div>
+            </td>
+            <td>
+              <div class="report-session">${escSim(f.session_code || '—')}</div>
+              <div class="report-meta">${escSim(f.flight_id)}</div>
+            </td>
+            <td><span style="font-family:var(--font-mono);font-size:11px;">${startedAt}</span></td>
+            <td>${duration}</td>
+            <td>${maxAlt}</td>
+            <td>${maxIas}</td>
+            <td>${points}</td>
+            <td><button class="btn-outline" onclick="openFlightDetail('${escAttr(f.report_key)}')">Detalle</button></td>
+          </tr>`;
+      }).join('');
+    }
+
+    async function openFlightDetail(reportKey) {
+      const flight = reportFlights.find(f => f.report_key === reportKey);
+      if (!flight) return;
+
+      document.getElementById('fdTitle').textContent =
+        `${flight.student?.nombre || flight.session_code || 'Vuelo'} · ${formatDateTime(flight.started_at)}`;
+      document.getElementById('fdMaxAlt').textContent = formatNumber(flight.max_altitude_ft, ' FT');
+      document.getElementById('fdMaxIas').textContent = formatNumber(flight.max_ias_kt, ' KT');
+      document.getElementById('fdDuration').textContent = formatDuration(flight.duration_seconds);
+      document.getElementById('fdPoints').textContent = Number(flight.point_count || 0).toLocaleString('es-CO');
+      document.getElementById('fdRouteStart').textContent = '--';
+      document.getElementById('fdRouteEnd').textContent = '--';
+      document.getElementById('fdRouteDistance').textContent = '--';
+      setFlightRouteMapStatus('Cargando ruta recorrida...');
+      document.getElementById('flightDetailModal').classList.remove('hidden-panel');
+
+      const { data, error } = await supabaseClient
+        .from('flight_telemetry')
+        .select('sim_time, altitude_ft, latitude, longitude')
+        .eq('flight_id', flight.detail_filter_value)
+        .order('sim_time', { ascending: true })
+        .limit(3000);
+
+      if (error) {
+        drawAltitudeChart([]);
+        renderFlightRouteMap([]);
+        setFlightRouteMapStatus('Error al cargar la ruta recorrida');
+        return;
+      }
+
+      const points = data || [];
+      drawAltitudeChart(points);
+      renderFlightRouteMap(points);
+    }
+
+    function closeFlightDetail() {
+      document.getElementById('flightDetailModal').classList.add('hidden-panel');
+    }
+
+    function setFlightRouteMapStatus(message, hidden = false) {
+      const empty = document.getElementById('fdRouteMapEmpty');
+      empty.textContent = message;
+      empty.classList.toggle('is-hidden', hidden);
+    }
+
+    function getRouteCoordinates(points) {
+      return points
+        .map(p => [Number(p.longitude), Number(p.latitude)])
+        .filter(([lng, lat]) =>
+          Number.isFinite(lng) &&
+          Number.isFinite(lat) &&
+          Math.abs(lat) <= 90 &&
+          Math.abs(lng) <= 180
+        );
+    }
+
+    function ensureFlightRouteMap() {
+      const container = document.getElementById('fdRouteMap');
+      if (!container || typeof maplibregl === 'undefined') return null;
+
+      if (flightRouteMap) {
+        setTimeout(() => flightRouteMap.resize(), 0);
+        return flightRouteMap;
+      }
+
+      flightRouteMap = new maplibregl.Map({
+        container,
+        style: FLIGHT_ROUTE_STYLE_URL,
+        center: [-74.2973, 4.5709],
+        zoom: 5,
+        attributionControl: true,
+      });
+      flightRouteMap.addControl(new maplibregl.NavigationControl({ showCompass: true }), 'top-right');
+
+      flightRouteMap.on('load', () => {
+        flightRouteMapReady = true;
+        setupFlightRouteLayers();
+      });
+
+      flightRouteMap.on('error', () => {
+        setFlightRouteMapStatus('Mapa no disponible');
+      });
+
+      return flightRouteMap;
+    }
+
+    function setupFlightRouteLayers() {
+      if (!flightRouteMap || !flightRouteMapReady || flightRouteMap.getSource('flight-route-line')) return;
+
+      flightRouteMap.addSource('flight-route-line', {
+        type: 'geojson',
+        data: emptyRouteLineGeoJSON(),
+      });
+      flightRouteMap.addSource('flight-route-points', {
+        type: 'geojson',
+        data: emptyRoutePointsGeoJSON(),
+      });
+
+      flightRouteMap.addLayer({
+        id: 'flight-route-line-glow',
+        type: 'line',
+        source: 'flight-route-line',
+        paint: {
+          'line-color': '#0ea5e9',
+          'line-width': 8,
+          'line-opacity': 0.22,
+        },
+      });
+      flightRouteMap.addLayer({
+        id: 'flight-route-line-main',
+        type: 'line',
+        source: 'flight-route-line',
+        paint: {
+          'line-color': '#38bdf8',
+          'line-width': 3,
+          'line-opacity': 0.92,
+        },
+      });
+      flightRouteMap.addLayer({
+        id: 'flight-route-point-dots',
+        type: 'circle',
+        source: 'flight-route-points',
+        paint: {
+          'circle-radius': ['case', ['==', ['get', 'kind'], 'start'], 6, 5],
+          'circle-color': ['case', ['==', ['get', 'kind'], 'start'], '#22c55e', '#f59e0b'],
+          'circle-stroke-color': '#0d0d0f',
+          'circle-stroke-width': 2,
+        },
+      });
+      flightRouteMap.addLayer({
+        id: 'flight-route-point-labels',
+        type: 'symbol',
+        source: 'flight-route-points',
+        layout: {
+          'text-field': ['get', 'label'],
+          'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+          'text-size': 11,
+          'text-offset': [0, 1.3],
+          'text-anchor': 'top',
+        },
+        paint: {
+          'text-color': '#f8fafc',
+          'text-halo-color': '#0d0d0f',
+          'text-halo-width': 1.4,
+        },
+      });
+    }
+
+    function renderFlightRouteMap(points) {
+      const coordinates = getRouteCoordinates(points);
+      updateFlightRouteSummary(coordinates);
+
+      if (!coordinates.length) {
+        updateFlightRouteSources([]);
+        setFlightRouteMapStatus('Sin coordenadas para mostrar la trayectoria');
+        return;
+      }
+
+      const map = ensureFlightRouteMap();
+      if (!map) {
+        setFlightRouteMapStatus('Mapa no disponible');
+        return;
+      }
+
+      const draw = () => {
+        setupFlightRouteLayers();
+        updateFlightRouteSources(coordinates);
+        fitFlightRouteBounds(coordinates);
+        setFlightRouteMapStatus('', true);
+      };
+
+      if (flightRouteMapReady && map.isStyleLoaded()) draw();
+      else map.once('load', draw);
+    }
+
+    function updateFlightRouteSources(coordinates) {
+      if (!flightRouteMap || !flightRouteMapReady || !flightRouteMap.getSource('flight-route-line')) return;
+      flightRouteMap.getSource('flight-route-line').setData(routeLineGeoJSON(coordinates));
+      flightRouteMap.getSource('flight-route-points').setData(routePointsGeoJSON(coordinates));
+    }
+
+    function updateFlightRouteSummary(coordinates) {
+      const start = coordinates[0];
+      const end = coordinates[coordinates.length - 1];
+      document.getElementById('fdRouteStart').textContent = start ? formatCoord(start) : '--';
+      document.getElementById('fdRouteEnd').textContent = end ? formatCoord(end) : '--';
+      document.getElementById('fdRouteDistance').textContent = coordinates.length > 1
+        ? `${routeDistanceNm(coordinates).toFixed(1)} NM`
+        : '--';
+    }
+
+    function fitFlightRouteBounds(coordinates) {
+      if (!flightRouteMap || !coordinates.length) return;
+      if (coordinates.length === 1) {
+        flightRouteMap.easeTo({ center: coordinates[0], zoom: 13, duration: 450 });
+        return;
+      }
+
+      const bounds = coordinates.reduce(
+        (b, coord) => b.extend(coord),
+        new maplibregl.LngLatBounds(coordinates[0], coordinates[0])
+      );
+      flightRouteMap.fitBounds(bounds, { padding: 54, maxZoom: 13, duration: 650 });
+    }
+
+    function emptyRouteLineGeoJSON() {
+      return routeLineGeoJSON([]);
+    }
+
+    function routeLineGeoJSON(coordinates) {
+      return {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'LineString',
+          coordinates: coordinates.length > 1 ? coordinates : [],
+        },
+      };
+    }
+
+    function emptyRoutePointsGeoJSON() {
+      return routePointsGeoJSON([]);
+    }
+
+    function routePointsGeoJSON(coordinates) {
+      if (!coordinates.length) return { type: 'FeatureCollection', features: [] };
+      const points = [
+        { coord: coordinates[0], kind: 'start', label: 'Inicio' },
+      ];
+      if (coordinates.length > 1) {
+        points.push({ coord: coordinates[coordinates.length - 1], kind: 'end', label: 'Fin' });
+      }
+      return {
+        type: 'FeatureCollection',
+        features: points.map(p => ({
+          type: 'Feature',
+          properties: { kind: p.kind, label: p.label },
+          geometry: { type: 'Point', coordinates: p.coord },
+        })),
+      };
+    }
+
+    function routeDistanceNm(coordinates) {
+      let totalKm = 0;
+      for (let i = 1; i < coordinates.length; i++) {
+        totalKm += haversineKm(coordinates[i - 1], coordinates[i]);
+      }
+      return totalKm / 1.852;
+    }
+
+    function haversineKm(a, b) {
+      const toRad = deg => deg * Math.PI / 180;
+      const earthKm = 6371;
+      const dLat = toRad(b[1] - a[1]);
+      const dLng = toRad(b[0] - a[0]);
+      const lat1 = toRad(a[1]);
+      const lat2 = toRad(b[1]);
+      const h =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+      return 2 * earthKm * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+    }
+
+    function formatCoord(coord) {
+      return `${coord[1].toFixed(4)}, ${coord[0].toFixed(4)}`;
+    }
+
+    function drawAltitudeChart(points) {
+      const canvas = document.getElementById('fdAltitudeChart');
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.getBoundingClientRect();
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = Math.max(1, Math.floor(rect.width * ratio));
+      canvas.height = Math.max(1, Math.floor(260 * ratio));
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+      const w = rect.width;
+      const h = 260;
+      ctx.clearRect(0, 0, w, h);
+      drawAltitudeChartImage(ctx, w, h);
+
+      if (!points.length) {
+        ctx.fillStyle = '#9a9aaa';
+        ctx.font = '12px monospace';
+        ctx.fillText('Sin puntos de altitud para graficar', 18, 32);
+        return;
+      }
+
+      const values = points.map(p => Number(p.altitude_ft || 0));
+      const rawMin = Math.min(...values);
+      const rawMax = Math.max(...values);
+      const scaleMax = Math.max(3000, Math.ceil((rawMax + 1000) / 1000) * 1000);
+      const scaleMin = Math.min(0, Math.floor((rawMin - 500) / 1000) * 1000);
+      const range = Math.max(1, scaleMax - scaleMin);
+      const padX = 34;
+      const padTop = 24;
+      const padBottom = 34;
+      const plotW = w - padX * 2;
+      const plotH = h - padTop - padBottom;
+
+      ctx.fillStyle = 'rgba(56,189,248,0.12)';
+      ctx.beginPath();
+      values.forEach((alt, i) => {
+        const x = padX + (i / Math.max(1, values.length - 1)) * plotW;
+        const y = padTop + (1 - ((alt - scaleMin) / range)) * plotH;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.lineTo(padX + plotW, padTop + plotH);
+      ctx.lineTo(padX, padTop + plotH);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = 'rgba(56,189,248,0.55)';
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      values.forEach((alt, i) => {
+        const x = padX + (i / Math.max(1, values.length - 1)) * plotW;
+        const y = padTop + (1 - ((alt - scaleMin) / range)) * plotH;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      const lastAlt = values[values.length - 1];
+      const lastX = padX + plotW;
+      const lastY = padTop + (1 - ((lastAlt - scaleMin) / range)) * plotH;
+      ctx.fillStyle = '#f8fafc';
+      ctx.beginPath();
+      ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '11px monospace';
+      ctx.fillText(`${Math.round(rawMax).toLocaleString('es-CO')} FT MAX`, padX, 15);
+      ctx.fillText(`${Math.round(lastAlt).toLocaleString('es-CO')} FT`, Math.max(padX, lastX - 86), Math.max(16, lastY - 10));
+    }
+
+    function drawAltitudeChartImage(ctx, w, h) {
+      const padX = 34;
+      const padTop = 24;
+      const padBottom = 34;
+      const plotW = w - padX * 2;
+      const plotH = h - padTop - padBottom;
+
+      const sky = ctx.createLinearGradient(0, 0, 0, h);
+      sky.addColorStop(0, '#0f2742');
+      sky.addColorStop(0.52, '#12304a');
+      sky.addColorStop(1, '#101216');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, w, h);
+
+      const horizon = padTop + plotH * 0.68;
+      ctx.fillStyle = 'rgba(15,23,42,0.65)';
+      ctx.beginPath();
+      ctx.moveTo(0, horizon + 18);
+      ctx.lineTo(w * 0.16, horizon - 8);
+      ctx.lineTo(w * 0.32, horizon + 16);
+      ctx.lineTo(w * 0.48, horizon - 18);
+      ctx.lineTo(w * 0.64, horizon + 10);
+      ctx.lineTo(w * 0.8, horizon - 12);
+      ctx.lineTo(w, horizon + 14);
+      ctx.lineTo(w, h);
+      ctx.lineTo(0, h);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(203,213,225,0.16)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = padTop + (plotH / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(padX, y);
+        ctx.lineTo(padX + plotW, y);
+        ctx.stroke();
+      }
+      for (let i = 0; i <= 4; i++) {
+        const x = padX + (plotW / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(x, padTop);
+        ctx.lineTo(x, padTop + plotH);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = 'rgba(248,250,252,0.42)';
+      ctx.strokeRect(padX, padTop, plotW, plotH);
+
+      ctx.fillStyle = 'rgba(203,213,225,0.72)';
+      ctx.font = '10px monospace';
+      ctx.fillText('PERFIL ALTITUD', padX, h - 12);
+      ctx.fillText('TIEMPO', Math.max(padX, w - padX - 42), h - 12);
+    }
+
+    function formatDuration(seconds) {
+      const total = Math.max(0, Math.round(Number(seconds || 0)));
+      const h = Math.floor(total / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      const s = total % 60;
+      if (h) return `${h}h ${String(m).padStart(2, '0')}m`;
+      if (m) return `${m}m ${String(s).padStart(2, '0')}s`;
+      return `${s}s`;
+    }
+
+    function formatDateTime(value) {
+      if (!value) return '—';
+      return new Intl.DateTimeFormat('es-CO', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(new Date(value));
+    }
+
+    function formatNumber(value, suffix) {
+      const n = Number(value);
+      if (!Number.isFinite(n)) return '—';
+      return `${Math.round(n).toLocaleString('es-CO')}${suffix}`;
+    }
+
+    function escAttr(s) {
+      return String(s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '');
     }
 
     function escSim(s) {
