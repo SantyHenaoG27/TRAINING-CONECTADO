@@ -624,6 +624,7 @@
       border-bottom: 1px solid var(--border);
     }
     .flight-chart-wrap {
+      position: relative;
       margin-top: 18px;
       background: var(--bg);
       border: 1px solid var(--border);
@@ -633,6 +634,37 @@
       display: block;
       width: 100%;
       height: 260px;
+      cursor: crosshair;
+    }
+    .chart-tooltip {
+      position: absolute;
+      pointer-events: none;
+      transform: translate(-50%, calc(-100% - 12px));
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.3;
+      color: #f8fafc;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.1s ease;
+      z-index: 5;
+    }
+    .chart-tooltip.is-visible {
+      opacity: 1;
+    }
+    .chart-tooltip strong {
+      display: block;
+      color: #38bdf8;
+      font-size: 13px;
+    }
+    .chart-tooltip span {
+      display: block;
+      color: #94a3b8;
+      margin-top: 2px;
     }
     .flight-detail-grid {
       display: grid;
@@ -968,6 +1000,7 @@
               <tr>
                 <th>Estudiante</th>
                 <th>Sesión</th>
+                <th>Asignación</th>
                 <th>Fecha</th>
                 <th>Duración</th>
                 <th>Altitud máx</th>
@@ -977,7 +1010,7 @@
               </tr>
             </thead>
             <tbody id="repFlightsBody">
-              <tr><td colspan="8" class="flights-loading">Cargando vuelos...</td></tr>
+              <tr><td colspan="9" class="flights-loading">Cargando vuelos...</td></tr>
             </tbody>
           </table>
         </div>
@@ -1029,6 +1062,7 @@
 
         <div class="flight-chart-wrap">
           <canvas id="fdAltitudeChart" height="110"></canvas>
+          <div class="chart-tooltip" id="fdAltitudeTooltip"></div>
         </div>
       </div>
     </div>
@@ -1250,7 +1284,7 @@
 
       const [sessionsRes, studentsRes, telemetryRes] = await Promise.all([
         supabaseClient.from('flight_sessions').select('*').order('last_seen', { ascending: false }),
-        supabaseClient.from('profiles').select('id, nombre, email, session_code').eq('role', 'estudiante'),
+        supabaseClient.from('profiles').select('id, nombre, session_code').eq('role', 'estudiante'),
         supabaseClient
           .from('flight_telemetry')
           .select('session_code, flight_id, sim_time, altitude_ft, ias_kt, heading_deg, vs_fpm, latitude, longitude, on_ground')
@@ -1610,34 +1644,42 @@
 
     async function loadReportes() {
       const body = document.getElementById('repFlightsBody');
-      body.innerHTML = '<tr><td colspan="8" class="flights-loading">Cargando vuelos...</td></tr>';
+      body.innerHTML = '<tr><td colspan="9" class="flights-loading">Cargando vuelos...</td></tr>';
 
-      const [summaryRes, telemetryRes, studentsRes] = await Promise.all([
+      const [summaryRes, telemetryRes, studentsRes, assignmentsRes] = await Promise.all([
         supabaseClient.rpc('flight_summaries'),
         supabaseClient
           .from('flight_telemetry')
-          .select('session_code, flight_id, sim_time, altitude_ft, ias_kt')
+          .select('session_code, flight_id, assignment_id, student_id, sim_time, altitude_ft, ias_kt')
           .not('flight_id', 'is', null)
           .neq('flight_id', '')
           .order('sim_time', { ascending: false })
           .limit(10000),
         supabaseClient
           .from('profiles')
-          .select('id, nombre, email, session_code')
+          .select('id, nombre, session_code')
           .eq('role', 'estudiante'),
+        supabaseClient
+          .from('flight_assignments')
+          .select('id, origen, destino'),
       ]);
 
       if (summaryRes.error && telemetryRes.error) {
-        body.innerHTML = `<tr><td colspan="8" class="flights-loading">Error al cargar reportes: ${escSim(summaryRes.error.message || telemetryRes.error.message)}</td></tr>`;
+        body.innerHTML = `<tr><td colspan="9" class="flights-loading">Error al cargar reportes: ${escSim(summaryRes.error.message || telemetryRes.error.message)}</td></tr>`;
         resetReportStats();
         return;
       }
 
       const students = studentsRes.data || [];
+      const studentsById = {};
       reportStudentsByCode = {};
       students.forEach(s => {
+        studentsById[s.id] = s;
         if (s.session_code) reportStudentsByCode[s.session_code] = s;
       });
+
+      const assignmentsById = {};
+      (assignmentsRes.data || []).forEach(a => { assignmentsById[a.id] = a; });
 
       const summaryFlights = summaryRes.error ? [] : (summaryRes.data || [])
         .filter(f => f.flight_id)
@@ -1650,9 +1692,14 @@
       reportFlights = [...flightsById.values()]
         .sort((a, b) => new Date(b.started_at) - new Date(a.started_at));
 
+      // student_id is stamped permanently on each telemetry row at write time,
+      // so it survives a student later re-linking to a different simulator.
+      // Older rows (recorded before that column existed) fall back to matching
+      // by the student's CURRENT session_code, which is the best guess we have.
       reportFlights = reportFlights.map(f => ({
         ...f,
-        student: reportStudentsByCode[f.session_code] || null,
+        student: (f.student_id ? studentsById[f.student_id] : null) || reportStudentsByCode[f.session_code] || null,
+        assignment: f.assignment_id ? (assignmentsById[f.assignment_id] || null) : null,
       }));
 
       renderReportStats(reportFlights);
@@ -1694,10 +1741,14 @@
       const endedMs = new Date(endedAt).getTime();
       const maxAlt = Math.max(...sorted.map(p => Number(p.altitude_ft)).filter(Number.isFinite));
       const maxIas = Math.max(...sorted.map(p => Number(p.ias_kt)).filter(Number.isFinite));
+      const assignmentId = sorted.find(p => p.assignment_id)?.assignment_id || null;
+      const studentId = sorted.find(p => p.student_id)?.student_id || null;
 
       return normalizeSummaryReport({
         flight_id: flightId,
         session_code: first.session_code,
+        assignment_id: assignmentId,
+        student_id: studentId,
         started_at: startedAt,
         ended_at: endedAt,
         duration_seconds: Number.isFinite(startedMs) && Number.isFinite(endedMs)
@@ -1728,7 +1779,7 @@
       const body = document.getElementById('repFlightsBody');
 
       if (!flights.length) {
-        body.innerHTML = '<tr><td colspan="8" class="flights-loading">No hay vuelos registrados todavía.</td></tr>';
+        body.innerHTML = '<tr><td colspan="9" class="flights-loading">No hay vuelos registrados todavía.</td></tr>';
         return;
       }
 
@@ -1739,17 +1790,21 @@
         const maxAlt = formatNumber(f.max_altitude_ft, ' FT');
         const maxIas = formatNumber(f.max_ias_kt, ' KT');
         const points = Number(f.point_count || 0).toLocaleString('es-CO');
+        const assignmentLabel = f.assignment
+          ? `<span class="tag tag-info">${escSim(f.assignment.origen)} → ${escSim(f.assignment.destino)}</span>`
+          : '<span class="report-meta">Sin asignación</span>';
 
         return `
           <tr>
             <td>
               <div class="student-name">${escSim(studentName)}</div>
-              <div class="student-email">${escSim(f.student?.email || f.session_code || '—')}</div>
+              <div class="student-email">${escSim(f.session_code || '—')}</div>
             </td>
             <td>
               <div class="report-session">${escSim(f.session_code || '—')}</div>
               <div class="report-meta">${escSim(f.flight_id)}</div>
             </td>
+            <td>${assignmentLabel}</td>
             <td><span style="font-family:var(--font-mono);font-size:11px;">${startedAt}</span></td>
             <td>${duration}</td>
             <td>${maxAlt}</td>
@@ -1778,7 +1833,7 @@
 
       const { data, error } = await supabaseClient
         .from('flight_telemetry')
-        .select('sim_time, altitude_ft, latitude, longitude')
+        .select('sim_time, altitude_ft, ias_kt, latitude, longitude')
         .eq('flight_id', flight.detail_filter_value)
         .order('sim_time', { ascending: true })
         .limit(3000);
@@ -2027,7 +2082,72 @@
       return `${coord[1].toFixed(4)}, ${coord[0].toFixed(4)}`;
     }
 
+    let altitudeChartPoints = [];
+    let altitudeChartLayout = null;
+    let altitudeChartHoverIndex = null;
+    let altitudeChartInteractionBound = false;
+
     function drawAltitudeChart(points) {
+      altitudeChartPoints = points || [];
+      altitudeChartHoverIndex = null;
+      altitudeChartLayout = null;
+      setupAltitudeChartInteraction();
+      renderAltitudeChart();
+    }
+
+    function setupAltitudeChartInteraction() {
+      if (altitudeChartInteractionBound) return;
+      const canvas = document.getElementById('fdAltitudeChart');
+      if (!canvas) return;
+      altitudeChartInteractionBound = true;
+
+      const indexFromEvent = (evt) => {
+        if (!altitudeChartLayout) return null;
+        const rect = canvas.getBoundingClientRect();
+        const { padX, plotW, count } = altitudeChartLayout;
+        const ratio = Math.min(1, Math.max(0, (evt.clientX - rect.left - padX) / plotW));
+        return Math.round(ratio * (count - 1));
+      };
+
+      const handleHover = (evt) => {
+        const idx = indexFromEvent(evt);
+        if (idx === null || idx === altitudeChartHoverIndex) return;
+        altitudeChartHoverIndex = idx;
+        renderAltitudeChart();
+      };
+
+      const handleLeave = () => {
+        if (altitudeChartHoverIndex === null) return;
+        altitudeChartHoverIndex = null;
+        renderAltitudeChart();
+      };
+
+      canvas.addEventListener('pointermove', handleHover);
+      canvas.addEventListener('pointerdown', handleHover);
+      canvas.addEventListener('pointerleave', handleLeave);
+    }
+
+    function hideAltitudeTooltip() {
+      const tooltip = document.getElementById('fdAltitudeTooltip');
+      if (tooltip) tooltip.classList.remove('is-visible');
+    }
+
+    function showAltitudeTooltip(idx, x, y) {
+      const tooltip = document.getElementById('fdAltitudeTooltip');
+      const canvas = document.getElementById('fdAltitudeChart');
+      const point = altitudeChartPoints[idx];
+      if (!tooltip || !canvas || !point) return;
+      const alt = Math.round(Number(point.altitude_ft || 0)).toLocaleString('es-CO');
+      const ias = Math.round(Number(point.ias_kt || 0)).toLocaleString('es-CO');
+      const startMs = new Date(altitudeChartPoints[0].sim_time).getTime();
+      const elapsedSec = Math.max(0, (new Date(point.sim_time).getTime() - startMs) / 1000);
+      tooltip.innerHTML = `<strong>${alt} FT · ${ias} KT</strong><span>T+${formatDuration(elapsedSec)}</span>`;
+      tooltip.style.left = `${canvas.offsetLeft + x}px`;
+      tooltip.style.top = `${canvas.offsetTop + y}px`;
+      tooltip.classList.add('is-visible');
+    }
+
+    function renderAltitudeChart() {
       const canvas = document.getElementById('fdAltitudeChart');
       const ctx = canvas.getContext('2d');
       const rect = canvas.getBoundingClientRect();
@@ -2041,10 +2161,14 @@
       ctx.clearRect(0, 0, w, h);
       drawAltitudeChartImage(ctx, w, h);
 
+      const points = altitudeChartPoints;
+      altitudeChartLayout = null;
+
       if (!points.length) {
         ctx.fillStyle = '#9a9aaa';
         ctx.font = '12px monospace';
         ctx.fillText('Sin puntos de altitud para graficar', 18, 32);
+        hideAltitudeTooltip();
         return;
       }
 
@@ -2059,6 +2183,8 @@
       const padBottom = 34;
       const plotW = w - padX * 2;
       const plotH = h - padTop - padBottom;
+
+      altitudeChartLayout = { padX, padTop, plotW, plotH, scaleMin, range, count: values.length };
 
       ctx.fillStyle = 'rgba(56,189,248,0.12)';
       ctx.beginPath();
@@ -2099,6 +2225,35 @@
       ctx.font = '11px monospace';
       ctx.fillText(`${Math.round(rawMax).toLocaleString('es-CO')} FT MAX`, padX, 15);
       ctx.fillText(`${Math.round(lastAlt).toLocaleString('es-CO')} FT`, Math.max(padX, lastX - 86), Math.max(16, lastY - 10));
+
+      if (altitudeChartHoverIndex !== null) {
+        const idx = Math.min(altitudeChartHoverIndex, values.length - 1);
+        const alt = values[idx];
+        const x = padX + (idx / Math.max(1, values.length - 1)) * plotW;
+        const y = padTop + (1 - ((alt - scaleMin) / range)) * plotH;
+
+        ctx.save();
+        ctx.strokeStyle = 'rgba(248,250,252,0.4)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(x, padTop);
+        ctx.lineTo(x, padTop + plotH);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.fillStyle = '#facc15';
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        showAltitudeTooltip(idx, x, y);
+      } else {
+        hideAltitudeTooltip();
+      }
     }
 
     function drawAltitudeChartImage(ctx, w, h) {

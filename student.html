@@ -397,6 +397,12 @@
       transition: border-color var(--motion-fast), background var(--motion-fast);
     }
     .btn-outline:hover { border-color: var(--accent); background: rgba(56,189,248,0.07); }
+    .btn-selected {
+      color: var(--success);
+      border-color: rgba(74,222,128,0.4);
+      background: rgba(74,222,128,0.08);
+    }
+    .btn-selected:hover { border-color: var(--success); background: rgba(74,222,128,0.12); }
 
     /* ── SIM WIDGET ── */
     .sim-widget {
@@ -605,6 +611,8 @@
           <div class="link-msg" id="linkMsg"></div>
         </div>
 
+        <div class="link-msg" id="activeAssignmentBanner" style="display:none;color:var(--success);margin-bottom:14px;"></div>
+
         <div class="flights-list" id="flightsList">
           <div class="flights-loading">Cargando vuelos...</div>
         </div>
@@ -788,6 +796,7 @@
     }
 
     // ── VUELOS ASIGNADOS ──
+    let lastLoadedFlights = [];
     const STATUS_MAP = {
       pendiente:   { cls: 'status-pending',   txt: 'Pendiente'   },
       en_progreso: { cls: 'status-progress',  txt: 'En progreso' },
@@ -813,6 +822,14 @@
         ? `<p class="flight-desc">${escapeHtml(f.instrucciones)}</p>`
         : '';
 
+      const isSelected  = f.id === window.currentUser.active_assignment_id;
+      const canFly      = f.estado === 'pendiente' || f.estado === 'en_progreso';
+      const selectBtn   = canFly
+        ? (isSelected
+            ? `<button class="btn-outline btn-selected" onclick="deselectAssignment('${f.id}')">✓ Seleccionado para volar</button>`
+            : `<button class="btn-outline" onclick="selectAssignment('${f.id}')">Seleccionar para volar</button>`)
+        : '';
+
       return `
         <article class="flight-card">
           <div class="flight-card-head">
@@ -830,12 +847,57 @@
           </div>
           <div class="flight-card-footer">
             <span class="status-badge ${st.cls}">${st.txt}</span>
-            <button class="btn-outline"
-              onclick="switchPanel('planificacion', document.querySelectorAll('.nav-item')[1])">
-              Ver planificación
-            </button>
+            <div style="display:flex;gap:10px;align-items:center;">
+              ${selectBtn}
+              <button class="btn-outline"
+                onclick="switchPanel('planificacion', document.querySelectorAll('.nav-item')[1])">
+                Ver planificación
+              </button>
+            </div>
           </div>
         </article>`;
+    }
+
+    async function selectAssignment(id) {
+      const { error } = await supabaseClient
+        .from('profiles')
+        .update({ active_assignment_id: id })
+        .eq('id', window.currentUser.id);
+
+      if (error) return;
+      window.currentUser.active_assignment_id = id;
+      loadFlights();
+      renderActiveAssignmentBanner();
+    }
+
+    async function deselectAssignment(id) {
+      const { error } = await supabaseClient
+        .from('profiles')
+        .update({ active_assignment_id: null })
+        .eq('id', window.currentUser.id);
+
+      if (error) return;
+      window.currentUser.active_assignment_id = null;
+      loadFlights();
+      renderActiveAssignmentBanner();
+    }
+
+    function renderActiveAssignmentBanner() {
+      const el = document.getElementById('activeAssignmentBanner');
+      if (!el) return;
+
+      const active = (lastLoadedFlights || []).find(f => f.id === window.currentUser.active_assignment_id);
+      if (!active) {
+        el.style.display = 'none';
+        el.innerHTML = '';
+        return;
+      }
+
+      el.style.display = '';
+      el.innerHTML = `
+        Volando ahora: <strong>${active.origen} → ${active.destino}</strong>
+        · tu próximo reporte de vuelo se relacionará con esta asignación
+        <button class="btn-outline" style="margin-left:12px;" onclick="deselectAssignment('${active.id}')">Quitar selección</button>`;
     }
 
     async function loadFlights() {
@@ -854,6 +916,9 @@
         </div>`;
         return;
       }
+
+      lastLoadedFlights = data;
+      renderActiveAssignmentBanner();
 
       const pending = data.filter(f => f.estado === 'pendiente').length;
       const badge   = document.getElementById('pendingCount');
@@ -877,6 +942,34 @@
       loadFlights();
     } else {
       window.addEventListener('authReady', loadFlights);
+    }
+
+    // ── PRESENCIA EN VIVO ─────────────────────────────────────────────────────
+    // Mientras este panel esté abierto y el estudiante autenticado, refrescamos
+    // profiles.last_active_at. El receptor de telemetría solo guarda los datos
+    // del vuelo si esa marca está reciente — así, volar sin tener la página
+    // abierta y logueada no genera registros en flight_telemetry.
+    const PRESENCE_HEARTBEAT_MS = 15000;
+    let presenceInterval = null;
+
+    function sendPresenceHeartbeat() {
+      supabaseClient
+        .from('profiles')
+        .update({ last_active_at: new Date().toISOString() })
+        .eq('id', window.currentUser.id)
+        .then(() => {});
+    }
+
+    function startPresenceHeartbeat() {
+      if (presenceInterval) return;
+      sendPresenceHeartbeat();
+      presenceInterval = setInterval(sendPresenceHeartbeat, PRESENCE_HEARTBEAT_MS);
+    }
+
+    if (window.__authComplete) {
+      startPresenceHeartbeat();
+    } else {
+      window.addEventListener('authReady', startPresenceHeartbeat);
     }
 
     // ── SIMULADOR EN TIEMPO REAL ──────────────────────────────────────────────
@@ -995,27 +1088,68 @@
         (claimed || []).filter(p => p.id !== window.currentUser.id).map(p => p.session_code)
       );
 
-      const pick = recent.find(s => !claimedByOthers.has(s.session_code));
-      if (!pick) {
+      const candidates = recent.filter(s => !claimedByOthers.has(s.session_code));
+      if (!candidates.length) {
         if (btn) { btn.disabled = false; btn.textContent = 'Conectar simulador'; }
         setLinkMsg('Todas las sesiones activas están asignadas a otros estudiantes.', true);
         return;
       }
 
+      renderSimSelection(candidates);
+    }
+
+    // Muestra la lista de equipos detectados para que el ESTUDIANTE confirme
+    // cuál es el suyo (comparando con el código de MI_CODIGO_DE_SESION.txt que
+    // el plugin escribe en su carpeta), en vez de que el sistema adivine y
+    // arriesgue vincular el equipo de otra persona.
+    function renderSimSelection(candidates) {
+      const rows = candidates.map(s => `
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+          <div style="flex:1;min-width:120px;">
+            <div class="sim-widget-machine">${escapeHtml(s.session_code)}</div>
+            <div class="sim-widget-hint">${s.on_ground ? 'En tierra' : 'En vuelo'} · visto hace ${Math.max(0, Math.round((Date.now() - new Date(s.last_seen).getTime()) / 1000))}s</div>
+          </div>
+          <button class="btn-connect-sim" style="font-size:11px;padding:8px 16px;" onclick="confirmSimulatorLink('${escapeHtml(s.session_code).replace(/'/g, "\\'")}')">Es mi equipo</button>
+        </div>`).join('');
+
+      document.getElementById('simWidget').innerHTML = `
+        <div style="margin-bottom:6px;">
+          <div class="sim-widget-title">Confirma cuál es tu equipo</div>
+          <div class="sim-widget-hint">
+            Revisa el archivo <strong>MI_CODIGO_DE_SESION.txt</strong> en la carpeta del plugin
+            (IFRTraining) y elige el código que coincida EXACTAMENTE. No selecciones uno que no
+            reconozcas: podrías vincular tu cuenta al equipo de otro estudiante.
+          </div>
+        </div>
+        ${rows}
+        <div style="margin-top:10px;">
+          <button class="btn-outline" style="font-size:10px;padding:6px 14px;" onclick="checkSimulatorLink()">Cancelar</button>
+        </div>
+        <div class="link-msg" id="linkMsg"></div>`;
+    }
+
+    async function confirmSimulatorLink(code) {
+      setLinkMsg('Vinculando...', false);
+
       const { error: upErr } = await supabaseClient
         .from('profiles')
-        .update({ session_code: pick.session_code })
+        .update({ session_code: code })
         .eq('id', window.currentUser.id);
 
       if (upErr) {
-        if (btn) { btn.disabled = false; btn.textContent = 'Conectar simulador'; }
         setLinkMsg('Error al vincular: ' + upErr.message, true);
         return;
       }
 
-      window.currentUser.session_code = pick.session_code;
-      renderSimLinked(pick.session_code, pick);
-      subscribeToSim(pick.session_code);
+      const { data: session } = await supabaseClient
+        .from('flight_sessions')
+        .select('session_code, last_seen, on_ground')
+        .eq('session_code', code)
+        .single();
+
+      window.currentUser.session_code = code;
+      renderSimLinked(code, session || { last_seen: new Date().toISOString(), on_ground: false });
+      subscribeToSim(code);
     }
 
     function setLinkMsg(text, isError) {

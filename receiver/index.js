@@ -34,9 +34,50 @@ function log(sessionCode, data) {
   );
 }
 
+// ── Session ownership cache ───────────────────────────────────────────────────
+// flight_telemetry is high-volume (one row per packet), so we only persist it
+// when a logged-in student both (a) has claimed this session via "Conectar
+// simulador" (profiles.session_code) AND (b) currently has the student panel
+// open — evidenced by a fresh profiles.last_active_at heartbeat. Anything else
+// (plugin running unclaimed, or claimed but the page is closed/logged out)
+// would just waste storage and isn't persisted.
+//
+// The student panel heartbeats every 15s (PRESENCE_HEARTBEAT_MS in student.html);
+// PRESENCE_STALE_MS gives it a couple of missed beats of slack before we treat
+// the student as "not present".
+const SESSION_OWNER_CACHE_TTL_MS = 15000;
+const PRESENCE_STALE_MS = 40000;
+const sessionOwnerCache = new Map(); // session_code -> { claimed, assignmentId, expiresAt }
+
+async function getSessionOwner(sessionCode) {
+  const now = Date.now();
+  const cached = sessionOwnerCache.get(sessionCode);
+  if (cached && cached.expiresAt > now) return cached;
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('active_assignment_id, last_active_at')
+    .eq('session_code', sessionCode)
+    .maybeSingle();
+
+  let owner;
+  if (error) {
+    owner = cached || { claimed: false, assignmentId: null };
+  } else {
+    const isPresent = !!data?.last_active_at
+      && (now - new Date(data.last_active_at).getTime()) < PRESENCE_STALE_MS;
+    owner = { claimed: !!data && isPresent, assignmentId: data ? data.active_assignment_id : null };
+  }
+
+  sessionOwnerCache.set(sessionCode, { ...owner, expiresAt: now + SESSION_OWNER_CACHE_TTL_MS });
+  return owner;
+}
+
 // ── Supabase writes (fire-and-forget — no block the plugin response) ──────────
 async function writeTelemetry(p) {
-  // 1. Upsert the session record so the admin can see who is flying live.
+  // 1. Upsert the session record (lightweight, one row per session) so students
+  //    can discover and claim it from "Conectar simulador" and the admin can
+  //    see who is flying live — regardless of whether anyone has claimed it yet.
   await supabase
     .from('flight_sessions')
     .upsert(
@@ -44,12 +85,19 @@ async function writeTelemetry(p) {
       { onConflict: 'session_code' }
     );
 
-  // 2. Insert the telemetry point.
+  // 2. Skip the heavy telemetry insert entirely if no logged-in student has
+  //    claimed this session — avoids storing data for people who just have the
+  //    plugin installed but aren't authenticated in the platform.
+  const owner = await getSessionOwner(p.sessionCode);
+  if (!owner.claimed) return;
+
+  // 3. Insert the telemetry point.
   const { error } = await supabase
     .from('flight_telemetry')
     .insert({
       session_code:  p.sessionCode,
       flight_id:     p.flightId,
+      assignment_id: owner.assignmentId,
       latitude:      p.latitude,
       longitude:     p.longitude,
       altitude_ft:   p.altitudeFt,

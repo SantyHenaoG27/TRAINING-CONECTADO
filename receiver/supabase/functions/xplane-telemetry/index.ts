@@ -33,10 +33,65 @@ function log(sessionCode: string, data: any) {
   );
 }
 
+// ── Caché de propiedad de sesión ──────────────────────────────────────────────
+// flight_telemetry es de alto volumen (una fila por paquete), así que solo se
+// persiste cuando un estudiante autenticado (a) reclamó esta sesión vía
+// "Conectar simulador" (profiles.session_code) Y (b) tiene el panel abierto en
+// este momento — evidenciado por un latido reciente en profiles.last_active_at.
+// Cualquier otro caso (plugin corriendo sin reclamar, o reclamado pero con la
+// página cerrada / sesión cerrada) desperdiciaría almacenamiento y no se guarda.
+//
+// El panel del estudiante manda un latido cada 15s (PRESENCE_HEARTBEAT_MS en
+// student.html); PRESENCE_STALE_MS le da un par de latidos de margen antes de
+// considerar que el estudiante "no está presente".
+const SESSION_OWNER_CACHE_TTL_MS = 15000;
+const PRESENCE_STALE_MS = 40000;
+
+interface SessionOwner {
+  claimed: boolean;
+  studentId: string | null;
+  assignmentId: string | null;
+  expiresAt: number;
+}
+
+const sessionOwnerCache = new Map<string, SessionOwner>();
+
+async function getSessionOwner(sessionCode: string): Promise<SessionOwner> {
+  const now = Date.now();
+  const cached = sessionOwnerCache.get(sessionCode);
+  if (cached && cached.expiresAt > now) return cached;
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, active_assignment_id, last_active_at")
+    .eq("session_code", sessionCode)
+    .maybeSingle();
+
+  let owner: SessionOwner;
+  if (error) {
+    owner = cached ?? { claimed: false, studentId: null, assignmentId: null, expiresAt: 0 };
+  } else {
+    const isPresent = !!data?.last_active_at &&
+      (now - new Date(data.last_active_at).getTime()) < PRESENCE_STALE_MS;
+    owner = {
+      claimed: !!data && isPresent,
+      studentId: data ? data.id : null,
+      assignmentId: data ? data.active_assignment_id : null,
+      expiresAt: 0,
+    };
+  }
+
+  owner.expiresAt = now + SESSION_OWNER_CACHE_TTL_MS;
+  sessionOwnerCache.set(sessionCode, owner);
+  return owner;
+}
+
 // ── Supabase writes (fire-and-forget — no bloquea la respuesta al plugin) ─────
 // deno-lint-ignore no-explicit-any
 async function writeTelemetry(p: any) {
-  // 1. Upsert el registro de sesión para que el admin vea quién está volando.
+  // 1. Upsert el registro de sesión (liviano) para que el estudiante pueda
+  //    descubrirla y reclamarla, y el admin vea quién está volando en vivo —
+  //    sin importar si alguien ya la reclamó.
   await supabase
     .from("flight_sessions")
     .upsert(
@@ -44,12 +99,19 @@ async function writeTelemetry(p: any) {
       { onConflict: "session_code" },
     );
 
-  // 2. Insertar el punto de telemetría.
+  // 2. Si nadie autenticado y presente reclamó esta sesión, no se guarda la
+  //    telemetría — evita gastar almacenamiento en vuelos no atribuibles.
+  const owner = await getSessionOwner(p.sessionCode);
+  if (!owner.claimed) return;
+
+  // 3. Insertar el punto de telemetría, ya con la asignación vinculada.
   const { error } = await supabase
     .from("flight_telemetry")
     .insert({
       session_code: p.sessionCode,
       flight_id: p.flightId,
+      assignment_id: owner.assignmentId,
+      student_id: owner.studentId,
       latitude: p.latitude,
       longitude: p.longitude,
       altitude_ft: p.altitudeFt,

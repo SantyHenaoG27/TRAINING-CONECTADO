@@ -8,7 +8,7 @@
 
   const { data: profile } = await supabaseClient
     .from('profiles')
-    .select('role, nombre, session_code')
+    .select('role, nombre, session_code, active_assignment_id')
     .eq('id', session.user.id)
     .single();
 
