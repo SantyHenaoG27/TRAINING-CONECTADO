@@ -906,6 +906,21 @@
       color: #94a3b8;
       margin-top: 2px;
     }
+    /* ── TOOLTIP AL PASAR EL MOUSE SOBRE LA TRAYECTORIA DEL MAPA DE RUTA ── */
+    .route-hover-popup .maplibregl-popup-content {
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-family: var(--font-mono);
+      color: #f8fafc;
+      box-shadow: none;
+    }
+    .route-hover-popup .maplibregl-popup-tip { display: none; }
+    .route-hover-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .route-hover-row + .route-hover-row { margin-top: 4px; }
+    .route-hover-row span { color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em; font-size: 9px; }
+    .route-hover-row strong { color: #38bdf8; font-size: 13px; margin-left: auto; }
     .chart-legend {
       position: absolute;
       top: 16px;
@@ -2836,6 +2851,8 @@
     let reportStudentsByCode = {};
     let flightRouteMap = null;
     let flightRouteMapReady = false;
+    let flightRouteHoverBound = false;
+    let flightRouteHoverPopup = null;
     const FLIGHT_ROUTE_STYLE_URL = 'https://tiles.openfreemap.org/styles/dark';
 
     async function loadReportes() {
@@ -3029,7 +3046,7 @@
 
       const { data, error } = await supabaseClient
         .from('flight_telemetry')
-        .select('sim_time, altitude_ft, ias_kt, latitude, longitude')
+        .select('sim_time, altitude_ft, ias_kt, heading_deg, latitude, longitude')
         .eq('flight_id', flight.detail_filter_value)
         .order('sim_time', { ascending: true })
         .limit(3000);
@@ -3048,6 +3065,7 @@
 
     function closeFlightDetail() {
       document.getElementById('flightDetailModal').classList.add('hidden-panel');
+      if (flightRouteHoverPopup) flightRouteHoverPopup.remove();
     }
 
     function setFlightRouteMapStatus(message, hidden = false) {
@@ -3108,6 +3126,10 @@
         type: 'geojson',
         data: emptyRoutePointsGeoJSON(),
       });
+      flightRouteMap.addSource('flight-route-track', {
+        type: 'geojson',
+        data: emptyRouteTrackGeoJSON(),
+      });
 
       flightRouteMap.addLayer({
         id: 'flight-route-line-glow',
@@ -3157,6 +3179,61 @@
           'text-halo-width': 1.4,
         },
       });
+
+      // Capa invisible de puntos de la trayectoria, solo para detectar el
+      // punto más cercano al cursor y mostrar su velocidad/rumbo al pasar el mouse.
+      flightRouteMap.addLayer({
+        id: 'flight-route-track-hit',
+        type: 'circle',
+        source: 'flight-route-track',
+        paint: { 'circle-radius': 9, 'circle-opacity': 0, 'circle-stroke-width': 0 },
+      });
+
+      setupFlightRouteHoverInteraction();
+    }
+
+    function setupFlightRouteHoverInteraction() {
+      if (!flightRouteMap || flightRouteHoverBound) return;
+      flightRouteHoverBound = true;
+      const hitLayer = 'flight-route-track-hit';
+
+      flightRouteMap.on('mousemove', hitLayer, (e) => {
+        if (!e.features?.length) return;
+        flightRouteMap.getCanvas().style.cursor = 'crosshair';
+
+        // queryRenderedFeatures puede devolver varios puntos cercanos dentro
+        // del radio de detección — nos quedamos con el más próximo al cursor.
+        let nearest = null;
+        let nearestDist = Infinity;
+        e.features.forEach(f => {
+          const screenPos = flightRouteMap.project(f.geometry.coordinates);
+          const dist = Math.hypot(screenPos.x - e.point.x, screenPos.y - e.point.y);
+          if (dist < nearestDist) { nearestDist = dist; nearest = f; }
+        });
+        if (!nearest) return;
+
+        const ias = Number(nearest.properties.ias_kt);
+        const hdg = Number(nearest.properties.heading_deg);
+        const html = `
+          <div class="route-hover-row"><span>Velocidad</span><strong>${Number.isFinite(ias) ? Math.round(ias) + ' KT' : '—'}</strong></div>
+          <div class="route-hover-row"><span>Rumbo</span><strong>${Number.isFinite(hdg) ? Math.round(hdg) + '°' : '—'}</strong></div>
+        `;
+
+        if (!flightRouteHoverPopup) {
+          flightRouteHoverPopup = new maplibregl.Popup({
+            closeButton: false,
+            closeOnClick: false,
+            offset: 14,
+            className: 'route-hover-popup',
+          });
+        }
+        flightRouteHoverPopup.setLngLat(nearest.geometry.coordinates).setHTML(html).addTo(flightRouteMap);
+      });
+
+      flightRouteMap.on('mouseleave', hitLayer, () => {
+        flightRouteMap.getCanvas().style.cursor = '';
+        if (flightRouteHoverPopup) flightRouteHoverPopup.remove();
+      });
     }
 
     function renderFlightRouteMap(points) {
@@ -3164,7 +3241,7 @@
       updateFlightRouteSummary(coordinates);
 
       if (!coordinates.length) {
-        updateFlightRouteSources([]);
+        updateFlightRouteSources([], []);
         setFlightRouteMapStatus('Sin coordenadas para mostrar la trayectoria');
         return;
       }
@@ -3177,7 +3254,7 @@
 
       const draw = () => {
         setupFlightRouteLayers();
-        updateFlightRouteSources(coordinates);
+        updateFlightRouteSources(coordinates, points);
         fitFlightRouteBounds(coordinates);
         setFlightRouteMapStatus('', true);
       };
@@ -3186,10 +3263,11 @@
       else map.once('load', draw);
     }
 
-    function updateFlightRouteSources(coordinates) {
+    function updateFlightRouteSources(coordinates, points) {
       if (!flightRouteMap || !flightRouteMapReady || !flightRouteMap.getSource('flight-route-line')) return;
       flightRouteMap.getSource('flight-route-line').setData(routeLineGeoJSON(coordinates));
       flightRouteMap.getSource('flight-route-points').setData(routePointsGeoJSON(coordinates));
+      flightRouteMap.getSource('flight-route-track').setData(routeTrackGeoJSON(points || []));
     }
 
     function updateFlightRouteSummary(coordinates) {
@@ -3250,6 +3328,36 @@
           properties: { kind: p.kind, label: p.label },
           geometry: { type: 'Point', coordinates: p.coord },
         })),
+      };
+    }
+
+    function emptyRouteTrackGeoJSON() {
+      return routeTrackGeoJSON([]);
+    }
+
+    // Un punto por cada lectura de telemetría con su velocidad y rumbo —
+    // alimenta la capa invisible que detecta el punto más cercano al cursor
+    // para mostrar el tooltip al pasar el mouse sobre la trayectoria.
+    function routeTrackGeoJSON(points) {
+      return {
+        type: 'FeatureCollection',
+        features: points
+          .map(p => {
+            const lng = Number(p.longitude);
+            const lat = Number(p.latitude);
+            if (!Number.isFinite(lng) || !Number.isFinite(lat) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
+            const ias = Number(p.ias_kt);
+            const hdg = Number(p.heading_deg);
+            return {
+              type: 'Feature',
+              properties: {
+                ias_kt: Number.isFinite(ias) ? ias : null,
+                heading_deg: Number.isFinite(hdg) ? hdg : null,
+              },
+              geometry: { type: 'Point', coordinates: [lng, lat] },
+            };
+          })
+          .filter(Boolean),
       };
     }
 
