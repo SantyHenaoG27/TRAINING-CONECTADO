@@ -8,12 +8,18 @@
 
   const { data: profile } = await supabaseClient
     .from('profiles')
-    .select('role, nombre, session_code, active_assignment_id')
+    .select('role, nombre, session_code, active_assignment_id, suspended')
     .eq('id', session.user.id)
     .single();
 
   if (!profile || profile.role !== REQUIRED_ROLE) {
     window.location.replace(profile?.role === 'admin' ? 'admin.html' : 'student.html');
+    return;
+  }
+
+  if (profile.role === 'estudiante' && profile.suspended) {
+    await supabaseClient.auth.signOut();
+    window.location.replace('login.html?suspended=1');
     return;
   }
 

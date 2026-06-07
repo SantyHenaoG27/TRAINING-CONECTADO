@@ -305,6 +305,48 @@
       border: 1px solid var(--border);
       overflow: hidden;
     }
+    .flight-card.is-flying {
+      border-color: rgba(74,222,128,0.4);
+      box-shadow: 0 0 0 1px rgba(74,222,128,0.12);
+    }
+    .flying-now-strip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 20px;
+      background: rgba(74,222,128,0.07);
+      border-bottom: 1px solid rgba(74,222,128,0.22);
+      font-size: 12px;
+      color: var(--fg-2);
+    }
+    .flying-now-dot {
+      position: relative;
+      width: 7px;
+      height: 7px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: var(--success);
+    }
+    .flying-now-dot::after {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      border: 1px solid var(--success);
+      opacity: 0.35;
+      animation: pulse 2s infinite;
+    }
+    .flying-now-text strong {
+      font-family: var(--font-mono);
+      letter-spacing: 0.06em;
+      color: var(--success);
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+    .flying-now-strip .btn-outline {
+      margin-left: auto;
+      flex-shrink: 0;
+    }
     .flight-card-head {
       display: flex;
       align-items: center;
@@ -397,12 +439,8 @@
       transition: border-color var(--motion-fast), background var(--motion-fast);
     }
     .btn-outline:hover { border-color: var(--accent); background: rgba(56,189,248,0.07); }
-    .btn-selected {
-      color: var(--success);
-      border-color: rgba(74,222,128,0.4);
-      background: rgba(74,222,128,0.08);
-    }
-    .btn-selected:hover { border-color: var(--success); background: rgba(74,222,128,0.12); }
+    .btn-outline:disabled { color: var(--muted); border-color: var(--border); cursor: not-allowed; background: transparent; }
+    .btn-outline:disabled:hover { border-color: var(--border); background: transparent; }
 
     /* ── SIM WIDGET ── */
     .sim-widget {
@@ -611,8 +649,6 @@
           <div class="link-msg" id="linkMsg"></div>
         </div>
 
-        <div class="link-msg" id="activeAssignmentBanner" style="display:none;color:var(--success);margin-bottom:14px;"></div>
-
         <div class="flights-list" id="flightsList">
           <div class="flights-loading">Cargando vuelos...</div>
         </div>
@@ -796,7 +832,7 @@
     }
 
     // ── VUELOS ASIGNADOS ──
-    let lastLoadedFlights = [];
+    let flownAssignmentIds = new Set();
     const STATUS_MAP = {
       pendiente:   { cls: 'status-pending',   txt: 'Pendiente'   },
       en_progreso: { cls: 'status-progress',  txt: 'En progreso' },
@@ -824,18 +860,30 @@
 
       const isSelected  = f.id === window.currentUser.active_assignment_id;
       const canFly      = f.estado === 'pendiente' || f.estado === 'en_progreso';
-      const selectBtn   = canFly
-        ? (isSelected
-            ? `<button class="btn-outline btn-selected" onclick="deselectAssignment('${f.id}')">✓ Seleccionado para volar</button>`
-            : `<button class="btn-outline" onclick="selectAssignment('${f.id}')">Seleccionar para volar</button>`)
+      const selectBtn   = (canFly && !isSelected)
+        ? `<button class="btn-outline" onclick="selectAssignment('${f.id}')">Seleccionar para volar</button>`
+        : '';
+      const hasFlightData = flownAssignmentIds.has(f.id);
+      const completeBtn   = canFly
+        ? (hasFlightData
+            ? `<button class="btn-outline" onclick="markAssignmentCompleted('${f.id}')">✓ Marcar como completado</button>`
+            : `<button class="btn-outline" disabled title="Aún no detectamos un vuelo registrado para esta asignación. Vuela la ruta con el simulador conectado primero.">✓ Marcar como completado</button>`)
+        : '';
+      const flyingStrip = isSelected
+        ? `<div class="flying-now-strip">
+            <span class="flying-now-dot"></span>
+            <span class="flying-now-text"><strong>Volando ahora</strong> · tu próximo reporte de vuelo se relacionará con esta asignación</span>
+            <button class="btn-outline" onclick="deselectAssignment('${f.id}')">Quitar selección</button>
+          </div>`
         : '';
 
       return `
-        <article class="flight-card">
+        <article class="flight-card ${isSelected ? 'is-flying' : ''}">
           <div class="flight-card-head">
             <div class="route-label">${f.origen} <span class="sep">→</span> ${f.destino}</div>
             <div class="flight-meta">Asignado: ${createdDate}</div>
           </div>
+          ${flyingStrip}
           <div class="flight-card-body">
             <div>
               <div class="flight-tags">
@@ -847,8 +895,9 @@
           </div>
           <div class="flight-card-footer">
             <span class="status-badge ${st.cls}">${st.txt}</span>
-            <div style="display:flex;gap:10px;align-items:center;">
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
               ${selectBtn}
+              ${completeBtn}
               <button class="btn-outline"
                 onclick="switchPanel('planificacion', document.querySelectorAll('.nav-item')[1])">
                 Ver planificación
@@ -867,7 +916,6 @@
       if (error) return;
       window.currentUser.active_assignment_id = id;
       loadFlights();
-      renderActiveAssignmentBanner();
     }
 
     async function deselectAssignment(id) {
@@ -879,36 +927,92 @@
       if (error) return;
       window.currentUser.active_assignment_id = null;
       loadFlights();
-      renderActiveAssignmentBanner();
     }
 
-    function renderActiveAssignmentBanner() {
-      const el = document.getElementById('activeAssignmentBanner');
-      if (!el) return;
-
-      const active = (lastLoadedFlights || []).find(f => f.id === window.currentUser.active_assignment_id);
-      if (!active) {
-        el.style.display = 'none';
-        el.innerHTML = '';
+    async function markAssignmentCompleted(id) {
+      if (!flownAssignmentIds.has(id)) {
+        alert('Aún no detectamos un vuelo registrado para esta asignación. Vuela la ruta con el simulador conectado antes de marcarla como completada.');
         return;
       }
+      if (!confirm('¿Confirmas que ya realizaste este vuelo asignado?')) return;
 
-      el.style.display = '';
-      el.innerHTML = `
-        Volando ahora: <strong>${active.origen} → ${active.destino}</strong>
-        · tu próximo reporte de vuelo se relacionará con esta asignación
-        <button class="btn-outline" style="margin-left:12px;" onclick="deselectAssignment('${active.id}')">Quitar selección</button>`;
+      const { error } = await supabaseClient
+        .from('flight_assignments')
+        .update({ estado: 'completado' })
+        .eq('id', id)
+        .eq('student_id', window.currentUser.id);
+
+      if (error) { alert('Error: ' + error.message); return; }
+
+      if (window.currentUser.active_assignment_id === id) {
+        await supabaseClient
+          .from('profiles')
+          .update({ active_assignment_id: null })
+          .eq('id', window.currentUser.id);
+        window.currentUser.active_assignment_id = null;
+      }
+
+      loadFlights();
+    }
+
+    // Recordamos qué asignaciones ya intentamos auto-completar en esta sesión
+    // de la página: si la actualización falla (p. ej. por permisos), no
+    // queremos reintentarla en cada loadFlights() y quedar en un bucle.
+    const autoCompleteAttempted = new Set();
+
+    // Si ya existe telemetría de un vuelo asociado a la asignación (assignment_id
+    // se estampa en flight_telemetry al volar) y ese vuelo terminó hace rato, lo
+    // damos por completado automáticamente — sin esperar a que el estudiante lo
+    // marque a mano. Devuelve true solo si algo se actualizó de verdad (para
+    // recargar la lista con el estado fresco).
+    async function autoCompleteFinishedAssignments(flights, summaries) {
+      const candidates = flights.filter(f =>
+        (f.estado === 'pendiente' || f.estado === 'en_progreso') && !autoCompleteAttempted.has(f.id));
+      if (!candidates.length || !summaries || !summaries.length) return false;
+
+      const FINISHED_GRACE_MS = 3 * 60 * 1000; // sin telemetría nueva por 3+ min ⇒ vuelo terminado
+      const now = Date.now();
+      const finishedAssignmentIds = new Set(
+        summaries
+          .filter(s => s.assignment_id && s.ended_at && (now - new Date(s.ended_at).getTime()) > FINISHED_GRACE_MS)
+          .map(s => s.assignment_id)
+      );
+
+      const toComplete = candidates.filter(f => finishedAssignmentIds.has(f.id));
+      if (!toComplete.length) return false;
+
+      toComplete.forEach(f => autoCompleteAttempted.add(f.id));
+
+      const results = await Promise.all(toComplete.map(f =>
+        supabaseClient.from('flight_assignments').update({ estado: 'completado' }).eq('id', f.id)
+      ));
+      const succeeded = toComplete.filter((f, i) => !results[i].error);
+      if (!succeeded.length) return false;
+
+      if (succeeded.some(f => f.id === window.currentUser.active_assignment_id)) {
+        await supabaseClient
+          .from('profiles')
+          .update({ active_assignment_id: null })
+          .eq('id', window.currentUser.id);
+        window.currentUser.active_assignment_id = null;
+      }
+
+      return true;
     }
 
     async function loadFlights() {
       const list = document.getElementById('flightsList');
 
-      const { data, error } = await supabaseClient
-        .from('flight_assignments')
-        .select('*')
-        .eq('student_id', window.currentUser.id)
-        .order('created_at', { ascending: false });
+      const [assignRes, summaryRes] = await Promise.all([
+        supabaseClient
+          .from('flight_assignments')
+          .select('*')
+          .eq('student_id', window.currentUser.id)
+          .order('created_at', { ascending: false }),
+        supabaseClient.rpc('flight_summaries'),
+      ]);
 
+      const { data, error } = assignRes;
       if (error) {
         list.innerHTML = `<div class="empty-state">
           <div class="empty-icon">⚠</div>
@@ -917,8 +1021,16 @@
         return;
       }
 
-      lastLoadedFlights = data;
-      renderActiveAssignmentBanner();
+      const summaries = summaryRes.error ? [] : (summaryRes.data || []);
+
+      // Solo se puede marcar como completado si ya existe telemetría real
+      // (assignment_id se estampa en flight_telemetry al volar) asociada a
+      // esa asignación — evita marcar vuelos que nunca se realizaron.
+      flownAssignmentIds = new Set(summaries.filter(s => s.assignment_id).map(s => s.assignment_id));
+
+      const updated = await autoCompleteFinishedAssignments(data, summaries);
+      if (updated) { return loadFlights(); }
+
 
       const pending = data.filter(f => f.estado === 'pendiente').length;
       const badge   = document.getElementById('pendingCount');
@@ -937,6 +1049,12 @@
 
       list.innerHTML = data.map(renderCard).join('');
     }
+
+    // Refresca la lista periódicamente: así, si el estudiante deja la página
+    // abierta tras cerrar el simulador, ve por sí solo cuándo el vuelo pasa a
+    // "completado" (a los ~3 min de inactividad) sin tener que recargar a mano.
+    const FLIGHTS_REFRESH_MS = 60000;
+    setInterval(() => { if (window.__authComplete) loadFlights(); }, FLIGHTS_REFRESH_MS);
 
     if (window.__authComplete) {
       loadFlights();

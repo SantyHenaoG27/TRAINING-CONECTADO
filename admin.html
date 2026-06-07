@@ -226,6 +226,7 @@
     .status-active   { color: var(--success); border-color: rgba(74,222,128,0.35); background: rgba(74,222,128,0.07); }
     .status-pending  { color: var(--amber); border-color: rgba(251,146,60,0.35); background: rgba(251,146,60,0.07); }
     .status-inactive { color: var(--muted); border-color: var(--border); background: transparent; }
+    .status-suspended { color: var(--danger); border-color: rgba(230,57,70,0.35); background: rgba(230,57,70,0.07); }
     .status-live     { color: var(--magenta); border-color: rgba(232,121,249,0.35); background: rgba(232,121,249,0.07); }
 
     /* ── STATS ROW ── */
@@ -515,6 +516,101 @@
     .assign-msg.ok   { color: var(--success); }
     .assign-msg.err  { color: var(--danger); }
 
+    /* ── ASIGNAR: layout + lista de asignaciones previas ── */
+    .assign-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.95fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .assigned-list-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 18px;
+    }
+    .assigned-list-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .assignment-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: border-color var(--motion-fast);
+    }
+    .assignment-item:hover { border-color: var(--magenta); }
+    .assignment-item-route {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .assignment-item-meta {
+      margin-top: 3px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .assignment-item-arrow { color: var(--muted); font-size: 18px; flex-shrink: 0; }
+    .assignment-item:hover .assignment-item-arrow { color: var(--magenta); }
+    .assignment-empty {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 14px 0;
+    }
+
+    /* Forzar el calendario nativo: el reset -webkit-appearance:none de
+       .field input ocultaba el ícono en algunos navegadores, obligando a
+       escribir la fecha a mano. Lo restauramos y abrimos el selector también
+       al enfocar/clicar en cualquier parte del campo (ver showPicker en JS). */
+    input[type="date"].date-picker-input {
+      -webkit-appearance: auto;
+      appearance: auto;
+      cursor: pointer;
+    }
+    input[type="date"].date-picker-input::-webkit-calendar-picker-indicator {
+      filter: invert(0.6) sepia(1) saturate(4) hue-rotate(270deg);
+      cursor: pointer;
+    }
+
+    .assignment-students {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .assignment-student-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+    .assignment-student-name {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
     /* ── MULTI-SELECT ── */
     .multi-select { position: relative; }
     .multi-select-trigger {
@@ -769,19 +865,19 @@
         <div class="stats-row">
           <div class="stat-card">
             <div class="stat-label">Estudiantes activos</div>
-            <div class="stat-value" style="color:var(--success);">04</div>
+            <div class="stat-value" id="estStatActive" style="color:var(--success);">—</div>
           </div>
           <div class="stat-card">
             <div class="stat-label">Vuelos asignados</div>
-            <div class="stat-value" style="color:var(--amber);">06</div>
+            <div class="stat-value" id="estStatAssigned" style="color:var(--amber);">—</div>
           </div>
           <div class="stat-card">
             <div class="stat-label">Vuelos completados</div>
-            <div class="stat-value" style="color:var(--accent);">11</div>
+            <div class="stat-value" id="estStatCompleted" style="color:var(--accent);">—</div>
           </div>
           <div class="stat-card">
             <div class="stat-label">Horas de vuelo</div>
-            <div class="stat-value" style="color:var(--magenta);">8.4</div>
+            <div class="stat-value" style="color:var(--magenta);"><span id="estStatHours">—</span></div>
           </div>
         </div>
 
@@ -806,71 +902,8 @@
               <th>Acciones</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>
-                <div class="student-name">Juan García</div>
-                <div class="student-email">juan.garcia@ejemplo.com</div>
-              </td>
-              <td><span style="font-family:var(--font-display);font-size:20px;color:var(--accent);">02</span></td>
-              <td><span style="font-family:var(--font-display);font-size:20px;color:var(--amber);">02</span></td>
-              <td><span style="font-family:var(--font-mono);font-size:11px;">28 May 2025</span></td>
-              <td><span class="status-badge status-active">Activo</span></td>
-              <td>
-                <div class="td-actions">
-                  <button class="btn-outline" onclick="switchTab('asignar', document.querySelectorAll('.page-tab')[2])">Asignar</button>
-                  <button class="btn-danger-outline">Suspender</button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="student-name">María Ospina</div>
-                <div class="student-email">maria.ospina@ejemplo.com</div>
-              </td>
-              <td><span style="font-family:var(--font-display);font-size:20px;color:var(--accent);">04</span></td>
-              <td><span style="font-family:var(--font-display);font-size:20px;color:var(--amber);">01</span></td>
-              <td><span style="font-family:var(--font-mono);font-size:11px;">02 Jun 2025</span></td>
-              <td><span class="status-badge status-active">Activo</span></td>
-              <td>
-                <div class="td-actions">
-                  <button class="btn-outline" onclick="switchTab('asignar', document.querySelectorAll('.page-tab')[2])">Asignar</button>
-                  <button class="btn-danger-outline">Suspender</button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="student-name">Carlos Martínez</div>
-                <div class="student-email">carlos.m@ejemplo.com</div>
-              </td>
-              <td><span style="font-family:var(--font-display);font-size:20px;color:var(--accent);">03</span></td>
-              <td><span style="font-family:var(--font-display);font-size:20px;color:var(--amber);">02</span></td>
-              <td><span style="font-family:var(--font-mono);font-size:11px;">01 Jun 2025</span></td>
-              <td><span class="status-badge status-active">Activo</span></td>
-              <td>
-                <div class="td-actions">
-                  <button class="btn-outline" onclick="switchTab('asignar', document.querySelectorAll('.page-tab')[2])">Asignar</button>
-                  <button class="btn-danger-outline">Suspender</button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="student-name">Valentina Ríos</div>
-                <div class="student-email">v.rios@ejemplo.com</div>
-              </td>
-              <td><span style="font-family:var(--font-display);font-size:20px;color:var(--accent);">02</span></td>
-              <td><span style="font-family:var(--font-display);font-size:20px;color:var(--amber);">01</span></td>
-              <td><span style="font-family:var(--font-mono);font-size:11px;">30 May 2025</span></td>
-              <td><span class="status-badge status-pending">Pendiente</span></td>
-              <td>
-                <div class="td-actions">
-                  <button class="btn-outline" onclick="switchTab('asignar', document.querySelectorAll('.page-tab')[2])">Asignar</button>
-                  <button class="btn-danger-outline">Suspender</button>
-                </div>
-              </td>
-            </tr>
+          <tbody id="estudiantesTableBody">
+            <tr><td colspan="6" class="flights-loading">Cargando estudiantes...</td></tr>
           </tbody>
         </table>
       </div>
@@ -904,52 +937,64 @@
           </div>
         </div>
 
-        <div class="form-card">
-          <div class="form-grid">
+        <div class="assign-layout">
+          <div class="form-card">
+            <div class="form-grid">
 
-            <div class="field">
-              <label>Estudiante(s)</label>
-              <div class="multi-select" id="studentMultiSelect">
-                <button type="button" class="multi-select-trigger" id="studentTrigger">
-                  <span class="trigger-label">Cargando estudiantes...</span>
-                  <span class="trigger-arrow">▼</span>
-                </button>
-                <div class="multi-select-dropdown">
-                  <label class="multi-select-option all-option">
-                    <input type="checkbox" id="selectAllStudents">
-                    Todos los estudiantes
-                  </label>
-                  <div id="studentList"></div>
+              <div class="field">
+                <label>Estudiante(s)</label>
+                <div class="multi-select" id="studentMultiSelect">
+                  <button type="button" class="multi-select-trigger" id="studentTrigger">
+                    <span class="trigger-label">Cargando estudiantes...</span>
+                    <span class="trigger-arrow">▼</span>
+                  </button>
+                  <div class="multi-select-dropdown">
+                    <label class="multi-select-option all-option">
+                      <input type="checkbox" id="selectAllStudents">
+                      Todos los estudiantes
+                    </label>
+                    <div id="studentList"></div>
+                  </div>
                 </div>
               </div>
+
+              <div class="field">
+                <label for="inp-origen">Aeropuerto origen (ICAO)</label>
+                <input type="text" id="inp-origen" placeholder="SKBO" maxlength="4" style="text-transform:uppercase;" />
+              </div>
+
+              <div class="field">
+                <label for="inp-destino">Aeropuerto destino (ICAO)</label>
+                <input type="text" id="inp-destino" placeholder="SKPE" maxlength="4" style="text-transform:uppercase;" />
+              </div>
+
+              <div class="field">
+                <label for="inp-fecha">Fecha límite</label>
+                <input type="date" id="inp-fecha" class="date-picker-input" />
+              </div>
+
+              <div class="field full">
+                <label for="inp-instrucciones">Instrucciones para el estudiante</label>
+                <textarea id="inp-instrucciones" placeholder="Describe el ejercicio, los puntos que se evaluarán y cualquier restricción especial..."></textarea>
+              </div>
+
             </div>
 
-            <div class="field">
-              <label for="inp-origen">Aeropuerto origen (ICAO)</label>
-              <input type="text" id="inp-origen" placeholder="SKBO" maxlength="4" style="text-transform:uppercase;" />
+            <div class="form-footer">
+              <button class="btn-primary" id="btn-assign" onclick="handleAssign()">Asignar vuelo</button>
+              <button class="btn-outline" onclick="clearForm()">Limpiar</button>
+              <div id="assign-msg" class="assign-msg" role="status"></div>
             </div>
-
-            <div class="field">
-              <label for="inp-destino">Aeropuerto destino (ICAO)</label>
-              <input type="text" id="inp-destino" placeholder="SKPE" maxlength="4" style="text-transform:uppercase;" />
-            </div>
-
-            <div class="field">
-              <label for="inp-fecha">Fecha límite</label>
-              <input type="date" id="inp-fecha" />
-            </div>
-
-            <div class="field full">
-              <label for="inp-instrucciones">Instrucciones para el estudiante</label>
-              <textarea id="inp-instrucciones" placeholder="Describe el ejercicio, los puntos que se evaluarán y cualquier restricción especial..."></textarea>
-            </div>
-
           </div>
 
-          <div class="form-footer">
-            <button class="btn-primary" id="btn-assign" onclick="handleAssign()">Asignar vuelo</button>
-            <button class="btn-outline" onclick="clearForm()">Limpiar</button>
-            <div id="assign-msg" class="assign-msg" role="status"></div>
+          <div class="assigned-list-card">
+            <div class="assigned-list-head">
+              <h2 class="panel-title" style="font-size:16px;">Vuelos asignados previamente</h2>
+              <button class="btn-outline" style="font-size:10px;padding:6px 12px;" onclick="loadAssignedFlights()">↺</button>
+            </div>
+            <div id="assignedFlightsList">
+              <div class="flights-loading">Cargando asignaciones...</div>
+            </div>
           </div>
         </div>
       </div>
@@ -1068,6 +1113,68 @@
     </div>
   </div>
 
+  <div id="assignmentDetailModal" class="flight-modal-overlay hidden-panel" onclick="if(event.target===this) closeAssignmentDetail()">
+    <div class="flight-modal" style="width:min(720px, 100%);">
+      <div class="flight-modal-head">
+        <div>
+          <div class="tech-label">Detalle de la asignación</div>
+          <h2 class="panel-title" id="adTitle" style="font-size:20px;">—</h2>
+        </div>
+        <button class="btn-outline" onclick="closeAssignmentDetail()">✕ Cerrar</button>
+      </div>
+
+      <div class="form-grid" style="margin-top:18px;">
+        <div class="field">
+          <label for="ad-fecha">Fecha límite</label>
+          <input type="date" id="ad-fecha" class="date-picker-input" />
+        </div>
+        <div class="field full">
+          <label for="ad-instrucciones">Instrucciones para el estudiante</label>
+          <textarea id="ad-instrucciones" placeholder="Describe el ejercicio, los puntos que se evaluarán y cualquier restricción especial..."></textarea>
+        </div>
+      </div>
+      <div class="form-footer" style="margin-top:14px;">
+        <button class="btn-primary" id="ad-btn-save" onclick="saveAssignmentChanges()">Guardar cambios</button>
+        <div id="ad-save-msg" class="assign-msg" role="status"></div>
+      </div>
+
+      <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--border);">
+        <div class="tech-label" style="margin-bottom:10px;">Estudiantes asignados</div>
+        <div class="assignment-students" id="adStudentsList"></div>
+      </div>
+
+      <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--border);">
+        <div class="tech-label" style="margin-bottom:10px;">Agregar más estudiantes</div>
+        <div class="multi-select" id="adAddMultiSelect">
+          <button type="button" class="multi-select-trigger" id="adAddTrigger">
+            <span class="trigger-label">Seleccionar estudiante(s)</span>
+            <span class="trigger-arrow">▼</span>
+          </button>
+          <div class="multi-select-dropdown">
+            <div id="adAddStudentList"></div>
+          </div>
+        </div>
+        <div class="form-footer" style="margin-top:14px;">
+          <button class="btn-primary" id="ad-btn-add" onclick="addStudentsToAssignment()">Agregar al vuelo asignado</button>
+          <div id="ad-add-msg" class="assign-msg" role="status"></div>
+        </div>
+      </div>
+
+      <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--border);">
+        <div class="tech-label" style="margin-bottom:10px;color:var(--danger);">Zona de peligro</div>
+        <p style="font-size:12px;color:var(--muted);margin:0 0 12px;max-width:520px;line-height:1.6;">
+          Esto elimina la asignación completa (todas las copias por estudiante) de la lista.
+          Los vuelos ya volados seguirán apareciendo en Reportes y en el historial del estudiante:
+          esta acción solo borra la asignación, no la telemetría registrada.
+        </p>
+        <div class="form-footer">
+          <button class="btn-danger-outline" id="ad-btn-delete" onclick="deleteAssignmentGroup()">🗑 Eliminar vuelo asignado</button>
+          <div id="ad-delete-msg" class="assign-msg" role="status"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
   <script src="src/scripts/supabase-client.js"></script>
@@ -1084,6 +1191,7 @@
       else stopActiveFlightsLive();
       if (name === 'simuladores') loadSimuladores();
       if (name === 'reportes') loadReportes();
+      if (name === 'estudiantes') loadEstudiantes();
     }
 
     // ── MULTI-SELECT ESTUDIANTES ──
@@ -1132,6 +1240,8 @@
         .map(cb => ({ id: cb.value, nombre: cb.dataset.nombre }));
     }
 
+    let allStudents = [];
+
     async function loadStudents() {
       const list  = document.getElementById('studentList');
       const label = document.querySelector('#studentTrigger .trigger-label');
@@ -1148,6 +1258,7 @@
         return;
       }
 
+      allStudents = data;
       label.textContent = 'Seleccionar estudiante(s)';
       list.innerHTML = data.map(s => `
         <label class="multi-select-option">
@@ -1163,9 +1274,24 @@
 
     if (window.__authComplete) {
       loadStudents();
+      loadAssignedFlights();
+      loadEstudiantes();
     } else {
-      window.addEventListener('authReady', loadStudents);
+      window.addEventListener('authReady', () => { loadStudents(); loadAssignedFlights(); loadEstudiantes(); });
     }
+
+    // Abre el calendario nativo al enfocar/clicar el campo de fecha — evita
+    // que el usuario tenga que escribir la fecha a mano.
+    document.addEventListener('focusin', (e) => {
+      if (e.target.matches('input[type="date"].date-picker-input') && e.target.showPicker) {
+        try { e.target.showPicker(); } catch {}
+      }
+    });
+    document.addEventListener('click', (e) => {
+      if (e.target.matches('input[type="date"].date-picker-input') && e.target.showPicker) {
+        try { e.target.showPicker(); } catch {}
+      }
+    });
 
     async function handleAssign() {
       const students      = getSelectedStudents();
@@ -1189,6 +1315,10 @@
       btn.textContent = 'Asignando...';
       showAssignMsg('', false);
 
+      // assignment_group_id ties every per-student row from this submission
+      // (and any students added to it later) into a single "vuelo asignado"
+      // that the list/detail view can show, open and edit as one unit.
+      const assignmentGroupId = crypto.randomUUID();
       const rows = students.map(s => ({
         instructor_id: window.currentUser.id,
         student_id:    s.id,
@@ -1196,6 +1326,7 @@
         destino,
         fecha_limite,
         instrucciones,
+        assignment_group_id: assignmentGroupId,
       }));
 
       const { error } = await supabaseClient.from('flight_assignments').insert(rows);
@@ -1211,6 +1342,7 @@
       const nombres = students.map(s => s.nombre).join(', ');
       showAssignMsg(`Vuelo ${origen} → ${destino} asignado a ${nombres}.`, false);
       clearForm();
+      loadAssignedFlights();
     }
 
     function showAssignMsg(text, isError) {
@@ -1229,6 +1361,373 @@
       document.getElementById('selectAllStudents').checked = false;
       document.getElementById('selectAllStudents').indeterminate = false;
       document.querySelector('#studentTrigger .trigger-label').textContent = 'Seleccionar estudiante(s)';
+    }
+
+    // ── VUELOS ASIGNADOS PREVIAMENTE ──────────────────────────────────────────
+    // Cada fila de flight_assignments es un (vuelo, estudiante); las agrupamos
+    // por assignment_group_id para mostrarlas y editarlas como una sola unidad.
+    let assignmentGroups = [];
+
+    async function loadAssignedFlights() {
+      const list = document.getElementById('assignedFlightsList');
+      list.innerHTML = '<div class="flights-loading">Cargando asignaciones...</div>';
+
+      const [assignRes, studentsRes] = await Promise.all([
+        supabaseClient
+          .from('flight_assignments')
+          .select('id, assignment_group_id, student_id, origen, destino, fecha_limite, instrucciones, estado, created_at')
+          .order('created_at', { ascending: false }),
+        supabaseClient.from('profiles').select('id, nombre').eq('role', 'estudiante'),
+      ]);
+
+      if (assignRes.error) {
+        list.innerHTML = `<div class="assignment-empty">Error al cargar asignaciones: ${escSim(assignRes.error.message)}</div>`;
+        return;
+      }
+
+      const studentsById = {};
+      (studentsRes.data || []).forEach(s => { studentsById[s.id] = s; });
+
+      const groups = new Map();
+      (assignRes.data || []).forEach(row => {
+        if (!groups.has(row.assignment_group_id)) {
+          groups.set(row.assignment_group_id, {
+            assignment_group_id: row.assignment_group_id,
+            origen: row.origen,
+            destino: row.destino,
+            fecha_limite: row.fecha_limite,
+            instrucciones: row.instrucciones,
+            created_at: row.created_at,
+            rows: [],
+          });
+        }
+        groups.get(row.assignment_group_id).rows.push({
+          id: row.id,
+          student_id: row.student_id,
+          estado: row.estado,
+          student: studentsById[row.student_id] || null,
+        });
+      });
+
+      assignmentGroups = [...groups.values()]
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      if (!assignmentGroups.length) {
+        list.innerHTML = '<div class="assignment-empty">Aún no has asignado ningún vuelo.</div>';
+        return;
+      }
+
+      list.innerHTML = assignmentGroups.map(g => `
+        <div class="assignment-item" onclick="openAssignmentDetail('${escAttr(g.assignment_group_id)}')">
+          <div>
+            <div class="assignment-item-route">${escSim(g.origen)} → ${escSim(g.destino)}</div>
+            <div class="assignment-item-meta">
+              ${g.rows.length} ${g.rows.length === 1 ? 'estudiante' : 'estudiantes'}
+              ${g.fecha_limite ? ' · vence ' + escSim(g.fecha_limite) : ''}
+            </div>
+          </div>
+          <span class="assignment-item-arrow">›</span>
+        </div>
+      `).join('');
+    }
+
+    function openAssignmentDetail(groupId) {
+      const group = assignmentGroups.find(g => g.assignment_group_id === groupId);
+      if (!group) return;
+
+      document.getElementById('adTitle').textContent = `${group.origen} → ${group.destino}`;
+      document.getElementById('ad-fecha').value = group.fecha_limite || '';
+      document.getElementById('ad-instrucciones').value = group.instrucciones || '';
+      document.getElementById('ad-save-msg').textContent = '';
+      document.getElementById('ad-save-msg').className = 'assign-msg';
+      document.getElementById('ad-add-msg').textContent = '';
+      document.getElementById('ad-add-msg').className = 'assign-msg';
+      document.getElementById('assignmentDetailModal').dataset.groupId = groupId;
+
+      const statusLabel = (estado) => ({
+        pendiente: 'Pendiente',
+        completado: 'Completado',
+        en_progreso: 'En progreso',
+      }[estado] || estado || 'Pendiente');
+
+      document.getElementById('adStudentsList').innerHTML = group.rows.map(r => `
+        <div class="assignment-student-row">
+          <span class="assignment-student-name">${escSim(r.student?.nombre || 'Estudiante eliminado')}</span>
+          <span class="tag tag-info">${escSim(statusLabel(r.estado))}</span>
+        </div>
+      `).join('') || '<div class="assignment-empty">Sin estudiantes asignados.</div>';
+
+      renderAssignmentAddList(group);
+
+      document.getElementById('assignmentDetailModal').classList.remove('hidden-panel');
+    }
+
+    function renderAssignmentAddList(group) {
+      const assignedIds = new Set(group.rows.map(r => r.student_id));
+      const candidates  = allStudents.filter(s => !assignedIds.has(s.id));
+      const list  = document.getElementById('adAddStudentList');
+      const label = document.querySelector('#adAddTrigger .trigger-label');
+
+      if (!candidates.length) {
+        list.innerHTML = '<div class="multi-select-empty">Todos los estudiantes ya están asignados a este vuelo</div>';
+        label.textContent = 'Sin estudiantes disponibles';
+        return;
+      }
+
+      label.textContent = 'Seleccionar estudiante(s)';
+      list.innerHTML = candidates.map(s => `
+        <label class="multi-select-option">
+          <input type="checkbox" class="ad-add-check" value="${s.id}" data-nombre="${escAttr(s.nombre)}">
+          ${escSim(s.nombre)}
+        </label>
+      `).join('');
+
+      document.querySelectorAll('.ad-add-check').forEach(cb => {
+        cb.addEventListener('change', () => {
+          const checked = document.querySelectorAll('.ad-add-check:checked');
+          label.textContent = checked.length === 0
+            ? 'Seleccionar estudiante(s)'
+            : (checked.length === 1 ? checked[0].dataset.nombre : `${checked.length} estudiantes`);
+        });
+      });
+    }
+
+    document.getElementById('adAddTrigger').addEventListener('click', () => {
+      document.getElementById('adAddMultiSelect').classList.toggle('is-open');
+    });
+    document.addEventListener('click', (e) => {
+      const ms = document.getElementById('adAddMultiSelect');
+      if (ms && !ms.contains(e.target)) ms.classList.remove('is-open');
+    });
+
+    function closeAssignmentDetail() {
+      document.getElementById('assignmentDetailModal').classList.add('hidden-panel');
+    }
+
+    async function saveAssignmentChanges() {
+      const groupId = document.getElementById('assignmentDetailModal').dataset.groupId;
+      const fecha_limite  = document.getElementById('ad-fecha').value || null;
+      const instrucciones = document.getElementById('ad-instrucciones').value.trim() || null;
+
+      const btn = document.getElementById('ad-btn-save');
+      btn.disabled = true;
+      btn.textContent = 'Guardando...';
+
+      const { error } = await supabaseClient
+        .from('flight_assignments')
+        .update({ fecha_limite, instrucciones })
+        .eq('assignment_group_id', groupId);
+
+      btn.disabled = false;
+      btn.textContent = 'Guardar cambios';
+
+      const msg = document.getElementById('ad-save-msg');
+      if (error) {
+        msg.textContent = 'Error: ' + error.message;
+        msg.className = 'assign-msg err';
+        return;
+      }
+      msg.textContent = 'Cambios guardados.';
+      msg.className = 'assign-msg ok';
+      setTimeout(() => { msg.textContent = ''; msg.className = 'assign-msg'; }, 4000);
+
+      await loadAssignedFlights();
+    }
+
+    async function addStudentsToAssignment() {
+      const groupId = document.getElementById('assignmentDetailModal').dataset.groupId;
+      const group = assignmentGroups.find(g => g.assignment_group_id === groupId);
+      if (!group) return;
+
+      const checked = Array.from(document.querySelectorAll('.ad-add-check:checked'))
+        .map(cb => ({ id: cb.value, nombre: cb.dataset.nombre }));
+
+      const msg = document.getElementById('ad-add-msg');
+      if (!checked.length) {
+        msg.textContent = 'Selecciona al menos un estudiante.';
+        msg.className = 'assign-msg err';
+        return;
+      }
+
+      const btn = document.getElementById('ad-btn-add');
+      btn.disabled = true;
+      btn.textContent = 'Agregando...';
+
+      const rows = checked.map(s => ({
+        instructor_id: window.currentUser.id,
+        student_id:    s.id,
+        origen:        group.origen,
+        destino:       group.destino,
+        fecha_limite:  group.fecha_limite,
+        instrucciones: group.instrucciones,
+        assignment_group_id: groupId,
+      }));
+
+      const { error } = await supabaseClient.from('flight_assignments').insert(rows);
+
+      btn.disabled = false;
+      btn.textContent = 'Agregar al vuelo asignado';
+
+      if (error) {
+        msg.textContent = 'Error: ' + error.message;
+        msg.className = 'assign-msg err';
+        return;
+      }
+
+      const nombres = checked.map(s => s.nombre).join(', ');
+      msg.textContent = `Agregado(s): ${nombres}.`;
+      msg.className = 'assign-msg ok';
+
+      await loadAssignedFlights();
+      openAssignmentDetail(groupId);
+    }
+
+    async function deleteAssignmentGroup() {
+      const groupId = document.getElementById('assignmentDetailModal').dataset.groupId;
+      const group = assignmentGroups.find(g => g.assignment_group_id === groupId);
+      if (!group) return;
+
+      const nombres = group.rows.map(r => r.student?.nombre || 'estudiante eliminado').join(', ');
+      if (!confirm(`¿Eliminar el vuelo asignado ${group.origen} → ${group.destino} (${nombres})? Esta acción no se puede deshacer.`)) return;
+
+      const msg = document.getElementById('ad-delete-msg');
+      const btn = document.getElementById('ad-btn-delete');
+      btn.disabled = true;
+      btn.textContent = 'Eliminando...';
+
+      const { error } = await supabaseClient
+        .from('flight_assignments')
+        .delete()
+        .eq('assignment_group_id', groupId);
+
+      btn.disabled = false;
+      btn.textContent = '🗑 Eliminar vuelo asignado';
+
+      if (error) {
+        msg.textContent = 'Error: ' + error.message;
+        msg.className = 'assign-msg err';
+        return;
+      }
+
+      closeAssignmentDetail();
+      await loadAssignedFlights();
+    }
+
+    // ── GESTIÓN DE ESTUDIANTES ────────────────────────────────────────────────
+    async function loadEstudiantes() {
+      const body = document.getElementById('estudiantesTableBody');
+
+      const [studentsRes, assignRes, summaryRes] = await Promise.all([
+        supabaseClient
+          .from('profiles')
+          .select('id, nombre, session_code, suspended, last_active_at')
+          .eq('role', 'estudiante')
+          .order('nombre'),
+        supabaseClient
+          .from('flight_assignments')
+          .select('student_id, estado'),
+        supabaseClient.rpc('flight_summaries'),
+      ]);
+
+      if (studentsRes.error || !studentsRes.data) {
+        body.innerHTML = `<tr><td colspan="6" class="flights-loading">Error al cargar estudiantes: ${escSim(studentsRes.error?.message || '')}</td></tr>`;
+        return;
+      }
+
+      const students = studentsRes.data;
+      const assignments = assignRes.data || [];
+      const summaries = summaryRes.data || [];
+
+      // Por estudiante: total asignado, total completado, último vuelo, horas totales
+      const perStudent = {};
+      const studentByCode = {};
+      students.forEach(s => {
+        perStudent[s.id] = { assigned: 0, completed: 0, lastFlight: null, hours: 0 };
+        if (s.session_code) studentByCode[s.session_code] = s.id;
+      });
+      assignments.forEach(a => {
+        const stat = perStudent[a.student_id];
+        if (!stat) return;
+        stat.assigned++;
+        if (a.estado === 'completado') stat.completed++;
+      });
+      summaries.forEach(f => {
+        // student_id queda estampado de forma permanente al escribir la telemetría;
+        // los vuelos registrados antes de esa columna recurren al session_code
+        // actual del estudiante, igual que en la pestaña de Reportes.
+        const studentId = f.student_id || studentByCode[f.session_code] || null;
+        const stat = perStudent[studentId];
+        if (!stat) return;
+        if (f.duration_seconds) stat.hours += Number(f.duration_seconds) / 3600;
+        if (f.ended_at && (!stat.lastFlight || new Date(f.ended_at) > new Date(stat.lastFlight))) {
+          stat.lastFlight = f.ended_at;
+        }
+      });
+
+      const totalAssigned  = assignments.length;
+      const totalCompleted = assignments.filter(a => a.estado === 'completado').length;
+      const totalActive    = students.filter(s => !s.suspended).length;
+      const totalHours     = Object.values(perStudent).reduce((sum, s) => sum + s.hours, 0);
+
+      document.getElementById('estStatActive').textContent    = totalActive;
+      document.getElementById('estStatAssigned').textContent  = totalAssigned;
+      document.getElementById('estStatCompleted').textContent = totalCompleted;
+      document.getElementById('estStatHours').textContent     = totalHours ? totalHours.toFixed(1) : '0';
+
+      if (!students.length) {
+        body.innerHTML = '<tr><td colspan="6" class="flights-loading">Aún no hay estudiantes registrados.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = students.map(s => {
+        const stat = perStudent[s.id];
+        const statusBadge = s.suspended
+          ? '<span class="status-badge status-suspended">Suspendido</span>'
+          : '<span class="status-badge status-active">Activo</span>';
+        const actionBtn = s.suspended
+          ? `<button class="btn-outline" onclick="toggleSuspendStudent('${escAttr(s.id)}', false, this)">Reactivar</button>`
+          : `<button class="btn-danger-outline" onclick="toggleSuspendStudent('${escAttr(s.id)}', true, this)">Suspender</button>`;
+
+        return `
+          <tr>
+            <td>
+              <div class="student-name">${escSim(s.nombre)}</div>
+              <div class="student-email">${escSim(s.session_code || '—')}</div>
+            </td>
+            <td>${stat.completed}</td>
+            <td>${stat.assigned}</td>
+            <td>${formatDateTime(stat.lastFlight)}</td>
+            <td>${statusBadge}</td>
+            <td style="display:flex; gap:8px;">
+              <button class="btn-outline" onclick="switchTab('asignar', document.querySelectorAll('.page-tab')[2])">Asignar</button>
+              ${actionBtn}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function toggleSuspendStudent(studentId, suspend, btn) {
+      const verbo = suspend ? 'suspender' : 'reactivar';
+      if (!confirm(`¿Seguro que deseas ${verbo} a este estudiante?`)) return;
+
+      btn.disabled = true;
+      const original = btn.textContent;
+      btn.textContent = suspend ? 'Suspendiendo...' : 'Reactivando...';
+
+      const { error } = await supabaseClient
+        .from('profiles')
+        .update({ suspended: suspend })
+        .eq('id', studentId);
+
+      if (error) {
+        alert('Error: ' + error.message);
+        btn.disabled = false;
+        btn.textContent = original;
+        return;
+      }
+
+      await loadEstudiantes();
     }
 
     // ── VUELOS ACTIVOS ────────────────────────────────────────────────────────
@@ -1328,8 +1827,61 @@
 
       empty.classList.add('hidden-panel');
       grid.classList.remove('hidden-panel');
-      grid.innerHTML = cards.map(renderActiveFlightCard).join('');
+
+      reconcileActiveFlightCards(grid, cards);
       syncActiveFlightMaps(cards);
+    }
+
+    // Actualiza la grilla de vuelos activos tarjeta por tarjeta (en vez de
+    // reemplazar todo el innerHTML cada 3s): las que siguen activas se
+    // actualizan en el sitio, las nuevas se insertan y las que ya no están se
+    // remueven. Así el contenedor del mapa en vivo (con su contexto WebGL de
+    // MapLibre) sobrevive entre refrescos y no "parpadea" / se pone negro.
+    function reconcileActiveFlightCards(grid, cards) {
+      const articlesById = new Map();
+      [...grid.children].forEach(el => {
+        if (el.dataset?.flightId) articlesById.set(el.dataset.flightId, el);
+      });
+
+      const seen = new Set();
+      let prevEl = null;
+
+      cards.forEach(card => {
+        seen.add(card.flight_id);
+        const mapOpen = activeFlightMapsOpen.has(card.flight_id);
+        const existing = articlesById.get(card.flight_id);
+        const existingHasMapWrap = !!existing?.querySelector('.live-route-map-wrap');
+
+        let article = existing;
+        if (!article || existingHasMapWrap !== mapOpen) {
+          const holder = document.createElement('div');
+          holder.innerHTML = renderActiveFlightCard(card).trim();
+          const fresh = holder.firstElementChild;
+          if (article) article.replaceWith(fresh);
+          article = fresh;
+        } else {
+          try {
+            updateActiveFlightCardValues(article, card);
+          } catch (err) {
+            console.error('[Vuelos activos] Error actualizando tarjeta, se reconstruye:', err);
+            const holder = document.createElement('div');
+            holder.innerHTML = renderActiveFlightCard(card).trim();
+            const fresh = holder.firstElementChild;
+            article.replaceWith(fresh);
+            article = fresh;
+          }
+        }
+
+        // Mantener el orden (más reciente primero) sin recrear nodos ya correctos.
+        if (prevEl ? prevEl.nextElementSibling !== article : grid.firstElementChild !== article) {
+          grid.insertBefore(article, prevEl ? prevEl.nextElementSibling : grid.firstElementChild);
+        }
+        prevEl = article;
+      });
+
+      articlesById.forEach((el, id) => {
+        if (!seen.has(id)) el.remove();
+      });
     }
 
     function buildActiveFlightCards(points, sessions, studentsByCode, now) {
@@ -1392,7 +1944,7 @@
       const mapId = `activeRouteMap-${domSafeId(f.flight_id)}`;
 
       return `
-        <article class="live-card">
+        <article class="live-card" data-flight-id="${escAttr(f.flight_id)}">
           <div class="live-card-head">
             <div>
               <div class="live-route">${escSim(studentName)}</div>
@@ -1401,17 +1953,17 @@
             <span class="status-badge status-live">En vuelo</span>
           </div>
           <div class="live-card-body">
-            ${renderTelemetryPair('Altitud', f.altitude_ft, 'FT')}
-            ${renderTelemetryPair('IAS', f.ias_kt, 'KT')}
-            ${renderTelemetryPair('Rumbo', f.heading_deg, '°')}
-            ${renderTelemetryPair('V/S', f.vs_fpm, 'FT/MIN', true)}
+            ${renderTelemetryPair('Altitud', f.altitude_ft, 'FT', false, 'altitude')}
+            ${renderTelemetryPair('IAS', f.ias_kt, 'KT', false, 'ias')}
+            ${renderTelemetryPair('Rumbo', f.heading_deg, '°', false, 'heading')}
+            ${renderTelemetryPair('V/S', f.vs_fpm, 'FT/MIN', true, 'vs')}
             <div class="live-progress">
-              ${renderTelemetryPair('Duración', formatDuration(f.duration_seconds), '')}
-              ${renderTelemetryPair('Puntos', Number(f.point_count || 0).toLocaleString('es-CO'), '')}
-              ${renderTelemetryPair('Distancia', f.distance_nm.toFixed(1), 'NM')}
-              ${renderTelemetryPair('Alt máx', f.max_altitude_ft, 'FT')}
-              ${renderTelemetryPair('IAS máx', f.max_ias_kt, 'KT')}
-              ${renderTelemetryPair('Última señal', f.last_signal, '')}
+              ${renderTelemetryPair('Duración', formatDuration(f.duration_seconds), '', false, 'duration')}
+              ${renderTelemetryPair('Puntos', Number(f.point_count || 0).toLocaleString('es-CO'), '', false, 'points')}
+              ${renderTelemetryPair('Distancia', f.distance_nm.toFixed(1), 'NM', false, 'distance')}
+              ${renderTelemetryPair('Alt máx', f.max_altitude_ft, 'FT', false, 'max_altitude')}
+              ${renderTelemetryPair('IAS máx', f.max_ias_kt, 'KT', false, 'max_ias')}
+              ${renderTelemetryPair('Última señal', f.last_signal, '', false, 'last_signal')}
             </div>
             <div class="live-map-toggle">
               <button class="btn-outline" onclick="toggleActiveFlightMap('${escAttr(f.flight_id)}')">${mapOpen ? 'Ocultar mapa' : 'Ver mapa'}</button>
@@ -1419,10 +1971,38 @@
             ${mapOpen ? `<div class="live-route-map-wrap"><div class="live-route-map" id="${mapId}" aria-label="Mapa en vivo del vuelo activo"></div></div>` : ''}
           </div>
           <div class="live-card-foot">
-            <div class="live-indicator"><div class="live-dot"></div> ${escSim(liveLabel)}</div>
+            <div class="live-indicator"><div class="live-dot"></div> <span data-field="live-label">${escSim(liveLabel)}</span></div>
             <span style="font-family:var(--font-mono);font-size:10px;color:var(--muted);">${escSim(f.session_code)}</span>
           </div>
         </article>`;
+    }
+
+    // Actualiza solo los valores de telemetría de una tarjeta ya renderizada,
+    // sin tocar el resto del DOM (en particular, el contenedor del mapa en
+    // vivo: si lo reemplazáramos en cada refresco de 3s, MapLibre perdería su
+    // contexto WebGL y el mapa se vería negro al moverlo).
+    function updateActiveFlightCardValues(article, f) {
+      const setField = (field, value, unit, signed = false) => {
+        const el = article.querySelector(`[data-field="${field}"]`);
+        if (!el) return;
+        const display = formatTelemetryValue(value, signed);
+        el.innerHTML = `${escSim(display)} ${unit ? `<span class="tele-unit">${escSim(unit)}</span>` : ''}`;
+      };
+
+      setField('altitude', f.altitude_ft, 'FT');
+      setField('ias', f.ias_kt, 'KT');
+      setField('heading', f.heading_deg, '°');
+      setField('vs', f.vs_fpm, 'FT/MIN', true);
+      setField('duration', formatDuration(f.duration_seconds), '');
+      setField('points', Number(f.point_count || 0).toLocaleString('es-CO'), '');
+      setField('distance', f.distance_nm.toFixed(1), 'NM');
+      setField('max_altitude', f.max_altitude_ft, 'FT');
+      setField('max_ias', f.max_ias_kt, 'KT');
+      setField('last_signal', f.last_signal, '');
+
+      const liveLabel = f.last_signal === 'ahora' ? 'En vivo' : `Señal ${f.last_signal}`;
+      const labelEl = article.querySelector('[data-field="live-label"]');
+      if (labelEl) labelEl.textContent = liveLabel;
     }
 
     function toggleActiveFlightMap(flightId) {
@@ -1455,7 +2035,11 @@
       const container = document.getElementById(`activeRouteMap-${domSafeId(flightId)}`);
       if (!container || typeof maplibregl === 'undefined') return;
 
-      removeActiveFlightMap(flightId);
+      const existing = activeFlightMaps.get(flightId);
+      if (existing) {
+        updateActiveFlightMapRoute(existing, coordinates);
+        return;
+      }
 
       const center = coordinates[coordinates.length - 1] || coordinates[0] || [-74.2973, 4.5709];
       const map = new maplibregl.Map({
@@ -1466,6 +2050,12 @@
         attributionControl: true,
       });
       activeFlightMaps.set(flightId, map);
+
+      // Si el usuario mueve/zoomea el mapa manualmente, dejamos de seguir el
+      // último punto automáticamente: si no, el `easeTo` periódico cancelaría
+      // las descargas de tiles del sector que está mirando y se vería negro.
+      map.on('movestart', e => { if (e.originalEvent) map.__userInteracted = true; });
+      map.on('zoomstart', e => { if (e.originalEvent) map.__userInteracted = true; });
 
       map.on('load', () => {
         map.addSource('active-flight-route', {
@@ -1500,7 +2090,28 @@
           },
         });
         fitActiveFlightMap(map, coordinates);
+        map.__lastCoordCount = coordinates.length;
       });
+    }
+
+    // Actualiza la ruta de un mapa ya existente sin recrearlo: reemplaza los
+    // datos de las fuentes geojson (la línea "se va dibujando sola") y solo
+    // sigue suavemente el último punto cuando llega telemetría nueva, en vez
+    // de recargar/recentrar el mapa por completo en cada refresco.
+    function updateActiveFlightMapRoute(map, coordinates) {
+      if (!map.isStyleLoaded()) return;
+      const routeSource = map.getSource('active-flight-route');
+      const pointsSource = map.getSource('active-flight-points');
+      if (!routeSource || !pointsSource) return;
+
+      routeSource.setData(routeLineGeoJSON(coordinates));
+      pointsSource.setData(routePointsGeoJSON(coordinates));
+
+      const last = coordinates[coordinates.length - 1];
+      if (last && !map.__userInteracted && coordinates.length !== map.__lastCoordCount) {
+        map.easeTo({ center: last, duration: 800 });
+      }
+      map.__lastCoordCount = coordinates.length;
     }
 
     function removeActiveFlightMap(flightId) {
@@ -1529,16 +2140,22 @@
       return String(value || '').replace(/[^a-zA-Z0-9_-]/g, '_');
     }
 
-    function renderTelemetryPair(label, value, unit, signed = false) {
+    function formatTelemetryValue(value, signed = false) {
       let display = value;
       if (typeof value === 'number') {
         display = Number.isFinite(value) ? Math.round(value).toLocaleString('es-CO') : '—';
         if (signed && Number.isFinite(value) && value > 0) display = `+${display}`;
       }
+      return display;
+    }
+
+    function renderTelemetryPair(label, value, unit, signed = false, field = null) {
+      const display = formatTelemetryValue(value, signed);
+      const fieldAttr = field ? ` data-field="${escAttr(field)}"` : '';
       return `
         <div class="telemetry-pair">
           <div class="tele-label">${escSim(label)}</div>
-          <div class="tele-value">${escSim(display)} ${unit ? `<span class="tele-unit">${escSim(unit)}</span>` : ''}</div>
+          <div class="tele-value"${fieldAttr}>${escSim(display)} ${unit ? `<span class="tele-unit">${escSim(unit)}</span>` : ''}</div>
         </div>`;
     }
 

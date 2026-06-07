@@ -414,6 +414,10 @@
       el.textContent = '';
     }
 
+    if (new URLSearchParams(window.location.search).get('suspended') === '1') {
+      showMsg('Tu cuenta ha sido suspendida por el instructor. Contacta a la academia para más información.', true);
+    }
+
     function setLoading(btnId, loading) {
       const btn = document.getElementById(btnId);
       if (!btn) return;
