@@ -1785,6 +1785,142 @@ input[type="checkbox"] {
   overflow: hidden;
 }
 
+.dash-map-live-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 12px;
+  align-items: stretch;
+  margin-top: 8px;
+}
+
+.dash-map-stage {
+  position: relative;
+  min-height: 520px;
+}
+
+.dash-map-live-layout .dash-map-container {
+  margin-top: 0;
+  height: 520px;
+}
+
+.dash-follow-aircraft-btn {
+  position: absolute;
+  right: 12px;
+  bottom: 38px;
+  z-index: 4;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(125, 211, 252, 0.55);
+  border-radius: 999px;
+  background: rgba(15, 42, 68, 0.92);
+  color: #7dd3fc;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.38);
+  cursor: pointer;
+  transition: transform 140ms ease-out, background 140ms ease-out, border-color 140ms ease-out;
+}
+
+.dash-follow-aircraft-btn:hover {
+  border-color: #7dd3fc;
+  background: rgba(14, 58, 92, 0.96);
+}
+
+.dash-follow-aircraft-btn:active {
+  transform: scale(0.96);
+}
+
+.dash-follow-aircraft-btn span {
+  font-family: var(--mono);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.dash-live-panel {
+  min-height: 520px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel-deep, #0d0d0f);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dash-live-head {
+  margin-bottom: 0;
+}
+
+.dash-live-aircraft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  border-radius: 6px;
+  background: rgba(56, 189, 248, 0.06);
+}
+
+.dash-live-plane-mark {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #0f2a44;
+  color: #7dd3fc;
+  font-size: 18px;
+}
+
+.dash-live-title {
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dash-live-subtitle {
+  margin-top: 3px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10px;
+}
+
+.dash-live-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.dash-live-metric {
+  min-height: 72px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.dash-live-metric span {
+  display: block;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dash-live-metric strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--text);
+  font-family: var(--display);
+  font-size: 21px;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
 /* ── Split layout: WX panel + Map panel ─────────────────────── */
 .map-card-body {
   display: grid;
@@ -2400,6 +2536,21 @@ body.map-page {
 
   .map-card-body {
     grid-template-columns: 1fr;
+  }
+
+  .dash-map-live-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .dash-map-stage,
+  .dash-map-live-layout .dash-map-container,
+  .dash-live-panel {
+    min-height: 0;
+    height: auto;
+  }
+
+  .dash-map-live-layout .dash-map-container {
+    height: 420px;
   }
 
   .wx-panel {

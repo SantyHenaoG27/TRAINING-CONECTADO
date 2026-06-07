@@ -70,10 +70,19 @@ let colombianAirports = [];
 let allWaypoints = [];
 let allNavaids = [];
 let dashMapInstance = null;
+let dashMapReady = false;
 let routeLineGeoJSON = { type: "FeatureCollection", features: [] };
 let routeWaypoints = [];
 const chartCache = {};
 let enrouteCharts = [];
+let studentLiveProfile = null;
+let studentLivePoints = [];
+let studentLiveChannel = null;
+let studentLiveTimer = null;
+const STUDENT_LIVE_ACTIVE_WINDOW_MS = 15000;
+const STUDENT_AIRCRAFT_FOLLOW_ZOOM = 10.5;
+const STUDENT_AIRCRAFT_LOCATE_ZOOM = 13;
+let studentAircraftFollowEnabled = true;
 
 const ENROUTE_CHART_TYPES = [
   { id: "SECTOR", label: "SECTORIZACION", match: (name) => name.includes("SECTORIZACION") },
@@ -97,6 +106,54 @@ async function fetchJson(path) {
 
 function formatCoordinate(value) {
   return Number(value).toFixed(6);
+}
+
+function formatLiveNumber(value, suffix = "", signed = false) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "--";
+  const rounded = Math.round(n);
+  const prefix = signed && rounded > 0 ? "+" : "";
+  return `${prefix}${rounded.toLocaleString("es-CO")}${suffix ? ` ${suffix}` : ""}`;
+}
+
+function formatLiveDuration(seconds) {
+  const total = Math.max(0, Math.round(Number(seconds || 0)));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  if (h) return `${h}h ${String(m).padStart(2, "0")}m`;
+  if (m) return `${m}m ${String(s).padStart(2, "0")}s`;
+  return `${s}s`;
+}
+
+function liveTimeSince(isoStr) {
+  if (!isoStr) return "--";
+  const diff = Math.floor((Date.now() - new Date(isoStr).getTime()) / 1000);
+  if (diff < 10) return "ahora";
+  if (diff < 60) return `hace ${diff}s`;
+  if (diff < 3600) return `hace ${Math.floor(diff / 60)}min`;
+  return `hace ${Math.floor(diff / 3600)}h`;
+}
+
+function haversineKm(a, b) {
+  const toRad = (deg) => deg * Math.PI / 180;
+  const earthKm = 6371;
+  const dLat = toRad(b[1] - a[1]);
+  const dLng = toRad(b[0] - a[0]);
+  const lat1 = toRad(a[1]);
+  const lat2 = toRad(b[1]);
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+  return 2 * earthKm * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+}
+
+function routeDistanceNm(coordinates) {
+  let totalKm = 0;
+  for (let i = 1; i < coordinates.length; i++) {
+    totalKm += haversineKm(coordinates[i - 1], coordinates[i]);
+  }
+  return totalKm / 1.852;
 }
 
 function normalizeFixName(value) {
@@ -1806,6 +1863,13 @@ function initDashboardMap(airportsReady, waypointsReady, navaidsReady) {
 
   dashMap.addControl(new maplibregl.NavigationControl(), "top-right");
   dashMap.addControl(new maplibregl.ScaleControl({ unit: "metric" }), "bottom-left");
+  document.getElementById("dashFollowAircraftBtn")?.addEventListener("click", () => centerStudentAircraft(true));
+  dashMap.on("movestart", (e) => {
+    if (e.originalEvent) studentAircraftFollowEnabled = false;
+  });
+  dashMap.on("zoomstart", (e) => {
+    if (e.originalEvent) studentAircraftFollowEnabled = false;
+  });
 
   // GeoJSON cache — populated once, reused on every style switch
   let normalWpGeoJSON = null;
@@ -1892,9 +1956,16 @@ function initDashboardMap(airportsReady, waypointsReady, navaidsReady) {
   }
 
   // Re-add layers on every style switch (and initial load)
+  dashMap.on("load", () => {
+    dashMapReady = true;
+    ensureStudentAircraftLayer();
+  });
+
   dashMap.on("style.load", () => {
+    dashMapReady = true;
     addAllDashLayers();
     addRouteLine();
+    ensureStudentAircraftLayer();
   });
 
   // One-time setup after data is ready
@@ -2005,6 +2076,312 @@ function initDashboardMap(airportsReady, waypointsReady, navaidsReady) {
   });
 }
 
+function createAircraftImage() {
+  const size = 96;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  ctx.translate(size / 2, size / 2);
+  ctx.fillStyle = "#0f2a44";
+  ctx.strokeStyle = "#7dd3fc";
+  ctx.lineWidth = 4;
+  ctx.shadowColor = "rgba(2, 6, 23, 0.7)";
+  ctx.shadowBlur = 10;
+  ctx.beginPath();
+  ctx.moveTo(0, -38);
+  ctx.lineTo(12, -8);
+  ctx.lineTo(38, 3);
+  ctx.lineTo(38, 13);
+  ctx.lineTo(9, 10);
+  ctx.lineTo(7, 33);
+  ctx.lineTo(22, 41);
+  ctx.lineTo(22, 47);
+  ctx.lineTo(0, 39);
+  ctx.lineTo(-22, 47);
+  ctx.lineTo(-22, 41);
+  ctx.lineTo(-7, 33);
+  ctx.lineTo(-9, 10);
+  ctx.lineTo(-38, 13);
+  ctx.lineTo(-38, 3);
+  ctx.lineTo(-12, -8);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+  return ctx.getImageData(0, 0, size, size);
+}
+
+function emptyStudentAircraftGeoJSON() {
+  return { type: "FeatureCollection", features: [] };
+}
+
+function studentAircraftGeoJSON(point) {
+  const lng = Number(point?.longitude);
+  const lat = Number(point?.latitude);
+  if (!Number.isFinite(lng) || !Number.isFinite(lat) || Math.abs(lat) > 90 || Math.abs(lng) > 180) {
+    return emptyStudentAircraftGeoJSON();
+  }
+  return {
+    type: "FeatureCollection",
+    features: [{
+      type: "Feature",
+      properties: { heading: Number(point.heading_deg || 0) },
+      geometry: { type: "Point", coordinates: [lng, lat] },
+    }],
+  };
+}
+
+function ensureStudentAircraftLayer() {
+  const map = dashMapInstance;
+  if (!map || !dashMapReady || !map.isStyleLoaded()) return;
+  if (!map.hasImage("student-aircraft")) {
+    map.addImage("student-aircraft", createAircraftImage(), { pixelRatio: 2 });
+  }
+  if (!map.getSource("student-aircraft-position")) {
+    map.addSource("student-aircraft-position", { type: "geojson", data: emptyStudentAircraftGeoJSON() });
+  }
+  if (!map.getLayer("student-aircraft-symbol")) {
+    map.addLayer({
+      id: "student-aircraft-symbol",
+      type: "symbol",
+      source: "student-aircraft-position",
+      layout: {
+        "icon-image": "student-aircraft",
+        "icon-size": 0.95,
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "icon-rotate": ["get", "heading"],
+        "icon-rotation-alignment": "map",
+      },
+    });
+  }
+  updateStudentAircraftOnMap();
+}
+
+function updateStudentAircraftOnMap(follow = false, zoom = STUDENT_AIRCRAFT_FOLLOW_ZOOM) {
+  const map = dashMapInstance;
+  const last = studentLivePoints[studentLivePoints.length - 1];
+  if (!map || !dashMapReady) return;
+  if (!map.getSource("student-aircraft-position")) ensureStudentAircraftLayer();
+  if (!map.getSource("student-aircraft-position")) return;
+  map.getSource("student-aircraft-position").setData(studentAircraftGeoJSON(last));
+  const lng = Number(last?.longitude);
+  const lat = Number(last?.latitude);
+  if (follow && Number.isFinite(lng) && Number.isFinite(lat)) {
+    map.easeTo({
+      center: [lng, lat],
+      zoom: Math.max(map.getZoom(), zoom),
+      duration: 900,
+      easing: (t) => t * (2 - t),
+    });
+  }
+}
+
+function centerStudentAircraft(close = false) {
+  const map = dashMapInstance;
+  const last = studentLivePoints[studentLivePoints.length - 1];
+  const lng = Number(last?.longitude);
+  const lat = Number(last?.latitude);
+  if (!map || !Number.isFinite(lng) || !Number.isFinite(lat)) return;
+  studentAircraftFollowEnabled = true;
+  ensureStudentAircraftLayer();
+  updateStudentAircraftOnMap(true, close ? STUDENT_AIRCRAFT_LOCATE_ZOOM : STUDENT_AIRCRAFT_FOLLOW_ZOOM);
+}
+
+function setDashLiveText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function setDashLiveStatus(text, cls = "") {
+  const el = document.getElementById("dashLiveStatus");
+  if (!el) return;
+  el.textContent = text;
+  el.className = `chip ${cls}`.trim();
+}
+
+function setDashLiveEmpty(title, detail, status = "OFF") {
+  setDashLiveStatus(status);
+  setDashLiveText("dashLiveSession", title);
+  setDashLiveText("dashLiveFlightId", detail);
+  [
+    "dashLiveAltitude",
+    "dashLiveIas",
+    "dashLiveHeading",
+    "dashLiveVs",
+    "dashLiveDuration",
+    "dashLivePoints",
+    "dashLiveDistance",
+    "dashLiveMaxAlt",
+    "dashLiveMaxIas",
+    "dashLiveLastSignal",
+  ].forEach((id) => setDashLiveText(id, "--"));
+  studentLivePoints = [];
+  updateStudentAircraftOnMap();
+}
+
+function getLiveRouteCoordinates(points) {
+  return points
+    .map((p) => [Number(p.longitude), Number(p.latitude)])
+    .filter(([lng, lat]) => Number.isFinite(lng) && Number.isFinite(lat) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180);
+}
+
+function summarizeStudentLiveFlight(points) {
+  const sorted = [...points].sort((a, b) => new Date(a.sim_time) - new Date(b.sim_time));
+  const first = sorted[0];
+  const last = sorted[sorted.length - 1];
+  if (!first || !last) return null;
+  const startedMs = new Date(first.sim_time).getTime();
+  const lastMs = new Date(last.sim_time).getTime();
+  const coords = getLiveRouteCoordinates(sorted);
+  const maxAlt = Math.max(...sorted.map((p) => Number(p.altitude_ft)).filter(Number.isFinite));
+  const maxIas = Math.max(...sorted.map((p) => Number(p.ias_kt)).filter(Number.isFinite));
+  return {
+    session_code: last.session_code,
+    flight_id: last.flight_id,
+    last,
+    duration_seconds: Number.isFinite(startedMs) && Number.isFinite(lastMs) ? Math.max(0, (lastMs - startedMs) / 1000) : 0,
+    point_count: sorted.length,
+    distance_nm: coords.length > 1 ? routeDistanceNm(coords) : 0,
+    max_altitude_ft: Number.isFinite(maxAlt) ? maxAlt : null,
+    max_ias_kt: Number.isFinite(maxIas) ? maxIas : null,
+  };
+}
+
+function renderStudentLiveTelemetry() {
+  const summary = summarizeStudentLiveFlight(studentLivePoints);
+  if (!summary) {
+    setDashLiveEmpty(
+      studentLiveProfile?.session_code || "Sin telemetria",
+      "Esperando datos del simulador",
+      studentLiveProfile?.session_code ? "WAIT" : "OFF",
+    );
+    return;
+  }
+
+  const p = summary.last;
+  const signal = liveTimeSince(p.sim_time);
+  setDashLiveStatus(p.on_ground ? "GND" : (signal === "ahora" ? "LIVE" : "REC"), p.on_ground ? "" : (signal === "ahora" ? "ok" : ""));
+  setDashLiveText("dashLiveSession", summary.session_code || "--");
+  setDashLiveText("dashLiveFlightId", summary.flight_id || "--");
+  setDashLiveText("dashLiveAltitude", formatLiveNumber(p.altitude_ft, "FT"));
+  setDashLiveText("dashLiveIas", formatLiveNumber(p.ias_kt, "KT"));
+  setDashLiveText("dashLiveHeading", formatLiveNumber(p.heading_deg, "°"));
+  setDashLiveText("dashLiveVs", formatLiveNumber(p.vs_fpm, "FT/MIN", true));
+  setDashLiveText("dashLiveDuration", formatLiveDuration(summary.duration_seconds));
+  setDashLiveText("dashLivePoints", Number(summary.point_count || 0).toLocaleString("es-CO"));
+  setDashLiveText("dashLiveDistance", `${summary.distance_nm.toFixed(1)} NM`);
+  setDashLiveText("dashLiveMaxAlt", formatLiveNumber(summary.max_altitude_ft, "FT"));
+  setDashLiveText("dashLiveMaxIas", formatLiveNumber(summary.max_ias_kt, "KT"));
+  setDashLiveText("dashLiveLastSignal", signal);
+  updateStudentAircraftOnMap(studentAircraftFollowEnabled, STUDENT_AIRCRAFT_FOLLOW_ZOOM);
+}
+
+async function refreshStudentLiveTelemetry() {
+  if (!studentLiveProfile?.session_code || typeof supabaseClient === "undefined") return;
+  const { data: session, error: sessionError } = await supabaseClient
+    .from("flight_sessions")
+    .select("session_code, last_seen, on_ground")
+    .eq("session_code", studentLiveProfile.session_code)
+    .maybeSingle();
+
+  if (sessionError || !session) {
+    setDashLiveEmpty(studentLiveProfile.session_code, "Simulador no detectado", "OFF");
+    return;
+  }
+
+  const isFresh = Date.now() - new Date(session.last_seen).getTime() < STUDENT_LIVE_ACTIVE_WINDOW_MS;
+  if (!isFresh) {
+    setDashLiveEmpty(studentLiveProfile.session_code, "Sin senal activa", "OFF");
+    return;
+  }
+
+  const since = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+  const { data, error } = await supabaseClient
+    .from("flight_telemetry")
+    .select("session_code, flight_id, sim_time, altitude_ft, ias_kt, heading_deg, vs_fpm, latitude, longitude, on_ground")
+    .eq("session_code", studentLiveProfile.session_code)
+    .gte("sim_time", since)
+    .not("flight_id", "is", null)
+    .neq("flight_id", "")
+    .order("sim_time", { ascending: false })
+    .limit(1200);
+
+  if (error) {
+    setDashLiveEmpty(studentLiveProfile.session_code, "No se pudo cargar telemetria", "ERR");
+    return;
+  }
+
+  const sorted = (data || []).sort((a, b) => new Date(a.sim_time) - new Date(b.sim_time));
+  const latest = sorted[sorted.length - 1];
+  studentLivePoints = latest?.flight_id ? sorted.filter((p) => p.flight_id === latest.flight_id) : [];
+  renderStudentLiveTelemetry();
+}
+
+async function initStudentLiveTelemetry() {
+  if (!document.body.classList.contains("is-student-embedded")) return;
+  if (typeof supabaseClient === "undefined") {
+    setDashLiveEmpty("Sin conexion", "Supabase no esta disponible", "ERR");
+    return;
+  }
+
+  const { data: authData } = await supabaseClient.auth.getUser();
+  const userId = authData?.user?.id;
+  if (!userId) {
+    setDashLiveEmpty("Sesion no disponible", "Abre el panel del estudiante", "OFF");
+    return;
+  }
+
+  const { data: profile, error } = await supabaseClient
+    .from("profiles")
+    .select("id, nombre, session_code")
+    .eq("id", userId)
+    .single();
+
+  if (error || !profile?.session_code) {
+    setDashLiveEmpty("Simulador no vinculado", "Conecta X-Plane en Vuelos Asignados", "OFF");
+    return;
+  }
+
+  studentLiveProfile = profile;
+  setDashLiveText("dashLiveSession", profile.session_code);
+  setDashLiveText("dashLiveFlightId", "Esperando telemetria");
+  await refreshStudentLiveTelemetry();
+
+  if (studentLiveTimer) clearInterval(studentLiveTimer);
+  studentLiveTimer = setInterval(refreshStudentLiveTelemetry, 3000);
+
+  if (studentLiveChannel && supabaseClient.removeChannel) {
+    supabaseClient.removeChannel(studentLiveChannel);
+  }
+  if (supabaseClient.channel) {
+    studentLiveChannel = supabaseClient
+      .channel(`student-live-map:${profile.session_code}`)
+      .on("postgres_changes", {
+        event: "INSERT",
+        schema: "public",
+        table: "flight_telemetry",
+        filter: `session_code=eq.${profile.session_code}`,
+      }, (payload) => {
+        const point = payload.new;
+        if (!point?.flight_id) {
+          refreshStudentLiveTelemetry();
+          return;
+        }
+        const currentFlightId = studentLivePoints[studentLivePoints.length - 1]?.flight_id;
+        if (currentFlightId && currentFlightId !== point.flight_id) {
+          studentLivePoints = [point];
+        } else {
+          studentLivePoints.push(point);
+          if (studentLivePoints.length > 1200) studentLivePoints = studentLivePoints.slice(-1200);
+        }
+        renderStudentLiveTelemetry();
+      })
+      .subscribe();
+  }
+}
+
 document.querySelector("#customSearchClear")?.addEventListener("click", () => {
   if (customAirportInput) {
     customAirportInput.value = "";
@@ -2094,3 +2471,4 @@ alternateOneClear?.addEventListener("click", () => clearAlternateAirport(alterna
 alternateTwoClear?.addEventListener("click", () => clearAlternateAirport(alternateTwoInput));
 
 updateRouteAirportClearButtons();
+initStudentLiveTelemetry();

@@ -5,6 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>IFR TRAINING COL | Panel Estudiante</title>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" />
   <style>body { visibility: hidden; }</style>
   <style>
     :root {
@@ -518,7 +519,17 @@
     }
     .history-table tbody tr { cursor: pointer; transition: background var(--motion-fast); }
     .history-table tbody tr:hover { background: var(--surface-warm); }
+    .history-table tbody tr.history-empty-row { cursor: default; }
+    .history-table tbody tr.history-empty-row:hover { background: transparent; }
     .history-table td .route-code { font-family: var(--font-display); font-size: 15px; color: var(--fg); text-transform: uppercase; }
+    .history-actions { display: flex; justify-content: flex-end; }
+    .history-flight-id {
+      margin-top: 3px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
 
     /* flight detail expand */
     .flight-detail-row { display: none; }
@@ -565,6 +576,131 @@
       overflow: hidden;
     }
     .alt-chart svg { width: 100%; height: 100%; }
+
+    .hidden-panel { display: none; }
+    .flight-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      background: rgba(0,0,0,0.72);
+    }
+    .flight-modal-overlay.hidden-panel { display: none; }
+    .flight-modal {
+      width: min(980px, 100%);
+      max-height: calc(100vh - 56px);
+      overflow-y: auto;
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 28px 84px rgba(0,0,0,0.54);
+      padding: 24px;
+    }
+    .flight-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .flight-detail-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      gap: 16px;
+      margin-top: 18px;
+      align-items: stretch;
+    }
+    .flight-map-wrap {
+      min-height: 360px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .flight-route-map {
+      position: absolute;
+      inset: 0;
+    }
+    .flight-map-empty {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(13,13,15,0.86);
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    .flight-map-empty.is-hidden { display: none; }
+    .flight-map-summary {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      z-index: 3;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-width: calc(100% - 24px);
+    }
+    .flight-map-summary .tag { background: rgba(13,13,15,0.82); }
+    .flight-route-map .maplibregl-ctrl-attrib {
+      background: rgba(13,13,15,0.72);
+      color: var(--muted);
+      font-size: 10px;
+    }
+    .flight-route-map .maplibregl-ctrl-attrib a { color: var(--fg-2); }
+    .flight-chart-wrap {
+      position: relative;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 16px;
+    }
+    .flight-chart-wrap canvas {
+      display: block;
+      width: 100%;
+      height: 260px;
+      cursor: crosshair;
+    }
+    .chart-tooltip {
+      position: absolute;
+      pointer-events: none;
+      transform: translate(-50%, calc(-100% - 12px));
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.3;
+      color: #f8fafc;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 100ms ease-out;
+      z-index: 5;
+    }
+    .chart-tooltip.is-visible { opacity: 1; }
+    .chart-tooltip strong {
+      display: block;
+      color: #38bdf8;
+      font-size: 13px;
+    }
+    .chart-tooltip span {
+      display: block;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+    @media (max-width: 900px) {
+      .flight-detail-grid { grid-template-columns: 1fr; }
+      .flight-map-wrap { min-height: 320px; }
+    }
   </style>
 </head>
 <body>
@@ -679,7 +815,7 @@
                 <th>Estado</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="historyFlightsBody">
               <tr onclick="toggleDetail('d1', this)">
                 <td><span style="font-family:var(--font-mono);font-size:11px;">28 May 2025</span></td>
                 <td><span class="route-code">SKBO → SKCL</span></td>
@@ -788,23 +924,45 @@
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
           <div style="background:var(--surface);border:1px solid var(--border);padding:20px 18px;display:flex;flex-direction:column;gap:6px;">
             <div class="stat-label">Vuelos completados</div>
-            <div style="font-family:var(--font-display);font-size:36px;color:var(--accent);line-height:1;">02</div>
-            <div class="stat-label" style="color:var(--border-soft);">Este mes</div>
+            <div id="statsTotalFlights" style="font-family:var(--font-display);font-size:36px;color:var(--accent);line-height:1;">--</div>
+            <div class="stat-label" id="statsMonthFlights" style="color:var(--border-soft);">Este mes: --</div>
           </div>
           <div style="background:var(--surface);border:1px solid var(--border);padding:20px 18px;display:flex;flex-direction:column;gap:6px;">
             <div class="stat-label">Horas de vuelo</div>
-            <div style="font-family:var(--font-display);font-size:36px;color:var(--accent);line-height:1;">2.2</div>
+            <div id="statsTotalHours" style="font-family:var(--font-display);font-size:36px;color:var(--accent);line-height:1;">--</div>
             <div class="stat-label" style="color:var(--border-soft);">Horas totales</div>
           </div>
           <div style="background:var(--surface);border:1px solid var(--border);padding:20px 18px;display:flex;flex-direction:column;gap:6px;">
             <div class="stat-label">Vuelos asignados</div>
-            <div style="font-family:var(--font-display);font-size:36px;color:var(--amber);line-height:1;">02</div>
-            <div class="stat-label" style="color:var(--border-soft);">Pendientes</div>
+            <div id="statsPendingAssignments" style="font-family:var(--font-display);font-size:36px;color:var(--amber);line-height:1;">--</div>
+            <div class="stat-label" id="statsCompletedAssignments" style="color:var(--border-soft);">Completados: --</div>
           </div>
           <div style="background:var(--surface);border:1px solid var(--border);padding:20px 18px;display:flex;flex-direction:column;gap:6px;">
             <div class="stat-label">Vuelo más largo</div>
-            <div style="font-family:var(--font-display);font-size:36px;color:var(--success);line-height:1;">1:12</div>
+            <div id="statsLongestFlight" style="font-family:var(--font-display);font-size:36px;color:var(--success);line-height:1;">--</div>
             <div class="stat-label" style="color:var(--border-soft);">Horas:minutos</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+          <div style="background:var(--surface);border:1px solid var(--border);padding:20px 18px;display:flex;flex-direction:column;gap:6px;">
+            <div class="stat-label">Altitud maxima</div>
+            <div id="statsMaxAlt" style="font-family:var(--font-display);font-size:30px;color:var(--accent);line-height:1;">--</div>
+            <div class="stat-label" style="color:var(--border-soft);">FT</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);padding:20px 18px;display:flex;flex-direction:column;gap:6px;">
+            <div class="stat-label">IAS maxima</div>
+            <div id="statsMaxIas" style="font-family:var(--font-display);font-size:30px;color:var(--magenta);line-height:1;">--</div>
+            <div class="stat-label" style="color:var(--border-soft);">KT</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);padding:20px 18px;display:flex;flex-direction:column;gap:6px;">
+            <div class="stat-label">Puntos grabados</div>
+            <div id="statsTotalPoints" style="font-family:var(--font-display);font-size:30px;color:var(--amber);line-height:1;">--</div>
+            <div class="stat-label" style="color:var(--border-soft);">Telemetria</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);padding:20px 18px;display:flex;flex-direction:column;gap:6px;">
+            <div class="stat-label">Ultimo vuelo</div>
+            <div id="statsLastFlight" style="font-family:var(--font-display);font-size:20px;color:var(--fg);line-height:1.15;">--</div>
+            <div class="stat-label" id="statsLastFlightDate" style="color:var(--border-soft);">--</div>
           </div>
         </div>
       </div>
@@ -812,7 +970,56 @@
     </main>
   </div>
 
+  <div id="studentFlightDetailModal" class="flight-modal-overlay hidden-panel" onclick="if(event.target===this) closeStudentFlightDetail()">
+    <div class="flight-modal">
+      <div class="flight-modal-head">
+        <div>
+          <div class="tech-label">Detalle del vuelo</div>
+          <h2 class="panel-title" id="sfTitle" style="font-size:20px;">--</h2>
+        </div>
+        <button class="btn-outline" onclick="closeStudentFlightDetail()">Cerrar</button>
+      </div>
+
+      <div class="flight-detail-inner" style="grid-template-columns:repeat(4,1fr);margin-top:16px;">
+        <div class="stat-row">
+          <div class="stat-label">Altitud maxima</div>
+          <div class="stat-value" id="sfMaxAlt">--</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label">IAS maxima</div>
+          <div class="stat-value" id="sfMaxIas" style="color:var(--magenta);">--</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label">Duracion total</div>
+          <div class="stat-value" id="sfDuration" style="color:var(--success);">--</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-label">Puntos grabados</div>
+          <div class="stat-value" id="sfPoints" style="color:var(--amber);">--</div>
+        </div>
+      </div>
+
+      <div class="flight-detail-grid">
+        <div class="flight-map-wrap">
+          <div id="sfRouteMap" class="flight-route-map" aria-label="Mapa de ruta recorrida"></div>
+          <div id="sfRouteMapEmpty" class="flight-map-empty">Cargando ruta recorrida...</div>
+          <div class="flight-map-summary">
+            <span class="tag tag-info">Inicio <strong id="sfRouteStart">--</strong></span>
+            <span class="tag tag-info">Fin <strong id="sfRouteEnd">--</strong></span>
+            <span class="tag tag-type">Distancia <strong id="sfRouteDistance">--</strong></span>
+          </div>
+        </div>
+
+        <div class="flight-chart-wrap">
+          <canvas id="sfPerformanceChart" height="110"></canvas>
+          <div class="chart-tooltip" id="sfPerformanceTooltip"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
   <script src="src/scripts/supabase-client.js"></script>
   <script>const REQUIRED_ROLE = 'estudiante';</script>
   <script src="src/scripts/auth-guard.js"></script>
@@ -823,6 +1030,8 @@
       document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
       document.getElementById('panel-' + name).classList.add('active');
       if (btn) btn.classList.add('active');
+      if (name === 'historial') loadStudentHistory(true);
+      if (name === 'estadisticas') loadStudentStats(true);
     }
 
     function toggleDetail(id, row) {
@@ -845,7 +1054,7 @@
     }
 
     function escapeHtml(s) {
-      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     function renderCard(f) {
@@ -859,12 +1068,14 @@
         : '';
 
       const isSelected  = f.id === window.currentUser.active_assignment_id;
-      const canFly      = f.estado === 'pendiente' || f.estado === 'en_progreso';
+      const canFly      = f.estado === 'pendiente' || f.estado === 'en_progreso' || f.estado === 'completado';
+      const canComplete = f.estado === 'pendiente' || f.estado === 'en_progreso';
+      const selectLabel = f.estado === 'completado' ? 'Volver a volar' : 'Seleccionar para volar';
       const selectBtn   = (canFly && !isSelected)
-        ? `<button class="btn-outline" onclick="selectAssignment('${f.id}')">Seleccionar para volar</button>`
+        ? `<button class="btn-outline" onclick="selectAssignment('${f.id}')">${selectLabel}</button>`
         : '';
       const hasFlightData = flownAssignmentIds.has(f.id);
-      const completeBtn   = canFly
+      const completeBtn   = canComplete
         ? (hasFlightData
             ? `<button class="btn-outline" onclick="markAssignmentCompleted('${f.id}')">✓ Marcar como completado</button>`
             : `<button class="btn-outline" disabled title="Aún no detectamos un vuelo registrado para esta asignación. Vuela la ruta con el simulador conectado primero.">✓ Marcar como completado</button>`)
@@ -1048,6 +1259,638 @@
       }
 
       list.innerHTML = data.map(renderCard).join('');
+    }
+
+    let studentHistoryLoaded = false;
+    let studentHistoryFlights = [];
+    let studentRouteMap = null;
+    let studentRouteMapReady = false;
+    let performanceChartPoints = [];
+    let performanceChartLayout = null;
+    let performanceChartHoverIndex = null;
+    let performanceChartInteractionBound = false;
+    const STUDENT_ROUTE_STYLE_URL = 'https://tiles.openfreemap.org/styles/dark';
+
+    async function loadStudentHistory(force = false) {
+      const body = document.getElementById('historyFlightsBody');
+      if (!body || (studentHistoryLoaded && !force)) return;
+      body.innerHTML = '<tr class="history-empty-row"><td colspan="5" class="flights-loading">Cargando historial...</td></tr>';
+
+      const telemetryQueries = [
+        supabaseClient
+          .from('flight_telemetry')
+          .select('session_code, flight_id, assignment_id, student_id, sim_time, altitude_ft, ias_kt')
+          .eq('student_id', window.currentUser.id)
+          .not('flight_id', 'is', null)
+          .neq('flight_id', '')
+          .order('sim_time', { ascending: false })
+          .limit(10000),
+      ];
+
+      if (window.currentUser.session_code) {
+        telemetryQueries.push(
+          supabaseClient
+            .from('flight_telemetry')
+            .select('session_code, flight_id, assignment_id, student_id, sim_time, altitude_ft, ias_kt')
+            .eq('session_code', window.currentUser.session_code)
+            .is('student_id', null)
+            .not('flight_id', 'is', null)
+            .neq('flight_id', '')
+            .order('sim_time', { ascending: false })
+            .limit(10000)
+        );
+      }
+
+      const [summaryRes, assignmentsRes, ...telemetryResults] = await Promise.all([
+        supabaseClient.rpc('flight_summaries'),
+        supabaseClient
+          .from('flight_assignments')
+          .select('id, origen, destino')
+          .eq('student_id', window.currentUser.id),
+        ...telemetryQueries,
+      ]);
+
+      const hasTelemetryError = telemetryResults.every(r => r.error);
+      if (summaryRes.error && hasTelemetryError) {
+        body.innerHTML = `<tr class="history-empty-row"><td colspan="5" class="flights-loading">Error al cargar historial: ${escapeHtml(summaryRes.error.message || telemetryResults[0]?.error?.message || '')}</td></tr>`;
+        return;
+      }
+
+      const assignmentsById = {};
+      (assignmentsRes.data || []).forEach(a => { assignmentsById[a.id] = a; });
+
+      const summaryFlights = summaryRes.error ? [] : (summaryRes.data || [])
+        .filter(f => f.flight_id && (
+          f.student_id === window.currentUser.id ||
+          (!f.student_id && f.session_code === window.currentUser.session_code)
+        ))
+        .map(normalizeStudentFlight);
+
+      const directPoints = telemetryResults.flatMap(r => r.error ? [] : (r.data || []));
+      const directFlights = buildStudentFlightReports(directPoints);
+      const flightsById = new Map();
+      summaryFlights.forEach(f => flightsById.set(studentFlightKey(f), f));
+      directFlights.forEach(f => flightsById.set(studentFlightKey(f), f));
+
+      studentHistoryFlights = [...flightsById.values()]
+        .map(f => ({ ...f, assignment: f.assignment_id ? assignmentsById[f.assignment_id] || null : null }))
+        .sort((a, b) => new Date(b.started_at) - new Date(a.started_at));
+
+      studentHistoryLoaded = true;
+      renderStudentHistoryRows();
+    }
+
+    function normalizeStudentFlight(f) {
+      return { ...f, report_key: studentFlightKey(f), detail_filter_value: f.flight_id };
+    }
+
+    function studentFlightKey(f) {
+      return `${f.flight_id || ''}|${f.session_code || ''}`;
+    }
+
+    function buildStudentFlightReports(points) {
+      const byFlightId = new Map();
+      points.forEach(p => {
+        if (!p.flight_id) return;
+        if (!byFlightId.has(p.flight_id)) byFlightId.set(p.flight_id, []);
+        byFlightId.get(p.flight_id).push(p);
+      });
+      return [...byFlightId.entries()]
+        .map(([flightId, group]) => summarizeStudentFlightGroup(flightId, group))
+        .filter(Boolean);
+    }
+
+    function summarizeStudentFlightGroup(flightId, group) {
+      const sorted = [...group].sort((a, b) => new Date(a.sim_time) - new Date(b.sim_time));
+      if (!sorted.length) return null;
+      const first = sorted[0];
+      const last = sorted[sorted.length - 1];
+      const startedMs = new Date(first.sim_time).getTime();
+      const endedMs = new Date(last.sim_time).getTime();
+      const maxAlt = Math.max(...sorted.map(p => Number(p.altitude_ft)).filter(Number.isFinite));
+      const maxIas = Math.max(...sorted.map(p => Number(p.ias_kt)).filter(Number.isFinite));
+      return normalizeStudentFlight({
+        flight_id: flightId,
+        session_code: first.session_code,
+        assignment_id: sorted.find(p => p.assignment_id)?.assignment_id || null,
+        student_id: sorted.find(p => p.student_id)?.student_id || null,
+        started_at: first.sim_time,
+        ended_at: last.sim_time,
+        duration_seconds: Number.isFinite(startedMs) && Number.isFinite(endedMs) ? Math.max(0, (endedMs - startedMs) / 1000) : 0,
+        max_altitude_ft: Number.isFinite(maxAlt) ? maxAlt : null,
+        max_ias_kt: Number.isFinite(maxIas) ? maxIas : null,
+        point_count: sorted.length,
+      });
+    }
+
+    function renderStudentHistoryRows() {
+      const body = document.getElementById('historyFlightsBody');
+      if (!studentHistoryFlights.length) {
+        body.innerHTML = '<tr class="history-empty-row"><td colspan="5" class="flights-loading">No tienes vuelos registrados todavia.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = studentHistoryFlights.map(f => {
+        const route = f.assignment
+          ? `${escapeHtml(f.assignment.origen)} <span class="sep">→</span> ${escapeHtml(f.assignment.destino)}`
+          : 'Vuelo libre';
+        const type = f.assignment ? 'Asignado' : 'Libre';
+        return `
+          <tr onclick="openStudentFlightDetail('${escAttr(f.report_key)}')">
+            <td><span style="font-family:var(--font-mono);font-size:11px;">${formatDateTime(f.started_at)}</span></td>
+            <td>
+              <span class="route-code">${route}</span>
+              <div class="history-flight-id">${escapeHtml(f.flight_id)}</div>
+            </td>
+            <td><span class="tag ${f.assignment ? 'tag-info' : 'tag-type'}" style="display:inline-block;">${type}</span></td>
+            <td><span style="font-family:var(--font-mono);font-size:12px;">${formatDuration(f.duration_seconds)}</span></td>
+            <td><span class="status-badge status-done">Registrado</span></td>
+          </tr>`;
+      }).join('');
+    }
+
+    async function loadStudentStats(force = false) {
+      setStudentStatsLoading();
+      await loadStudentHistory(force);
+
+      const { data: assignments, error } = await supabaseClient
+        .from('flight_assignments')
+        .select('estado')
+        .eq('student_id', window.currentUser.id);
+
+      if (error) {
+        setStudentStatsError();
+        return;
+      }
+
+      const flights = studentHistoryFlights;
+      const totalFlights = flights.length;
+      const totalSeconds = flights.reduce((sum, f) => sum + Number(f.duration_seconds || 0), 0);
+      const totalPoints = flights.reduce((sum, f) => sum + Number(f.point_count || 0), 0);
+      const maxAlt = Math.max(...flights.map(f => Number(f.max_altitude_ft)).filter(Number.isFinite));
+      const maxIas = Math.max(...flights.map(f => Number(f.max_ias_kt)).filter(Number.isFinite));
+      const longest = flights.reduce((best, f) =>
+        Number(f.duration_seconds || 0) > Number(best?.duration_seconds || 0) ? f : best, null);
+      const last = flights[0] || null;
+
+      const now = new Date();
+      const monthFlights = flights.filter(f => {
+        const d = new Date(f.started_at);
+        return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+      }).length;
+
+      const pendingAssignments = (assignments || []).filter(a => a.estado === 'pendiente' || a.estado === 'en_progreso').length;
+      const completedAssignments = (assignments || []).filter(a => a.estado === 'completado').length;
+
+      setText('statsTotalFlights', totalFlights.toLocaleString('es-CO'));
+      setText('statsMonthFlights', `Este mes: ${monthFlights.toLocaleString('es-CO')}`);
+      setText('statsTotalHours', (totalSeconds / 3600).toFixed(1));
+      setText('statsPendingAssignments', pendingAssignments.toLocaleString('es-CO'));
+      setText('statsCompletedAssignments', `Completados: ${completedAssignments.toLocaleString('es-CO')}`);
+      setText('statsLongestFlight', longest ? formatDurationCompact(longest.duration_seconds) : '--');
+      setText('statsMaxAlt', Number.isFinite(maxAlt) ? Math.round(maxAlt).toLocaleString('es-CO') : '--');
+      setText('statsMaxIas', Number.isFinite(maxIas) ? Math.round(maxIas).toLocaleString('es-CO') : '--');
+      setText('statsTotalPoints', totalPoints.toLocaleString('es-CO'));
+      setText('statsLastFlight', last ? (last.assignment ? `${last.assignment.origen} → ${last.assignment.destino}` : 'Vuelo libre') : '--');
+      setText('statsLastFlightDate', last ? formatDateTime(last.started_at) : '--');
+    }
+
+    function setStudentStatsLoading() {
+      [
+        'statsTotalFlights',
+        'statsTotalHours',
+        'statsPendingAssignments',
+        'statsLongestFlight',
+        'statsMaxAlt',
+        'statsMaxIas',
+        'statsTotalPoints',
+        'statsLastFlight',
+      ].forEach(id => setText(id, '--'));
+      setText('statsMonthFlights', 'Este mes: --');
+      setText('statsCompletedAssignments', 'Completados: --');
+      setText('statsLastFlightDate', '--');
+    }
+
+    function setStudentStatsError() {
+      setText('statsTotalFlights', 'ERR');
+      setText('statsTotalHours', '--');
+      setText('statsPendingAssignments', '--');
+      setText('statsLongestFlight', '--');
+      setText('statsMaxAlt', '--');
+      setText('statsMaxIas', '--');
+      setText('statsTotalPoints', '--');
+      setText('statsLastFlight', 'Error');
+      setText('statsLastFlightDate', 'No se pudieron cargar las estadisticas');
+    }
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    function formatDurationCompact(seconds) {
+      const total = Math.max(0, Math.round(Number(seconds || 0)));
+      const h = Math.floor(total / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      return `${h}:${String(m).padStart(2, '0')}`;
+    }
+
+    async function openStudentFlightDetail(reportKey) {
+      const flight = studentHistoryFlights.find(f => f.report_key === reportKey);
+      if (!flight) return;
+
+      document.getElementById('sfTitle').textContent =
+        `${flight.assignment ? `${flight.assignment.origen} → ${flight.assignment.destino}` : 'Vuelo libre'} · ${formatDateTime(flight.started_at)}`;
+      document.getElementById('sfMaxAlt').textContent = formatNumber(flight.max_altitude_ft, ' FT');
+      document.getElementById('sfMaxIas').textContent = formatNumber(flight.max_ias_kt, ' KT');
+      document.getElementById('sfDuration').textContent = formatDuration(flight.duration_seconds);
+      document.getElementById('sfPoints').textContent = Number(flight.point_count || 0).toLocaleString('es-CO');
+      document.getElementById('sfRouteStart').textContent = '--';
+      document.getElementById('sfRouteEnd').textContent = '--';
+      document.getElementById('sfRouteDistance').textContent = '--';
+      setStudentRouteMapStatus('Cargando ruta recorrida...');
+      document.getElementById('studentFlightDetailModal').classList.remove('hidden-panel');
+
+      let detailQuery = supabaseClient
+        .from('flight_telemetry')
+        .select('sim_time, altitude_ft, ias_kt, latitude, longitude, student_id, session_code')
+        .eq('flight_id', flight.detail_filter_value)
+        .order('sim_time', { ascending: true })
+        .limit(3000);
+      if (flight.session_code) detailQuery = detailQuery.eq('session_code', flight.session_code);
+
+      const { data, error } = await detailQuery;
+
+      if (error) {
+        drawPerformanceChart([]);
+        renderStudentRouteMap([]);
+        setStudentRouteMapStatus('Error al cargar la ruta recorrida');
+        return;
+      }
+
+      const points = (data || []).filter(p =>
+        p.student_id === window.currentUser.id ||
+        (!p.student_id && p.session_code === window.currentUser.session_code)
+      );
+      drawPerformanceChart(points);
+      renderStudentRouteMap(points);
+    }
+
+    function closeStudentFlightDetail() {
+      document.getElementById('studentFlightDetailModal').classList.add('hidden-panel');
+    }
+
+    function setStudentRouteMapStatus(message, hidden = false) {
+      const empty = document.getElementById('sfRouteMapEmpty');
+      empty.textContent = message;
+      empty.classList.toggle('is-hidden', hidden);
+    }
+
+    function getStudentRouteCoordinates(points) {
+      return points
+        .map(p => [Number(p.longitude), Number(p.latitude)])
+        .filter(([lng, lat]) => Number.isFinite(lng) && Number.isFinite(lat) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180);
+    }
+
+    function ensureStudentRouteMap() {
+      const container = document.getElementById('sfRouteMap');
+      if (!container || typeof maplibregl === 'undefined') return null;
+      if (studentRouteMap) {
+        setTimeout(() => studentRouteMap.resize(), 0);
+        return studentRouteMap;
+      }
+
+      studentRouteMap = new maplibregl.Map({
+        container,
+        style: STUDENT_ROUTE_STYLE_URL,
+        center: [-74.2973, 4.5709],
+        zoom: 5,
+        attributionControl: true,
+      });
+      studentRouteMap.addControl(new maplibregl.NavigationControl({ showCompass: true }), 'top-right');
+      studentRouteMap.on('load', () => {
+        studentRouteMapReady = true;
+        setupStudentRouteLayers();
+      });
+      studentRouteMap.on('error', () => setStudentRouteMapStatus('Mapa no disponible'));
+      return studentRouteMap;
+    }
+
+    function setupStudentRouteLayers() {
+      if (!studentRouteMap || !studentRouteMapReady || studentRouteMap.getSource('student-route-line')) return;
+      studentRouteMap.addSource('student-route-line', { type: 'geojson', data: studentRouteLineGeoJSON([]) });
+      studentRouteMap.addSource('student-route-points', { type: 'geojson', data: studentRoutePointsGeoJSON([]) });
+      studentRouteMap.addLayer({
+        id: 'student-route-line-glow',
+        type: 'line',
+        source: 'student-route-line',
+        paint: { 'line-color': '#0ea5e9', 'line-width': 8, 'line-opacity': 0.22 },
+      });
+      studentRouteMap.addLayer({
+        id: 'student-route-line-main',
+        type: 'line',
+        source: 'student-route-line',
+        paint: { 'line-color': '#38bdf8', 'line-width': 3, 'line-opacity': 0.92 },
+      });
+      studentRouteMap.addLayer({
+        id: 'student-route-point-dots',
+        type: 'circle',
+        source: 'student-route-points',
+        paint: {
+          'circle-radius': ['case', ['==', ['get', 'kind'], 'start'], 6, 5],
+          'circle-color': ['case', ['==', ['get', 'kind'], 'start'], '#22c55e', '#f59e0b'],
+          'circle-stroke-color': '#0d0d0f',
+          'circle-stroke-width': 2,
+        },
+      });
+    }
+
+    function renderStudentRouteMap(points) {
+      const coordinates = getStudentRouteCoordinates(points);
+      updateStudentRouteSummary(coordinates);
+      if (!coordinates.length) {
+        updateStudentRouteSources([]);
+        setStudentRouteMapStatus('Sin coordenadas para mostrar la trayectoria');
+        return;
+      }
+
+      const map = ensureStudentRouteMap();
+      if (!map) {
+        setStudentRouteMapStatus('Mapa no disponible');
+        return;
+      }
+      const draw = () => {
+        setupStudentRouteLayers();
+        updateStudentRouteSources(coordinates);
+        fitStudentRouteBounds(coordinates);
+        setStudentRouteMapStatus('', true);
+      };
+      if (studentRouteMapReady && map.isStyleLoaded()) draw();
+      else map.once('load', draw);
+    }
+
+    function updateStudentRouteSources(coordinates) {
+      if (!studentRouteMap || !studentRouteMapReady || !studentRouteMap.getSource('student-route-line')) return;
+      studentRouteMap.getSource('student-route-line').setData(studentRouteLineGeoJSON(coordinates));
+      studentRouteMap.getSource('student-route-points').setData(studentRoutePointsGeoJSON(coordinates));
+    }
+
+    function studentRouteLineGeoJSON(coordinates) {
+      return { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coordinates.length > 1 ? coordinates : [] } };
+    }
+
+    function studentRoutePointsGeoJSON(coordinates) {
+      if (!coordinates.length) return { type: 'FeatureCollection', features: [] };
+      const points = [{ coord: coordinates[0], kind: 'start' }];
+      if (coordinates.length > 1) points.push({ coord: coordinates[coordinates.length - 1], kind: 'end' });
+      return {
+        type: 'FeatureCollection',
+        features: points.map(p => ({ type: 'Feature', properties: { kind: p.kind }, geometry: { type: 'Point', coordinates: p.coord } })),
+      };
+    }
+
+    function updateStudentRouteSummary(coordinates) {
+      const start = coordinates[0];
+      const end = coordinates[coordinates.length - 1];
+      document.getElementById('sfRouteStart').textContent = start ? formatCoord(start) : '--';
+      document.getElementById('sfRouteEnd').textContent = end ? formatCoord(end) : '--';
+      document.getElementById('sfRouteDistance').textContent = coordinates.length > 1 ? `${routeDistanceNm(coordinates).toFixed(1)} NM` : '--';
+    }
+
+    function fitStudentRouteBounds(coordinates) {
+      if (!studentRouteMap || !coordinates.length) return;
+      if (coordinates.length === 1) {
+        studentRouteMap.easeTo({ center: coordinates[0], zoom: 13, duration: 300 });
+        return;
+      }
+      const bounds = coordinates.reduce((b, coord) => b.extend(coord), new maplibregl.LngLatBounds(coordinates[0], coordinates[0]));
+      studentRouteMap.fitBounds(bounds, { padding: 54, maxZoom: 13, duration: 400 });
+    }
+
+    function drawPerformanceChart(points) {
+      performanceChartPoints = points || [];
+      performanceChartHoverIndex = null;
+      performanceChartLayout = null;
+      setupPerformanceChartInteraction();
+      renderPerformanceChart();
+    }
+
+    function setupPerformanceChartInteraction() {
+      if (performanceChartInteractionBound) return;
+      const canvas = document.getElementById('sfPerformanceChart');
+      if (!canvas) return;
+      performanceChartInteractionBound = true;
+      const indexFromEvent = (evt) => {
+        if (!performanceChartLayout) return null;
+        const rect = canvas.getBoundingClientRect();
+        const { padX, plotW, count } = performanceChartLayout;
+        const ratio = Math.min(1, Math.max(0, (evt.clientX - rect.left - padX) / plotW));
+        return Math.round(ratio * (count - 1));
+      };
+      const handleHover = (evt) => {
+        const idx = indexFromEvent(evt);
+        if (idx === null || idx === performanceChartHoverIndex) return;
+        performanceChartHoverIndex = idx;
+        renderPerformanceChart();
+      };
+      canvas.addEventListener('pointermove', handleHover);
+      canvas.addEventListener('pointerdown', handleHover);
+      canvas.addEventListener('pointerleave', () => {
+        performanceChartHoverIndex = null;
+        renderPerformanceChart();
+      });
+    }
+
+    function renderPerformanceChart() {
+      const canvas = document.getElementById('sfPerformanceChart');
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.getBoundingClientRect();
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = Math.max(1, Math.floor(rect.width * ratio));
+      canvas.height = Math.max(1, Math.floor(260 * ratio));
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+      const w = rect.width;
+      const h = 260;
+      const padX = 34;
+      const padTop = 24;
+      const padBottom = 34;
+      const plotW = w - padX * 2;
+      const plotH = h - padTop - padBottom;
+      ctx.clearRect(0, 0, w, h);
+      drawPerformanceChartBackground(ctx, w, h, padX, padTop, plotW, plotH);
+
+      const points = performanceChartPoints;
+      performanceChartLayout = null;
+      if (!points.length) {
+        ctx.fillStyle = '#9a9aaa';
+        ctx.font = '12px monospace';
+        ctx.fillText('Sin puntos de altitud o velocidad para graficar', 18, 32);
+        hidePerformanceTooltip();
+        return;
+      }
+
+      const altValues = points.map(p => Number(p.altitude_ft || 0));
+      const iasValues = points.map(p => Number(p.ias_kt || 0));
+      const altMax = Math.max(3000, Math.ceil((Math.max(...altValues) + 1000) / 1000) * 1000);
+      const altMin = Math.min(0, Math.floor((Math.min(...altValues) - 500) / 1000) * 1000);
+      const iasMax = Math.max(100, Math.ceil((Math.max(...iasValues) + 20) / 20) * 20);
+      const altRange = Math.max(1, altMax - altMin);
+      const iasRange = Math.max(1, iasMax);
+      performanceChartLayout = { padX, plotW, count: points.length };
+
+      const pointXY = (values, value, i, min, range) => ({
+        x: padX + (i / Math.max(1, values.length - 1)) * plotW,
+        y: padTop + (1 - ((value - min) / range)) * plotH,
+      });
+
+      drawChartSeries(ctx, altValues, (v, i) => pointXY(altValues, v, i, altMin, altRange), '#38bdf8', 'rgba(56,189,248,0.12)', padTop + plotH);
+      drawChartSeries(ctx, iasValues, (v, i) => pointXY(iasValues, v, i, 0, iasRange), '#e879f9', null, padTop + plotH);
+
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '11px monospace';
+      ctx.fillText(`${Math.round(Math.max(...altValues)).toLocaleString('es-CO')} FT MAX`, padX, 15);
+      ctx.fillStyle = '#f0abfc';
+      ctx.fillText(`${Math.round(Math.max(...iasValues)).toLocaleString('es-CO')} KT MAX`, Math.max(padX, w - padX - 92), 15);
+
+      if (performanceChartHoverIndex !== null) {
+        const idx = Math.min(performanceChartHoverIndex, points.length - 1);
+        const x = padX + (idx / Math.max(1, points.length - 1)) * plotW;
+        ctx.save();
+        ctx.strokeStyle = 'rgba(248,250,252,0.4)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(x, padTop);
+        ctx.lineTo(x, padTop + plotH);
+        ctx.stroke();
+        ctx.restore();
+        showPerformanceTooltip(idx, x, padTop + 16);
+      } else {
+        hidePerformanceTooltip();
+      }
+    }
+
+    function drawPerformanceChartBackground(ctx, w, h, padX, padTop, plotW, plotH) {
+      const sky = ctx.createLinearGradient(0, 0, 0, h);
+      sky.addColorStop(0, '#0f2742');
+      sky.addColorStop(0.52, '#12304a');
+      sky.addColorStop(1, '#101216');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = 'rgba(203,213,225,0.16)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = padTop + (plotH / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(padX, y);
+        ctx.lineTo(padX + plotW, y);
+        ctx.stroke();
+      }
+      ctx.strokeStyle = 'rgba(248,250,252,0.42)';
+      ctx.strokeRect(padX, padTop, plotW, plotH);
+      ctx.fillStyle = 'rgba(203,213,225,0.72)';
+      ctx.font = '10px monospace';
+      ctx.fillText('ALTITUD', padX, h - 12);
+      ctx.fillStyle = '#f0abfc';
+      ctx.fillText('VELOCIDAD', Math.max(padX, w - padX - 62), h - 12);
+    }
+
+    function drawChartSeries(ctx, values, xy, stroke, fill, baseY) {
+      if (fill) {
+        ctx.fillStyle = fill;
+        ctx.beginPath();
+        values.forEach((value, i) => {
+          const p = xy(value, i);
+          if (i === 0) ctx.moveTo(p.x, p.y);
+          else ctx.lineTo(p.x, p.y);
+        });
+        ctx.lineTo(xy(values[values.length - 1], values.length - 1).x, baseY);
+        ctx.lineTo(xy(values[0], 0).x, baseY);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      values.forEach((value, i) => {
+        const p = xy(value, i);
+        if (i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      });
+      ctx.stroke();
+    }
+
+    function showPerformanceTooltip(idx, x, y) {
+      const tooltip = document.getElementById('sfPerformanceTooltip');
+      const canvas = document.getElementById('sfPerformanceChart');
+      const point = performanceChartPoints[idx];
+      if (!tooltip || !canvas || !point) return;
+      const alt = Math.round(Number(point.altitude_ft || 0)).toLocaleString('es-CO');
+      const ias = Math.round(Number(point.ias_kt || 0)).toLocaleString('es-CO');
+      const startMs = new Date(performanceChartPoints[0].sim_time).getTime();
+      const elapsedSec = Math.max(0, (new Date(point.sim_time).getTime() - startMs) / 1000);
+      tooltip.innerHTML = `<strong>${alt} FT · ${ias} KT</strong><span>T+${formatDuration(elapsedSec)}</span>`;
+      tooltip.style.left = `${canvas.offsetLeft + x}px`;
+      tooltip.style.top = `${canvas.offsetTop + y}px`;
+      tooltip.classList.add('is-visible');
+    }
+
+    function hidePerformanceTooltip() {
+      const tooltip = document.getElementById('sfPerformanceTooltip');
+      if (tooltip) tooltip.classList.remove('is-visible');
+    }
+
+    function routeDistanceNm(coordinates) {
+      let totalKm = 0;
+      for (let i = 1; i < coordinates.length; i++) totalKm += haversineKm(coordinates[i - 1], coordinates[i]);
+      return totalKm / 1.852;
+    }
+
+    function haversineKm(a, b) {
+      const toRad = deg => deg * Math.PI / 180;
+      const earthKm = 6371;
+      const dLat = toRad(b[1] - a[1]);
+      const dLng = toRad(b[0] - a[0]);
+      const lat1 = toRad(a[1]);
+      const lat2 = toRad(b[1]);
+      const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+      return 2 * earthKm * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+    }
+
+    function formatCoord(coord) {
+      return `${coord[1].toFixed(4)}, ${coord[0].toFixed(4)}`;
+    }
+
+    function formatDuration(seconds) {
+      const total = Math.max(0, Math.round(Number(seconds || 0)));
+      const h = Math.floor(total / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      const s = total % 60;
+      if (h) return `${h}h ${String(m).padStart(2, '0')}m`;
+      if (m) return `${m}m ${String(s).padStart(2, '0')}s`;
+      return `${s}s`;
+    }
+
+    function formatDateTime(value) {
+      if (!value) return '--';
+      return new Intl.DateTimeFormat('es-CO', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(new Date(value));
+    }
+
+    function formatNumber(value, suffix) {
+      const n = Number(value);
+      if (!Number.isFinite(n)) return '--';
+      return `${Math.round(n).toLocaleString('es-CO')}${suffix}`;
+    }
+
+    function escAttr(s) {
+      return String(s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '');
     }
 
     // Refresca la lista periódicamente: así, si el estudiante deja la página

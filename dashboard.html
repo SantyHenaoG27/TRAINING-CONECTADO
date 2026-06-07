@@ -4,10 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IFR Colombia Data Dashboard</title>
-    <link rel="stylesheet" href="styles.css?v=30" />
+    <link rel="stylesheet" href="styles.css?v=31" />
     <link rel="stylesheet" href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" />
     <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js" defer></script>
-    <script src="src/scripts/dashboard.js?v=51" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
+    <script src="src/scripts/supabase-client.js" defer></script>
+    <script src="src/scripts/dashboard.js?v=57" defer></script>
   </head>
   <body class="dashboard-page">
     <script>
@@ -467,7 +469,39 @@
                   <code id="dashNavaidCount">---</code>
                 </button>
               </div>
-              <div id="dashMapContainer" class="dash-map-container"></div>
+              <div class="dash-map-live-layout">
+                <div class="dash-map-stage">
+                  <div id="dashMapContainer" class="dash-map-container"></div>
+                  <button type="button" id="dashFollowAircraftBtn" class="dash-follow-aircraft-btn" title="Centrar avion" aria-label="Centrar avion">
+                    <span>⌖</span>
+                  </button>
+                </div>
+                <aside class="dash-live-panel" aria-label="Datos del vuelo en tiempo real">
+                  <div class="module-head dash-live-head">
+                    <h2>Vuelo en tiempo real</h2>
+                    <span class="chip" id="dashLiveStatus">OFF</span>
+                  </div>
+                  <div class="dash-live-aircraft">
+                    <div class="dash-live-plane-mark">✈</div>
+                    <div>
+                      <div class="dash-live-title" id="dashLiveSession">Sin simulador</div>
+                      <div class="dash-live-subtitle" id="dashLiveFlightId">Esperando telemetria</div>
+                    </div>
+                  </div>
+                  <div class="dash-live-grid">
+                    <div class="dash-live-metric"><span>Altitud</span><strong id="dashLiveAltitude">--</strong></div>
+                    <div class="dash-live-metric"><span>IAS</span><strong id="dashLiveIas">--</strong></div>
+                    <div class="dash-live-metric"><span>Rumbo</span><strong id="dashLiveHeading">--</strong></div>
+                    <div class="dash-live-metric"><span>V/S</span><strong id="dashLiveVs">--</strong></div>
+                    <div class="dash-live-metric"><span>Duracion</span><strong id="dashLiveDuration">--</strong></div>
+                    <div class="dash-live-metric"><span>Puntos</span><strong id="dashLivePoints">--</strong></div>
+                    <div class="dash-live-metric"><span>Distancia</span><strong id="dashLiveDistance">--</strong></div>
+                    <div class="dash-live-metric"><span>Alt max</span><strong id="dashLiveMaxAlt">--</strong></div>
+                    <div class="dash-live-metric"><span>IAS max</span><strong id="dashLiveMaxIas">--</strong></div>
+                    <div class="dash-live-metric"><span>Ultima senal</span><strong id="dashLiveLastSignal">--</strong></div>
+                  </div>
+                </aside>
+              </div>
             </div>
 
           </div>
