@@ -22,12 +22,11 @@
       --accent-hover: #7dd3fc;
       --success: #4ade80;
       --danger: #e63946;
-      --magenta: #e879f9;
       --amber: #fb923c;
       --font-display: "Eurostile", "Arial Narrow", Arial, sans-serif;
       --font-body: "Inter", Arial, sans-serif;
       --font-mono: "SF Mono", ui-monospace, Menlo, monospace;
-      --focus-ring: 0 0 0 4px rgba(232,121,249,0.22);
+      --focus-ring: 0 0 0 4px rgba(56,189,248,0.22);
       --motion-fast: 120ms;
       --ease: cubic-bezier(0.16,1,0.3,1);
       --topbar-h: 54px;
@@ -75,7 +74,7 @@
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: #040408;
-      background: var(--magenta);
+      background: var(--accent);
       padding: 3px 8px;
       font-weight: 700;
     }
@@ -130,7 +129,7 @@
       white-space: nowrap;
     }
     .page-tab:hover { color: var(--fg); }
-    .page-tab.active { color: var(--magenta); border-bottom-color: var(--magenta); }
+    .page-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
     .tab-count {
       background: var(--surface-warm);
       border: 1px solid var(--border);
@@ -139,7 +138,7 @@
       padding: 1px 6px;
       color: var(--muted);
     }
-    .page-tab.active .tab-count { border-color: var(--magenta); color: var(--magenta); background: rgba(232,121,249,0.08); }
+    .page-tab.active .tab-count { border-color: var(--accent); color: var(--accent); background: rgba(56,189,248,0.08); }
 
     /* ── CONTENT ── */
     .page-content {
@@ -177,9 +176,9 @@
 
     /* Buttons */
     .btn-primary {
-      background: var(--magenta);
+      background: var(--accent);
       color: #040408;
-      border: 1px solid var(--magenta);
+      border: 1px solid var(--accent);
       font-family: var(--font-display);
       font-size: 11px;
       font-weight: 800;
@@ -188,7 +187,7 @@
       padding: 9px 20px;
       transition: background var(--motion-fast), border-color var(--motion-fast);
     }
-    .btn-primary:hover { background: #f0abfc; border-color: #f0abfc; }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
     .btn-outline {
       background: transparent;
       border: 1px solid var(--border-soft);
@@ -227,7 +226,7 @@
     .status-pending  { color: var(--amber); border-color: rgba(251,146,60,0.35); background: rgba(251,146,60,0.07); }
     .status-inactive { color: var(--muted); border-color: var(--border); background: transparent; }
     .status-suspended { color: var(--danger); border-color: rgba(230,57,70,0.35); background: rgba(230,57,70,0.07); }
-    .status-live     { color: var(--magenta); border-color: rgba(232,121,249,0.35); background: rgba(232,121,249,0.07); }
+    .status-live     { color: var(--accent); border-color: rgba(56,189,248,0.35); background: rgba(56,189,248,0.07); }
 
     /* ── STATS ROW ── */
     .stats-row {
@@ -288,6 +287,43 @@
     .data-table tbody tr:hover { background: var(--surface-warm); }
     .student-name { font-size: 14px; color: var(--fg); font-weight: 500; }
     .student-email { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+    .student-online-dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+    .student-online-dot.is-online { background: var(--success); box-shadow: 0 0 6px rgba(74,222,128,0.7); }
+    .student-online-dot.is-offline { background: var(--border-soft); }
+
+    /* ── ESTUDIANTES: barra de búsqueda/filtro y tabla interactiva ── */
+    .est-toolbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .est-toolbar input, .est-toolbar select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      border-radius: 0;
+      padding: 9px 14px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      outline: none;
+      transition: border-color var(--motion-fast);
+      -webkit-appearance: none;
+    }
+    .est-toolbar input:focus, .est-toolbar select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(56,189,248,0.12);
+    }
+    .est-toolbar input { flex: 1; min-width: 180px; }
+    .est-toolbar input::placeholder { color: var(--muted); }
+    .est-toolbar select { min-width: 170px; }
+    .est-result-count { font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em; white-space: nowrap; }
+    .data-table th.sortable { cursor: pointer; user-select: none; }
+    .data-table th.sortable:hover { color: var(--fg-2); }
+    .data-table th .sort-arrow { margin-left: 4px; color: var(--accent); }
+    .data-table tbody tr.student-row { cursor: pointer; }
+    .data-table tbody tr.student-row:hover .student-name { color: var(--accent); }
     .td-actions { display: flex; align-items: center; gap: 8px; }
 
     /* ── LIVE FLIGHT CARDS ── */
@@ -323,7 +359,7 @@
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
-    .live-route .sep { color: var(--magenta); margin: 0 5px; }
+    .live-route .sep { color: var(--accent); margin: 0 5px; }
     .live-card-body { padding: 14px 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .telemetry-pair { display: flex; flex-direction: column; gap: 2px; }
     .tele-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
@@ -377,18 +413,18 @@
       font-size: 9px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--magenta);
+      color: var(--accent);
     }
     .live-dot {
       width: 7px; height: 7px;
-      background: var(--magenta);
+      background: var(--accent);
       position: relative;
     }
     .live-dot::after {
       content: "";
       position: absolute;
       inset: -3px;
-      background: var(--magenta);
+      background: var(--accent);
       opacity: 0.25;
       animation: pulse 2s infinite;
     }
@@ -451,7 +487,7 @@
       padding: 6px 10px;
       outline: none;
     }
-    .sim-assign-wrap select:focus { border-color: var(--magenta); }
+    .sim-assign-wrap select:focus { border-color: var(--accent); }
     .sim-empty {
       padding: 60px 20px;
       text-align: center;
@@ -491,8 +527,8 @@
       -webkit-appearance: none;
     }
     .field input:focus, .field select:focus, .field textarea:focus {
-      border-color: var(--magenta);
-      box-shadow: 0 0 0 4px rgba(232,121,249,0.12);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(56,189,248,0.12);
     }
     .field input::placeholder, .field textarea::placeholder { color: var(--muted); }
     .field select option { background: var(--surface); }
@@ -549,7 +585,7 @@
       cursor: pointer;
       transition: border-color var(--motion-fast);
     }
-    .assignment-item:hover { border-color: var(--magenta); }
+    .assignment-item:hover { border-color: var(--accent); }
     .assignment-item-route {
       font-family: var(--font-display);
       font-size: 14px;
@@ -566,7 +602,7 @@
       text-transform: uppercase;
     }
     .assignment-item-arrow { color: var(--muted); font-size: 18px; flex-shrink: 0; }
-    .assignment-item:hover .assignment-item-arrow { color: var(--magenta); }
+    .assignment-item:hover .assignment-item-arrow { color: var(--accent); }
     .assignment-empty {
       font-family: var(--font-mono);
       font-size: 11px;
@@ -610,6 +646,114 @@
       font-size: 13px;
       font-weight: 600;
     }
+    .assignment-student-row > div { display: flex; align-items: center; gap: 10px; }
+    .student-avatar {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: rgba(56,189,248,0.12);
+      color: var(--accent);
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── VISTA PREVIA DE RUTA (form de asignar vuelo) ── */
+    .route-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 22px;
+      padding: 16px 20px;
+      background: var(--bg);
+      border: 1px dashed var(--border);
+      transition: border-color var(--motion-fast);
+    }
+    .route-preview.is-complete { border-style: solid; border-color: rgba(56,189,248,0.35); }
+    .route-preview-leg {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      min-width: 64px;
+      text-align: center;
+      transition: color var(--motion-fast);
+    }
+    .route-preview-leg.is-filled { color: var(--accent); }
+    .route-preview-arrow {
+      font-size: 17px;
+      color: var(--border);
+      transition: color var(--motion-fast), transform var(--motion-fast);
+    }
+    .route-preview.is-complete .route-preview-arrow { color: var(--accent); transform: translateX(2px); }
+    .route-preview-hint {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* ── BARRA DE PROGRESO DE ASIGNACIÓN (lista + modal) ── */
+    .assignment-progress { display: flex; align-items: center; gap: 10px; }
+    .assignment-progress-bar {
+      flex: 0 0 auto;
+      width: 110px;
+      height: 5px;
+      display: flex;
+      overflow: hidden;
+      background: var(--border);
+      border-radius: 3px;
+    }
+    .assignment-progress-bar span { display: block; height: 100%; }
+    .assignment-progress-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* ── DETALLE DE ESTUDIANTE (modal) ── */
+    .sd-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .sd-stat {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .sd-stat .stat-label { font-size: 8px; }
+    .sd-stat .stat-value { font-size: 22px; }
+    .sd-flight-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+    .sd-flight-row + .sd-flight-row { margin-top: 6px; }
+    .sd-flight-route { font-family: var(--font-display); font-size: 13px; font-weight: 600; }
+    .sd-flight-meta { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .sd-flight-stats { font-family: var(--font-mono); font-size: 11px; color: var(--fg-2); text-align: right; white-space: nowrap; }
 
     /* ── MULTI-SELECT ── */
     .multi-select { position: relative; }
@@ -629,7 +773,7 @@
       transition: border-color var(--motion-fast);
       border-radius: 0;
     }
-    .multi-select-trigger:focus { outline: none; border-color: var(--magenta); box-shadow: 0 0 0 4px rgba(232,121,249,0.12); }
+    .multi-select-trigger:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(56,189,248,0.12); }
     .trigger-arrow { color: var(--muted); font-size: 10px; transition: transform var(--motion-fast); }
     .multi-select.is-open .trigger-arrow { transform: rotate(180deg); }
     .multi-select-dropdown {
@@ -661,7 +805,7 @@
     .multi-select-option:last-child { border-bottom: none; }
     .multi-select-option:hover { background: var(--surface-warm); color: var(--fg); }
     .multi-select-option.all-option { color: var(--accent); border-bottom: 1px solid var(--border-soft); }
-    .multi-select-option input[type="checkbox"] { accent-color: var(--magenta); width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; }
+    .multi-select-option input[type="checkbox"] { accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; }
     .multi-select-option:has(input.student-check:checked) { background: rgba(74,222,128,0.07); color: var(--success); }
     .multi-select-option:has(input.student-check:checked)::after { content: '›'; color: var(--success); margin-left: auto; font-size: 16px; font-weight: bold; line-height: 1; }
     .multi-select-empty { padding: 12px 14px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
@@ -675,7 +819,7 @@
       padding: 4px 10px;
       border: 1px solid;
     }
-    .tag-type { color: var(--magenta); border-color: rgba(232,121,249,0.3); background: rgba(232,121,249,0.06); }
+    .tag-type { color: var(--accent); border-color: rgba(56,189,248,0.3); background: rgba(56,189,248,0.06); }
     .tag-info { color: var(--muted); border-color: var(--border); }
 
     /* REPORTES */
@@ -762,6 +906,28 @@
       color: #94a3b8;
       margin-top: 2px;
     }
+    .chart-legend {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      gap: 14px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #cbd5e1;
+      z-index: 4;
+    }
+    .chart-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .chart-legend i {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
     .flight-detail-grid {
       display: grid;
       grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
@@ -840,10 +1006,10 @@
     <!-- HORIZONTAL TABS -->
     <nav class="page-tabs">
       <button class="page-tab active" onclick="switchTab('estudiantes', this)">
-        Estudiantes <span class="tab-count">4</span>
+        Estudiantes <span class="tab-count" id="estudiantesCount">0</span>
       </button>
       <button class="page-tab" onclick="switchTab('vuelos-activos', this)">
-        Vuelos activos <span class="tab-count">0</span>
+        Vuelos activos <span class="tab-count" id="activeFlightsCount">0</span>
       </button>
       <button class="page-tab" onclick="switchTab('asignar', this)">
         Asignar vuelo
@@ -864,7 +1030,7 @@
         <!-- Stats row -->
         <div class="stats-row">
           <div class="stat-card">
-            <div class="stat-label">Estudiantes activos</div>
+            <div class="stat-label">Conectados ahora</div>
             <div class="stat-value" id="estStatActive" style="color:var(--success);">—</div>
           </div>
           <div class="stat-card">
@@ -877,7 +1043,7 @@
           </div>
           <div class="stat-card">
             <div class="stat-label">Horas de vuelo</div>
-            <div class="stat-value" style="color:var(--magenta);"><span id="estStatHours">—</span></div>
+            <div class="stat-value" style="color:var(--accent);"><span id="estStatHours">—</span></div>
           </div>
         </div>
 
@@ -891,14 +1057,26 @@
           </button>
         </div>
 
+        <div class="est-toolbar">
+          <input type="text" id="estSearchInput" placeholder="Buscar por nombre o código de sesión..." oninput="renderEstudiantesTable()" />
+          <select id="estFilterSelect" onchange="renderEstudiantesTable()">
+            <option value="todos">Todos los estudiantes</option>
+            <option value="conectados">Conectados ahora</option>
+            <option value="activos">Cuentas activas</option>
+            <option value="suspendidos">Suspendidos</option>
+            <option value="sin-asignar">Sin vuelos asignados</option>
+          </select>
+          <span class="est-result-count" id="estResultCount"></span>
+        </div>
+
         <table class="data-table">
           <thead>
             <tr>
-              <th>Estudiante</th>
-              <th>Vuelos completados</th>
-              <th>Vuelos asignados</th>
-              <th>Último vuelo</th>
-              <th>Estado</th>
+              <th class="sortable" onclick="setEstudiantesSort('nombre')">Estudiante<span class="sort-arrow" id="sortArrow-nombre"></span></th>
+              <th class="sortable" onclick="setEstudiantesSort('completed')">Vuelos completados<span class="sort-arrow" id="sortArrow-completed"></span></th>
+              <th class="sortable" onclick="setEstudiantesSort('assigned')">Vuelos asignados<span class="sort-arrow" id="sortArrow-assigned"></span></th>
+              <th class="sortable" onclick="setEstudiantesSort('lastFlight')">Último vuelo<span class="sort-arrow" id="sortArrow-lastFlight"></span></th>
+              <th class="sortable" onclick="setEstudiantesSort('estado')">Estado<span class="sort-arrow" id="sortArrow-estado"></span></th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -980,6 +1158,13 @@
 
             </div>
 
+            <div class="route-preview" id="routePreview">
+              <span class="route-preview-leg" id="routePreviewOrigin">----</span>
+              <span class="route-preview-arrow">✈ — — —▶</span>
+              <span class="route-preview-leg" id="routePreviewDest">----</span>
+            </div>
+            <div class="route-preview-hint">Vista previa de la ruta a asignar</div>
+
             <div class="form-footer">
               <button class="btn-primary" id="btn-assign" onclick="handleAssign()">Asignar vuelo</button>
               <button class="btn-outline" onclick="clearForm()">Limpiar</button>
@@ -1031,7 +1216,7 @@
           </div>
           <div class="stat-card">
             <div class="stat-label">Total horas registradas</div>
-            <div class="stat-value" style="color:var(--magenta);"><span id="repTotalHours">—</span> <span style="font-family:var(--font-mono);font-size:14px;color:var(--muted);">H</span></div>
+            <div class="stat-value" style="color:var(--accent);"><span id="repTotalHours">—</span> <span style="font-family:var(--font-mono);font-size:14px;color:var(--muted);">H</span></div>
           </div>
           <div class="stat-card">
             <div class="stat-label">Estudiantes con vuelos</div>
@@ -1082,7 +1267,7 @@
         </div>
         <div class="stat-card">
           <div class="stat-label">IAS máxima</div>
-          <div class="stat-value" id="fdMaxIas" style="color:var(--magenta);font-size:22px;">—</div>
+          <div class="stat-value" id="fdMaxIas" style="color:var(--accent);font-size:22px;">—</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Duración total</div>
@@ -1106,6 +1291,10 @@
         </div>
 
         <div class="flight-chart-wrap">
+          <div class="chart-legend">
+            <span><i style="background:#38bdf8;"></i> Altitud (FT)</span>
+            <span><i style="background:var(--accent);"></i> Velocidad (KT)</span>
+          </div>
           <canvas id="fdAltitudeChart" height="110"></canvas>
           <div class="chart-tooltip" id="fdAltitudeTooltip"></div>
         </div>
@@ -1175,6 +1364,54 @@
     </div>
   </div>
 
+  <div id="studentDetailModal" class="flight-modal-overlay hidden-panel" onclick="if(event.target===this) closeStudentDetail()">
+    <div class="flight-modal" style="width:min(760px, 100%);">
+      <div class="flight-modal-head">
+        <div>
+          <div class="tech-label">Detalle del estudiante</div>
+          <h2 class="panel-title" id="sdTitle" style="font-size:20px;">—</h2>
+          <div class="student-email" id="sdSubtitle" style="margin-top:4px;">—</div>
+        </div>
+        <button class="btn-outline" onclick="closeStudentDetail()">✕ Cerrar</button>
+      </div>
+
+      <div class="sd-stats">
+        <div class="sd-stat">
+          <div class="stat-label">Vuelos completados</div>
+          <div class="stat-value" id="sdStatCompleted" style="color:var(--accent);">—</div>
+        </div>
+        <div class="sd-stat">
+          <div class="stat-label">Vuelos asignados</div>
+          <div class="stat-value" id="sdStatAssigned" style="color:var(--amber);">—</div>
+        </div>
+        <div class="sd-stat">
+          <div class="stat-label">Horas de vuelo</div>
+          <div class="stat-value" id="sdStatHours" style="color:var(--accent);">—</div>
+        </div>
+        <div class="sd-stat">
+          <div class="stat-label">Último vuelo</div>
+          <div class="stat-value" id="sdStatLast" style="font-size:15px;color:var(--fg-2);">—</div>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <div>
+          <div class="tech-label" style="margin-bottom:4px;">Acciones</div>
+          <div style="font-size:12px;color:var(--muted);">Suspender bloquea el acceso del estudiante a la plataforma.</div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn-outline" id="sd-btn-assign">Asignar vuelo</button>
+          <button class="btn-danger-outline" id="sd-btn-suspend">Suspender</button>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--border);">
+        <div class="tech-label" style="margin-bottom:10px;">Historial de vuelos recientes</div>
+        <div id="sdFlightHistory"></div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
   <script src="src/scripts/supabase-client.js"></script>
@@ -1189,9 +1426,101 @@
       if (btn) btn.classList.add('active');
       if (name === 'vuelos-activos') startActiveFlightsLive();
       else stopActiveFlightsLive();
-      if (name === 'simuladores') loadSimuladores();
+      if (name === 'simuladores') startSimuladoresLive();
+      else stopSimuladoresLive();
+      if (name === 'estudiantes') startEstudiantesLive();
+      else stopEstudiantesLive();
       if (name === 'reportes') loadReportes();
-      if (name === 'estudiantes') loadEstudiantes();
+    }
+
+    let simuladoresTimer = null;
+    function startSimuladoresLive() {
+      loadSimuladores();
+      if (!simuladoresTimer) simuladoresTimer = setInterval(() => loadSimuladores(true), 10000);
+    }
+    function stopSimuladoresLive() {
+      if (simuladoresTimer) { clearInterval(simuladoresTimer); simuladoresTimer = null; }
+    }
+
+    let estudiantesTimer = null;
+    function startEstudiantesLive() {
+      loadEstudiantes();
+      if (!estudiantesTimer) estudiantesTimer = setInterval(loadEstudiantes, 15000);
+    }
+    function stopEstudiantesLive() {
+      if (estudiantesTimer) { clearInterval(estudiantesTimer); estudiantesTimer = null; }
+    }
+
+    // ── CONTADORES DE LAS PESTAÑAS (siempre visibles, se actualizan sin importar
+    // qué pestaña esté abierta — los paneles solo refrescan su número mientras
+    // están activos, así que aquí cubrimos el resto del tiempo) ─────────────────
+    async function computeActiveFlightsCount() {
+      const now = Date.now();
+      const activeWindowMs = 15000;
+      const [sessionsRes, telemetryRes] = await Promise.all([
+        supabaseClient.from('flight_sessions').select('session_code, last_seen, on_ground'),
+        supabaseClient
+          .from('flight_telemetry')
+          .select('session_code, flight_id, sim_time, on_ground')
+          .not('flight_id', 'is', null)
+          .neq('flight_id', '')
+          .order('sim_time', { ascending: false })
+          .limit(2000),
+      ]);
+      if (sessionsRes.error || telemetryRes.error) return null;
+
+      const activeSessions = (sessionsRes.data || [])
+        .filter(s => now - new Date(s.last_seen).getTime() < activeWindowMs)
+        .filter(s => !s.on_ground);
+      const activeCodes = new Set(activeSessions.map(s => s.session_code));
+
+      const activePoints = (telemetryRes.data || [])
+        .filter(p => activeCodes.has(p.session_code))
+        .filter(p => !p.on_ground);
+
+      const latestFlightBySession = new Map();
+      activePoints.forEach(p => {
+        const prev = latestFlightBySession.get(p.session_code);
+        if (!prev || new Date(p.sim_time) > new Date(prev.sim_time)) {
+          latestFlightBySession.set(p.session_code, { flightId: p.flight_id, sim_time: p.sim_time });
+        }
+      });
+      return latestFlightBySession.size;
+    }
+
+    async function refreshTabCounts() {
+      const activePanelId = document.querySelector('.tab-panel.active')?.id;
+
+      if (activePanelId !== 'panel-estudiantes') {
+        const { count, error } = await supabaseClient
+          .from('profiles')
+          .select('id', { count: 'exact', head: true })
+          .eq('role', 'estudiante');
+        const el = document.getElementById('estudiantesCount');
+        if (el && !error && count != null) el.textContent = String(count);
+      }
+
+      if (activePanelId !== 'panel-simuladores') {
+        const { data, error } = await supabaseClient.from('flight_sessions').select('last_seen');
+        if (!error) {
+          const nowMs = Date.now();
+          const active = (data || []).filter(s => nowMs - new Date(s.last_seen).getTime() < 10000).length;
+          const el = document.getElementById('simActiveCount');
+          if (el) el.textContent = String(active);
+        }
+      }
+
+      if (activePanelId !== 'panel-vuelos-activos') {
+        const count = await computeActiveFlightsCount();
+        const el = document.getElementById('activeFlightsCount');
+        if (el && count != null) el.textContent = String(count);
+      }
+    }
+
+    let tabCountsTimer = null;
+    function startTabCountsLive() {
+      refreshTabCounts();
+      if (!tabCountsTimer) tabCountsTimer = setInterval(refreshTabCounts, 12000);
     }
 
     // ── MULTI-SELECT ESTUDIANTES ──
@@ -1204,6 +1533,23 @@
         document.getElementById('studentMultiSelect').classList.remove('is-open');
       }
     });
+
+    // ── VISTA PREVIA DE RUTA (origen → destino, en vivo mientras se escribe) ──
+    function updateRoutePreview() {
+      const origin = document.getElementById('inp-origen').value.trim().toUpperCase();
+      const dest   = document.getElementById('inp-destino').value.trim().toUpperCase();
+      const oEl    = document.getElementById('routePreviewOrigin');
+      const dEl    = document.getElementById('routePreviewDest');
+      const wrap   = document.getElementById('routePreview');
+
+      oEl.textContent = origin || '----';
+      dEl.textContent = dest || '----';
+      oEl.classList.toggle('is-filled', origin.length === 4);
+      dEl.classList.toggle('is-filled', dest.length === 4);
+      wrap.classList.toggle('is-complete', origin.length === 4 && dest.length === 4);
+    }
+    document.getElementById('inp-origen').addEventListener('input', updateRoutePreview);
+    document.getElementById('inp-destino').addEventListener('input', updateRoutePreview);
 
     document.getElementById('selectAllStudents').addEventListener('change', function () {
       document.querySelectorAll('.student-check').forEach(cb => { cb.checked = this.checked; });
@@ -1276,8 +1622,9 @@
       loadStudents();
       loadAssignedFlights();
       loadEstudiantes();
+      startTabCountsLive();
     } else {
-      window.addEventListener('authReady', () => { loadStudents(); loadAssignedFlights(); loadEstudiantes(); });
+      window.addEventListener('authReady', () => { loadStudents(); loadAssignedFlights(); loadEstudiantes(); startTabCountsLive(); });
     }
 
     // Abre el calendario nativo al enfocar/clicar el campo de fecha — evita
@@ -1361,6 +1708,7 @@
       document.getElementById('selectAllStudents').checked = false;
       document.getElementById('selectAllStudents').indeterminate = false;
       document.querySelector('#studentTrigger .trigger-label').textContent = 'Seleccionar estudiante(s)';
+      updateRoutePreview();
     }
 
     // ── VUELOS ASIGNADOS PREVIAMENTE ──────────────────────────────────────────
@@ -1417,18 +1765,28 @@
         return;
       }
 
-      list.innerHTML = assignmentGroups.map(g => `
+      list.innerHTML = assignmentGroups.map(g => {
+        const completed  = g.rows.filter(r => r.estado === 'completado').length;
+        const inProgress = g.rows.filter(r => r.estado === 'en_progreso').length;
+        const pending    = g.rows.length - completed - inProgress;
+
+        return `
         <div class="assignment-item" onclick="openAssignmentDetail('${escAttr(g.assignment_group_id)}')">
           <div>
-            <div class="assignment-item-route">${escSim(g.origen)} → ${escSim(g.destino)}</div>
+            <div class="assignment-item-route">✈ ${escSim(g.origen)} → ${escSim(g.destino)}</div>
             <div class="assignment-item-meta">
               ${g.rows.length} ${g.rows.length === 1 ? 'estudiante' : 'estudiantes'}
               ${g.fecha_limite ? ' · vence ' + escSim(g.fecha_limite) : ''}
             </div>
+            <div class="assignment-progress" style="margin-top:8px;">
+              <div class="assignment-progress-bar">${progressBarSegments(completed, inProgress, pending)}</div>
+              <span class="assignment-progress-label">${completed}/${g.rows.length} completados</span>
+            </div>
           </div>
           <span class="assignment-item-arrow">›</span>
         </div>
-      `).join('');
+      `;
+      }).join('');
     }
 
     function openAssignmentDetail(groupId) {
@@ -1444,18 +1802,35 @@
       document.getElementById('ad-add-msg').className = 'assign-msg';
       document.getElementById('assignmentDetailModal').dataset.groupId = groupId;
 
-      const statusLabel = (estado) => ({
-        pendiente: 'Pendiente',
-        completado: 'Completado',
-        en_progreso: 'En progreso',
-      }[estado] || estado || 'Pendiente');
+      const statusInfo = (estado) => ({
+        pendiente:   { label: 'Pendiente',   cls: 'status-pending' },
+        completado:  { label: 'Completado',  cls: 'status-active' },
+        en_progreso: { label: 'En progreso', cls: 'status-live' },
+      }[estado] || { label: estado || 'Pendiente', cls: 'status-pending' });
 
-      document.getElementById('adStudentsList').innerHTML = group.rows.map(r => `
+      const completed  = group.rows.filter(r => r.estado === 'completado').length;
+      const inProgress = group.rows.filter(r => r.estado === 'en_progreso').length;
+      const pending    = group.rows.length - completed - inProgress;
+
+      const summaryHtml = group.rows.length ? `
+        <div class="assignment-progress" style="margin-bottom:14px;">
+          <div class="assignment-progress-bar" style="width:160px;">${progressBarSegments(completed, inProgress, pending)}</div>
+          <span class="assignment-progress-label">${completed} completados · ${inProgress} en progreso · ${pending} pendientes</span>
+        </div>` : '';
+
+      document.getElementById('adStudentsList').innerHTML = summaryHtml + (group.rows.map(r => {
+        const info = statusInfo(r.estado);
+        const nombre = r.student?.nombre || 'Estudiante eliminado';
+        return `
         <div class="assignment-student-row">
-          <span class="assignment-student-name">${escSim(r.student?.nombre || 'Estudiante eliminado')}</span>
-          <span class="tag tag-info">${escSim(statusLabel(r.estado))}</span>
+          <div>
+            <span class="student-avatar">${escSim(initials(nombre))}</span>
+            <span class="assignment-student-name">${escSim(nombre)}</span>
+          </div>
+          <span class="status-badge ${info.cls}">${escSim(info.label)}</span>
         </div>
-      `).join('') || '<div class="assignment-empty">Sin estudiantes asignados.</div>';
+      `;
+      }).join('') || '<div class="assignment-empty">Sin estudiantes asignados.</div>');
 
       renderAssignmentAddList(group);
 
@@ -1614,6 +1989,21 @@
     }
 
     // ── GESTIÓN DE ESTUDIANTES ────────────────────────────────────────────────
+    // Mismo umbral de presencia que usa el receptor de telemetría (PRESENCE_STALE_MS):
+    // el panel del estudiante manda un latido cada 15s, así que 40s da margen para
+    // un par de latidos perdidos antes de considerarlo desconectado.
+    const STUDENT_PRESENCE_STALE_MS = 40000;
+
+    let estudiantesStudents = [];
+    let estudiantesPerStudent = {};
+    let estudiantesSummariesById = {};
+    let estudiantesSort = { field: 'nombre', dir: 'asc' };
+
+    function isStudentOnline(student) {
+      return !!student.last_active_at &&
+        (Date.now() - new Date(student.last_active_at).getTime()) < STUDENT_PRESENCE_STALE_MS;
+    }
+
     async function loadEstudiantes() {
       const body = document.getElementById('estudiantesTableBody');
 
@@ -1625,7 +2015,7 @@
           .order('nombre'),
         supabaseClient
           .from('flight_assignments')
-          .select('student_id, estado'),
+          .select('id, student_id, estado, origen, destino'),
         supabaseClient.rpc('flight_summaries'),
       ]);
 
@@ -1638,60 +2028,152 @@
       const assignments = assignRes.data || [];
       const summaries = summaryRes.data || [];
 
+      const tabCountEl = document.getElementById('estudiantesCount');
+      if (tabCountEl) tabCountEl.textContent = String(students.length);
+
       // Por estudiante: total asignado, total completado, último vuelo, horas totales
       const perStudent = {};
+      const summariesById = {};
       const studentByCode = {};
+      const assignmentsById = {};
       students.forEach(s => {
         perStudent[s.id] = { assigned: 0, completed: 0, lastFlight: null, hours: 0 };
+        summariesById[s.id] = [];
         if (s.session_code) studentByCode[s.session_code] = s.id;
       });
       assignments.forEach(a => {
+        assignmentsById[a.id] = a;
         const stat = perStudent[a.student_id];
         if (!stat) return;
         stat.assigned++;
         if (a.estado === 'completado') stat.completed++;
       });
-      summaries.forEach(f => {
+      summaries.forEach(rawF => {
         // student_id queda estampado de forma permanente al escribir la telemetría;
         // los vuelos registrados antes de esa columna recurren al session_code
         // actual del estudiante, igual que en la pestaña de Reportes.
-        const studentId = f.student_id || studentByCode[f.session_code] || null;
+        const studentId = rawF.student_id || studentByCode[rawF.session_code] || null;
         const stat = perStudent[studentId];
         if (!stat) return;
-        if (f.duration_seconds) stat.hours += Number(f.duration_seconds) / 3600;
-        if (f.ended_at && (!stat.lastFlight || new Date(f.ended_at) > new Date(stat.lastFlight))) {
-          stat.lastFlight = f.ended_at;
+        if (rawF.duration_seconds) stat.hours += Number(rawF.duration_seconds) / 3600;
+        if (rawF.ended_at && (!stat.lastFlight || new Date(rawF.ended_at) > new Date(stat.lastFlight))) {
+          stat.lastFlight = rawF.ended_at;
         }
+        const f = { ...rawF, assignment: rawF.assignment_id ? (assignmentsById[rawF.assignment_id] || null) : null };
+        summariesById[studentId].push(f);
       });
 
       const totalAssigned  = assignments.length;
       const totalCompleted = assignments.filter(a => a.estado === 'completado').length;
-      const totalActive    = students.filter(s => !s.suspended).length;
+      const totalOnline    = students.filter(isStudentOnline).length;
       const totalHours     = Object.values(perStudent).reduce((sum, s) => sum + s.hours, 0);
 
-      document.getElementById('estStatActive').textContent    = totalActive;
+      document.getElementById('estStatActive').textContent    = totalOnline;
       document.getElementById('estStatAssigned').textContent  = totalAssigned;
       document.getElementById('estStatCompleted').textContent = totalCompleted;
       document.getElementById('estStatHours').textContent     = totalHours ? totalHours.toFixed(1) : '0';
 
-      if (!students.length) {
+      estudiantesStudents = students;
+      estudiantesPerStudent = perStudent;
+      estudiantesSummariesById = summariesById;
+
+      renderEstudiantesTable();
+
+      // Si el modal de detalle está abierto, refresca su contenido con los
+      // datos recién cargados (presencia, estadísticas, historial...).
+      const modal = document.getElementById('studentDetailModal');
+      if (modal && !modal.classList.contains('hidden-panel') && modal.dataset.studentId) {
+        renderStudentDetail(modal.dataset.studentId);
+      }
+    }
+
+    function setEstudiantesSort(field) {
+      if (estudiantesSort.field === field) {
+        estudiantesSort.dir = estudiantesSort.dir === 'asc' ? 'desc' : 'asc';
+      } else {
+        estudiantesSort = { field, dir: 'asc' };
+      }
+      renderEstudiantesTable();
+    }
+
+    function renderEstudiantesTable() {
+      const body = document.getElementById('estudiantesTableBody');
+      const countEl = document.getElementById('estResultCount');
+
+      document.querySelectorAll('.sort-arrow').forEach(el => el.textContent = '');
+      const arrowEl = document.getElementById(`sortArrow-${estudiantesSort.field}`);
+      if (arrowEl) arrowEl.textContent = estudiantesSort.dir === 'asc' ? '▲' : '▼';
+
+      if (!estudiantesStudents.length) {
         body.innerHTML = '<tr><td colspan="6" class="flights-loading">Aún no hay estudiantes registrados.</td></tr>';
+        if (countEl) countEl.textContent = '';
         return;
       }
 
-      body.innerHTML = students.map(s => {
-        const stat = perStudent[s.id];
+      const search = (document.getElementById('estSearchInput')?.value || '').trim().toLowerCase();
+      const filter = document.getElementById('estFilterSelect')?.value || 'todos';
+
+      let rows = estudiantesStudents.filter(s => {
+        if (search) {
+          const haystack = `${s.nombre || ''} ${s.session_code || ''}`.toLowerCase();
+          if (!haystack.includes(search)) return false;
+        }
+        const stat = estudiantesPerStudent[s.id];
+        switch (filter) {
+          case 'conectados':  return isStudentOnline(s);
+          case 'activos':     return !s.suspended;
+          case 'suspendidos': return !!s.suspended;
+          case 'sin-asignar': return !stat || stat.assigned === 0;
+          default:            return true;
+        }
+      });
+
+      const dir = estudiantesSort.dir === 'asc' ? 1 : -1;
+      rows = [...rows].sort((a, b) => {
+        const statA = estudiantesPerStudent[a.id];
+        const statB = estudiantesPerStudent[b.id];
+        let valA, valB;
+        switch (estudiantesSort.field) {
+          case 'completed':  valA = statA.completed; valB = statB.completed; break;
+          case 'assigned':   valA = statA.assigned; valB = statB.assigned; break;
+          case 'lastFlight': valA = statA.lastFlight ? new Date(statA.lastFlight).getTime() : -Infinity;
+                             valB = statB.lastFlight ? new Date(statB.lastFlight).getTime() : -Infinity; break;
+          case 'estado':     valA = a.suspended ? 1 : 0; valB = b.suspended ? 1 : 0; break;
+          default:           valA = (a.nombre || '').toLowerCase(); valB = (b.nombre || '').toLowerCase();
+        }
+        if (valA < valB) return -1 * dir;
+        if (valA > valB) return 1 * dir;
+        return 0;
+      });
+
+      if (countEl) {
+        countEl.textContent = rows.length === estudiantesStudents.length
+          ? `${rows.length} estudiante${rows.length === 1 ? '' : 's'}`
+          : `${rows.length} de ${estudiantesStudents.length} estudiantes`;
+      }
+
+      if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="6" class="flights-loading">Ningún estudiante coincide con la búsqueda/filtro.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = rows.map(s => {
+        const stat = estudiantesPerStudent[s.id];
+        const online = isStudentOnline(s);
         const statusBadge = s.suspended
           ? '<span class="status-badge status-suspended">Suspendido</span>'
           : '<span class="status-badge status-active">Activo</span>';
         const actionBtn = s.suspended
-          ? `<button class="btn-outline" onclick="toggleSuspendStudent('${escAttr(s.id)}', false, this)">Reactivar</button>`
-          : `<button class="btn-danger-outline" onclick="toggleSuspendStudent('${escAttr(s.id)}', true, this)">Suspender</button>`;
+          ? `<button class="btn-outline" onclick="event.stopPropagation(); toggleSuspendStudent('${escAttr(s.id)}', false, this)">Reactivar</button>`
+          : `<button class="btn-danger-outline" onclick="event.stopPropagation(); toggleSuspendStudent('${escAttr(s.id)}', true, this)">Suspender</button>`;
 
         return `
-          <tr>
+          <tr class="student-row" onclick="openStudentDetail('${escAttr(s.id)}')">
             <td>
-              <div class="student-name">${escSim(s.nombre)}</div>
+              <div class="student-name">
+                <span class="student-online-dot ${online ? 'is-online' : 'is-offline'}" title="${online ? 'Conectado ahora' : 'Sin conexión'}"></span>
+                ${escSim(s.nombre)}
+              </div>
               <div class="student-email">${escSim(s.session_code || '—')}</div>
             </td>
             <td>${stat.completed}</td>
@@ -1699,10 +2181,81 @@
             <td>${formatDateTime(stat.lastFlight)}</td>
             <td>${statusBadge}</td>
             <td style="display:flex; gap:8px;">
-              <button class="btn-outline" onclick="switchTab('asignar', document.querySelectorAll('.page-tab')[2])">Asignar</button>
+              <button class="btn-outline" onclick="event.stopPropagation(); switchTab('asignar', document.querySelectorAll('.page-tab')[2])">Asignar</button>
               ${actionBtn}
             </td>
           </tr>
+        `;
+      }).join('');
+    }
+
+    // ── DETALLE DE ESTUDIANTE (modal) ─────────────────────────────────────────
+    function openStudentDetail(studentId) {
+      const modal = document.getElementById('studentDetailModal');
+      modal.dataset.studentId = studentId;
+      renderStudentDetail(studentId);
+      modal.classList.remove('hidden-panel');
+    }
+
+    function closeStudentDetail() {
+      const modal = document.getElementById('studentDetailModal');
+      modal.classList.add('hidden-panel');
+      delete modal.dataset.studentId;
+    }
+
+    function renderStudentDetail(studentId) {
+      const student = estudiantesStudents.find(s => s.id === studentId);
+      const modal = document.getElementById('studentDetailModal');
+      if (!student || !modal) return;
+
+      const stat = estudiantesPerStudent[studentId] || { assigned: 0, completed: 0, lastFlight: null, hours: 0 };
+      const online = isStudentOnline(student);
+
+      document.getElementById('sdTitle').textContent = student.nombre;
+      document.getElementById('sdSubtitle').innerHTML =
+        `<span class="student-online-dot ${online ? 'is-online' : 'is-offline'}"></span>` +
+        `${escSim(student.session_code || 'Sin simulador asignado')} · ${online ? 'Conectado ahora' : 'Sin conexión'}` +
+        (student.suspended ? ' · <span style="color:var(--danger);">Suspendido</span>' : '');
+
+      document.getElementById('sdStatCompleted').textContent = stat.completed;
+      document.getElementById('sdStatAssigned').textContent = stat.assigned;
+      document.getElementById('sdStatHours').textContent = stat.hours ? stat.hours.toFixed(1) : '0';
+      document.getElementById('sdStatLast').textContent = formatDateTime(stat.lastFlight);
+
+      const assignBtn = document.getElementById('sd-btn-assign');
+      assignBtn.onclick = () => {
+        closeStudentDetail();
+        switchTab('asignar', document.querySelectorAll('.page-tab')[2]);
+      };
+
+      const suspendBtn = document.getElementById('sd-btn-suspend');
+      suspendBtn.textContent = student.suspended ? 'Reactivar' : 'Suspender';
+      suspendBtn.className = student.suspended ? 'btn-outline' : 'btn-danger-outline';
+      suspendBtn.onclick = () => toggleSuspendStudent(student.id, !student.suspended, suspendBtn);
+
+      const flights = (estudiantesSummariesById[studentId] || [])
+        .slice()
+        .sort((a, b) => new Date(b.started_at || b.ended_at || 0) - new Date(a.started_at || a.ended_at || 0))
+        .slice(0, 8);
+
+      const history = document.getElementById('sdFlightHistory');
+      if (!flights.length) {
+        history.innerHTML = '<div class="no-live-text" style="text-align:left;color:var(--muted);">Este estudiante todavía no ha registrado vuelos.</div>';
+        return;
+      }
+
+      history.innerHTML = flights.map(f => {
+        const route = f.assignment ? `${escSim(f.assignment.origen)} → ${escSim(f.assignment.destino)}` : (f.flight_id || 'Vuelo libre');
+        const maxAlt = formatNumber(f.max_altitude_ft, ' FT');
+        const maxIas = formatNumber(f.max_ias_kt, ' KT');
+        return `
+          <div class="sd-flight-row">
+            <div>
+              <div class="sd-flight-route">${route}</div>
+              <div class="sd-flight-meta">${formatDateTime(f.started_at)} · ${formatDuration(f.duration_seconds)}</div>
+            </div>
+            <div class="sd-flight-stats">${maxAlt} · ${maxIas}</div>
+          </div>
         `;
       }).join('');
     }
@@ -1815,7 +2368,28 @@
       const activePoints = (telemetryRes.data || [])
         .filter(p => activeCodes.has(p.session_code))
         .filter(p => !p.on_ground);
-      const cards = buildActiveFlightCards(activePoints, activeSessions, studentsByCode, now);
+
+      // Si el estudiante carga un vuelo nuevo (otro aeropuerto, otra ruta) sin
+      // cerrar el simulador, el plugin genera un flight_id distinto pero la
+      // sesión sigue siendo la misma y "activa" — sin este filtro, la
+      // telemetría reciente del vuelo anterior seguiría agrupándose en su
+      // propia tarjeta junto a la del vuelo actual. Nos quedamos solo con el
+      // flight_id más reciente por sesión.
+      const latestFlightBySession = new Map();
+      activePoints.forEach(p => {
+        const prev = latestFlightBySession.get(p.session_code);
+        if (!prev || new Date(p.sim_time) > new Date(prev.sim_time)) {
+          latestFlightBySession.set(p.session_code, { flightId: p.flight_id, sim_time: p.sim_time });
+        }
+      });
+      const currentFlightPoints = activePoints.filter(p =>
+        latestFlightBySession.get(p.session_code)?.flightId === p.flight_id
+      );
+
+      const cards = buildActiveFlightCards(currentFlightPoints, activeSessions, studentsByCode, now);
+
+      const countEl = document.getElementById('activeFlightsCount');
+      if (countEl) countEl.textContent = String(cards.length);
 
       if (!cards.length) {
         empty.classList.remove('hidden-panel');
@@ -2070,7 +2644,7 @@
           id: 'active-flight-route-glow',
           type: 'line',
           source: 'active-flight-route',
-          paint: { 'line-color': '#e879f9', 'line-width': 8, 'line-opacity': 0.24 },
+          paint: { 'line-color': '#38bdf8', 'line-width': 8, 'line-opacity': 0.24 },
         });
         map.addLayer({
           id: 'active-flight-route-main',
@@ -2160,9 +2734,9 @@
     }
 
     // ── PANEL SIMULADORES ─────────────────────────────────────────────────────
-    async function loadSimuladores() {
+    async function loadSimuladores(silent = false) {
       const container = document.getElementById('simSessionsList');
-      container.innerHTML = '<div class="flights-loading">Cargando sesiones...</div>';
+      if (!silent) container.innerHTML = '<div class="flights-loading">Cargando sesiones...</div>';
 
       // Load sessions and students in parallel
       const [sessionsRes, studentsRes] = await Promise.all([
@@ -2830,6 +3404,38 @@
       ctx.stroke();
       ctx.shadowBlur = 0;
 
+      const iasValues = points.map(p => Number(p.ias_kt || 0));
+      const iasRawMax = Math.max(...iasValues);
+      const iasScaleMax = Math.max(60, Math.ceil((iasRawMax + 20) / 20) * 20);
+      const iasScaleMin = 0;
+      const iasRange = Math.max(1, iasScaleMax - iasScaleMin);
+
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2;
+      ctx.shadowColor = 'rgba(56,189,248,0.55)';
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      iasValues.forEach((ias, i) => {
+        const x = padX + (i / Math.max(1, iasValues.length - 1)) * plotW;
+        const y = padTop + (1 - ((ias - iasScaleMin) / iasRange)) * plotH;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      const lastIas = iasValues[iasValues.length - 1];
+      const lastIasX = padX + plotW;
+      const lastIasY = padTop + (1 - ((lastIas - iasScaleMin) / iasRange)) * plotH;
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.arc(lastIasX, lastIasY, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = '11px monospace';
+      ctx.fillText(`${Math.round(iasRawMax).toLocaleString('es-CO')} KT MAX`, padX, h - 14);
+
       const lastAlt = values[values.length - 1];
       const lastX = padX + plotW;
       const lastY = padTop + (1 - ((lastAlt - scaleMin) / range)) * plotH;
@@ -2961,6 +3567,24 @@
 
     function escSim(s) {
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // Iniciales de un nombre completo para los avatares de la lista de
+    // estudiantes asignados (ej. "Ana Torres" -> "AT").
+    function initials(name) {
+      const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+      if (!parts.length) return '?';
+      return ((parts[0][0] || '') + (parts[1]?.[0] || '')).toUpperCase();
+    }
+
+    // Construye los segmentos de una mini barra de progreso (completados /
+    // en progreso / pendientes) reutilizando los mismos colores de estado
+    // que el resto del panel (status-active/live/pending).
+    function progressBarSegments(completed, inProgress, pending) {
+      const total = completed + inProgress + pending;
+      if (!total) return '';
+      const seg = (n, color) => n > 0 ? `<span style="width:${(n / total * 100).toFixed(2)}%;background:${color}"></span>` : '';
+      return seg(completed, 'var(--success)') + seg(inProgress, 'var(--accent)') + seg(pending, 'var(--amber)');
     }
   </script>
 </body>

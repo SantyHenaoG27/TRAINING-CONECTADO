@@ -9,8 +9,14 @@
   <script src="src/scripts/supabase-client.js"></script>
   <style>body { visibility: hidden; }</style>
   <script>
+    // document.body puede ser null aquí si esta promesa resuelve antes de que
+    // el parser llegue a <body> (p.ej. cuando getSession() responde desde caché).
+    function showBody() {
+      if (document.body) document.body.style.visibility = 'visible';
+      else document.addEventListener('DOMContentLoaded', showBody, { once: true });
+    }
     // Safety net: show the page after 3s no matter what
-    setTimeout(() => { document.body.style.visibility = 'visible'; }, 3000);
+    setTimeout(showBody, 3000);
     (async () => {
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
@@ -21,7 +27,7 @@
           return;
         }
       } catch (e) {}
-      document.body.style.visibility = 'visible';
+      showBody();
     })();
   </script>
   <style>
