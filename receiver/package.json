@@ -1,0 +1,13 @@
+{
+  "name": "ifr-training-receiver",
+  "version": "1.0.0",
+  "description": "Receptor local de telemetría X-Plane para IFR Training",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.0.0",
+    "dotenv": "^16.0.0"
+  }
+}

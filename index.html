@@ -13,21 +13,21 @@
      */
 
     :root {
-      --bg: #050505;
-      --surface: #141414;
-      --surface-warm: #08111f;
-      --fg: #f8f4e6;
-      --fg-2: #d8ceb0;
-      --muted: #9b927d;
-      --meta: #67e8f9;
-      --border: #1e293b;
-      --border-soft: #334155;
-      --accent: #22d3ee;
-      --accent-on: #050505;
-      --accent-hover: #67e8f9;
+      --bg: #0d0d0f;
+      --surface: #161618;
+      --surface-warm: #1e1e22;
+      --fg: #f0f0f2;
+      --fg-2: #b0b0be;
+      --muted: #9a9aaa;
+      --meta: #7dd3fc;
+      --border: #2a2a30;
+      --border-soft: #38383f;
+      --accent: #38bdf8;
+      --accent-on: #040408;
+      --accent-hover: #7dd3fc;
       --accent-active: color-mix(in oklab, var(--accent), black 14%);
-      --success: #39a852;
-      --warn: #67e8f9;
+      --success: #4ade80;
+      --warn: #7dd3fc;
       --danger: #e63946;
       --font-display: "Lamborghini", "Eurostile", Arial, sans-serif;
       --font-body: "Inter", Arial, sans-serif;
@@ -61,7 +61,7 @@
       --elev-flat: none;
       --elev-ring: 0 0 0 1px var(--border);
       --elev-raised: 0 28px 84px rgba(0, 0, 0, 0.54);
-      --focus-ring: 0 0 0 4px rgba(34, 211, 238, 0.32);
+      --focus-ring: 0 0 0 4px rgba(56, 189, 248, 0.28);
       --motion-fast: 120ms;
       --motion-base: 210ms;
       --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
@@ -369,7 +369,7 @@
         <a href="map.html">Mapa IFR</a>
         <a href="#faq">FAQ</a>
       </nav>
-      <a class="btn btn-primary" href="dashboard.html">INGRESAR</a>
+      <a class="btn btn-primary" href="login.html">INGRESAR</a>
     </div>
   </header>
 
@@ -381,7 +381,7 @@
           <h1>Cartas y rutas IFR en un solo mapa.</h1>
           <p class="lead">Una consola para estudiantes y apasionados por la aviacion: organiza cartas de navegacion de Aerocivil, arma rutas IFR y visualiza waypoints, aerovias y datos clave sin saltar entre archivos.</p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="dashboard.html">INGRESAR</a>
+            <a class="btn btn-primary" href="login.html">INGRESAR</a>
             <a class="btn btn-secondary" href="map.html">Ver mapa IFR</a>
           </div>
           <div class="trust-strip" aria-label="Alcance del producto">
@@ -540,9 +540,9 @@
         source: "landing-airports",
         paint: {
           "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 4.5, 8, 7, 12, 11],
-          "circle-color": "#34d399",
+          "circle-color": "#4ade80",
           "circle-stroke-width": 1.6,
-          "circle-stroke-color": "#020617",
+          "circle-stroke-color": "#040408",
         },
       });
 
@@ -559,8 +559,8 @@
           "text-allow-overlap": false,
         },
         paint: {
-          "text-color": "#34d399",
-          "text-halo-color": "#020617",
+          "text-color": "#4ade80",
+          "text-halo-color": "#040408",
           "text-halo-width": 1.5,
         },
       });
@@ -594,7 +594,7 @@
         },
         paint: {
           "text-color": color,
-          "text-halo-color": "#020617",
+          "text-halo-color": "#040408",
           "text-halo-width": 1.2,
         },
       });
@@ -676,7 +676,7 @@
             "landing-waypoints-dot",
             "landing-waypoints-label",
             landingWaypointsToGeoJSON(normalWaypoints),
-            "#67e8f9",
+            "#7dd3fc",
           );
           landingAddWaypointLayers(
             map,
@@ -684,7 +684,7 @@
             "landing-gps-waypoints-dot",
             "landing-gps-waypoints-label",
             landingWaypointsToGeoJSON(gpsWaypoints),
-            "#fbbf24",
+            "#fb923c",
             8,
           );
           landingAddAirportLayers(map, landingAirportsToGeoJSON(airports));

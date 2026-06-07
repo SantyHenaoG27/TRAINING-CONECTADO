@@ -1,3 +1,10 @@
+const PDF_BASE_URL = "https://charts.shenao.uk";
+
+function resolvePdfUrl(filePath) {
+  if (!filePath) return filePath;
+  return `${PDF_BASE_URL}/${filePath.replace(/^storage\/uploads\/pdfs\//, "")}`;
+}
+
 const waypointRows = document.querySelector("#waypointRows");
 const waypointCount = document.querySelector("#waypointCount");
 const airportRows = document.querySelector("#airportRows");
@@ -458,10 +465,10 @@ function updateRouteSummaryWaypoints() {
   if (routeString) {
     const originIcao = getSelectedAirportCode(originAirportInput);
     const destIcao = getSelectedAirportCode(destinationAirportInput);
-    const originRwy = originRunwaySelect?.value || "";
+    const originRwy = (originRunwaySelect?.value === "todas" ? "" : originRunwaySelect?.value) || "";
     const sid = sidProcedureSelect?.value || "";
     const star = starProcedureSelect?.value || "";
-    const destRwy = destinationRunwaySelect?.value || "";
+    const destRwy = (destinationRunwaySelect?.value === "todas" ? "" : destinationRunwaySelect?.value) || "";
     const iac = iacProcedureSelect?.value || "";
 
     const routeParts = [];
@@ -661,10 +668,11 @@ function getChartCards(index) {
   return index.items.filter(isNavigationProcedureChart).map((item) => ({
     title: item.title || item.chartName || item.procedureName || item.fileName,
     procedures: formatProcedureList(item),
+    codes: getItemProcedureObjects(item).map((p) => p.code).filter(Boolean),
     runway: item.runway,
     chartType: item.chartType,
     fileName: item.fileName,
-    filePath: item.filePath,
+    filePath: resolvePdfUrl(item.filePath),
   }));
 }
 
@@ -677,7 +685,7 @@ function getProcedureCards(index) {
         name: procedure.name,
         code: procedure.code,
         runway: item.runway,
-        filePath: item.filePath,
+        filePath: resolvePdfUrl(item.filePath),
       }));
     }
 
@@ -686,7 +694,7 @@ function getProcedureCards(index) {
         name: item.procedureName || item.chartName || item.title || item.fileName,
         code: item.procedureName || item.chartName || item.title || item.fileName,
         runway: item.runway,
-        filePath: item.filePath,
+        filePath: resolvePdfUrl(item.filePath),
       },
     ];
   });
@@ -724,8 +732,9 @@ function renderChartList(panel, chartType, index) {
         const detail = isProcedureChart
           ? [chartType, chart.runway].filter(Boolean).join(" / ")
           : [chart.procedures, chart.runway].filter(Boolean).join(" / ");
+        const codesAttr = chart.codes?.length ? ` data-codes="${chart.codes.join(",")}"` : "";
         return `
-        <button class="chart-result-item" type="button" data-panel="${panel}" data-title="${chart.title}" data-file="${encodeURI(chart.filePath)}">
+        <button class="chart-result-item" type="button" data-panel="${panel}" data-title="${chart.title}" data-file="${encodeURI(chart.filePath)}" data-chart-type="${chartType}"${codesAttr}>
           <strong>${title}</strong>
           <span>${detail}</span>
         </button>
@@ -754,7 +763,6 @@ function setupChartButtons() {
       const panel = button.dataset.chartPanel;
       const airport = getAirportForPanel(panel);
       const isActive = button.classList.contains("is-active");
-      hideChartPreview(panel);
 
       document
         .querySelectorAll(`[data-chart-panel="${panel}"]`)
@@ -799,6 +807,153 @@ function setupChartButtons() {
   });
 }
 
+function autoFillSelect(selectEl, codes, filePath) {
+  if (!selectEl) return;
+  const options = Array.from(selectEl.options);
+  for (const code of codes) {
+    const match = options.find((o) => o.value === code);
+    if (match) { selectEl.value = code; syncSelectPlaceholder(selectEl); return; }
+  }
+  // Fallback: match by relative file path (data-path vs getAttribute href, both relative)
+  if (filePath) {
+    const cleanTarget = decodeURI(filePath).replace(/#.*/, "").replace(/^https?:\/\/[^/]+\//, "");
+    const match = options.find((o) => o.dataset.path && decodeURI(o.dataset.path) === cleanTarget);
+    if (match) { selectEl.value = match.value; syncSelectPlaceholder(selectEl); }
+  }
+}
+
+function setupChartPinning() {
+  ["origin", "destination", "enroute", "custom"].forEach((panel) => {
+    const right = document.querySelector(`#${panel}ChartPreview`)?.closest(".chart-h-right");
+    const pinnedEl = document.querySelector(`#${panel}ChartPinned`);
+    const pinnedTitle = document.querySelector(`#${panel}PinnedTitle`);
+    const pinnedView = document.querySelector(`#${panel}PinnedView`);
+    const pinnedDownload = document.querySelector(`#${panel}PinnedDownload`);
+    const pinnedUnpin = document.querySelector(`#${panel}PinnedUnpin`);
+    const pinnedFrame = document.querySelector(`#${panel}PinnedFrame`);
+    const preview = document.querySelector(`#${panel}ChartPreview`);
+    const previewTitle = document.querySelector(`#${panel}PreviewTitle`);
+    const previewView = document.querySelector(`#${panel}PreviewView`);
+    const previewDownload = document.querySelector(`#${panel}PreviewDownload`);
+    const previewPin = document.querySelector(`#${panel}PreviewPin`);
+    const previewFrame = document.querySelector(`#${panel}PreviewFrame`);
+    const placeholder = right?.querySelector(".chart-h-placeholder");
+
+    if (!pinnedEl || !previewPin || !pinnedUnpin || !right) return;
+
+    // Destination-only: secondary pinned slot for IAC
+    const pinned2El = panel === "destination" ? document.querySelector("#destinationChartPinned2") : null;
+    const pinned2Title = panel === "destination" ? document.querySelector("#destinationPinned2Title") : null;
+    const pinned2View = panel === "destination" ? document.querySelector("#destinationPinned2View") : null;
+    const pinned2Download = panel === "destination" ? document.querySelector("#destinationPinned2Download") : null;
+    const pinned2Unpin = panel === "destination" ? document.querySelector("#destinationPinned2Unpin") : null;
+    const pinned2Frame = panel === "destination" ? document.querySelector("#destinationPinned2Frame") : null;
+
+    function copyPreviewToSlot(titleEl, viewEl, downloadEl, frameEl) {
+      titleEl.textContent = previewTitle.textContent;
+      viewEl.href = previewView.href;
+      downloadEl.href = previewDownload.href;
+      downloadEl.setAttribute("download", previewDownload.getAttribute("download") || "");
+      frameEl.src = previewFrame.src;
+    }
+
+    previewPin.addEventListener("click", () => {
+      const activeCodes = (preview.dataset.activeCodes || "").split(",").filter(Boolean);
+      const activeFilePath = previewView.getAttribute("href") || "";
+      const activeType = preview.dataset.activeChartType || "";
+
+      // Destination: second pin → secondary (IAC) slot when already split
+      if (panel === "destination" && pinned2El && right.classList.contains("is-split") && !right.classList.contains("is-split-triple")) {
+        copyPreviewToSlot(pinned2Title, pinned2View, pinned2Download, pinned2Frame);
+        pinned2El.classList.remove("hidden-panel");
+        right.classList.remove("is-split");
+        right.classList.add("is-split-triple");
+        const sel2 = activeType === "STAR" ? starProcedureSelect : iacProcedureSelect;
+        autoFillSelect(sel2, activeCodes, activeFilePath);
+
+      } else if (!right.classList.contains("is-split-triple")) {
+        // Primary pin (all panels)
+        copyPreviewToSlot(pinnedTitle, pinnedView, pinnedDownload, pinnedFrame);
+        pinnedEl.classList.remove("hidden-panel");
+        right.classList.add("is-split");
+        if (placeholder) placeholder.style.display = "none";
+
+        if (panel === "origin") {
+          autoFillSelect(sidProcedureSelect, activeCodes, activeFilePath);
+        }
+        if (panel === "destination") {
+          const sel = activeType === "IAC" ? iacProcedureSelect : starProcedureSelect;
+          autoFillSelect(sel, activeCodes, activeFilePath);
+        }
+
+      } else if (panel === "destination" && right.classList.contains("is-split-triple")) {
+        // Triple mode: replace the slot that matches the chart type
+        if (activeType === "STAR") {
+          copyPreviewToSlot(pinnedTitle, pinnedView, pinnedDownload, pinnedFrame);
+          autoFillSelect(starProcedureSelect, activeCodes, activeFilePath);
+        } else if (activeType === "IAC") {
+          copyPreviewToSlot(pinned2Title, pinned2View, pinned2Download, pinned2Frame);
+          autoFillSelect(iacProcedureSelect, activeCodes, activeFilePath);
+        } else {
+          return;
+        }
+      } else {
+        return;
+      }
+
+      preview.classList.add("hidden-panel");
+      previewFrame.src = "";
+      previewTitle.textContent = "Carta seleccionada";
+      clearSelectedCard(preview);
+    });
+
+    // Secondary unpin (IAC) — destination only
+    if (pinned2Unpin) {
+      pinned2Unpin.addEventListener("click", () => {
+        const hasActiveChart = !preview.classList.contains("hidden-panel");
+        if (!hasActiveChart) {
+          previewTitle.textContent = pinned2Title.textContent;
+          previewView.href = pinned2View.href;
+          previewDownload.href = pinned2Download.href;
+          previewDownload.setAttribute("download", pinned2Download.getAttribute("download") || "");
+          previewFrame.src = pinned2Frame.src;
+          preview.classList.remove("hidden-panel");
+        }
+        pinned2El.classList.add("hidden-panel");
+        pinned2Frame.src = "";
+        right.classList.remove("is-split-triple");
+        right.classList.add("is-split");
+      });
+    }
+
+    pinnedUnpin.addEventListener("click", () => {
+      const hasActiveChart = !preview.classList.contains("hidden-panel");
+      const hasSecondary = pinned2El && !pinned2El.classList.contains("hidden-panel");
+
+      // If secondary is also pinned, clear it too
+      if (hasSecondary) {
+        pinned2El.classList.add("hidden-panel");
+        if (pinned2Frame) pinned2Frame.src = "";
+      }
+
+      if (!hasActiveChart) {
+        previewTitle.textContent = pinnedTitle.textContent;
+        previewView.href = pinnedView.href;
+        previewDownload.href = pinnedDownload.href;
+        previewDownload.setAttribute("download", pinnedDownload.getAttribute("download") || "");
+        previewFrame.src = pinnedFrame.src;
+        preview.classList.remove("hidden-panel");
+      }
+
+      pinnedEl.classList.add("hidden-panel");
+      pinnedFrame.src = "";
+      right.classList.remove("is-split");
+      right.classList.remove("is-split-triple");
+      if (placeholder) placeholder.style.display = "";
+    });
+  });
+}
+
 function setupChartPreview() {
   [
     getChartPreviewElements("origin"),
@@ -809,6 +964,7 @@ function setupChartPreview() {
     preview.hide?.addEventListener("click", () => {
       preview.preview?.classList.add("hidden-panel");
       if (preview.frame) preview.frame.src = "";
+      clearSelectedCard(preview.preview);
     });
   });
 
@@ -822,7 +978,8 @@ function setupChartPreview() {
     event.preventDefault();
     event.stopPropagation();
 
-    const preview = getChartPreviewElements(item.dataset.panel);
+    const panel = item.dataset.panel;
+    const preview = getChartPreviewElements(panel);
     const filePath = item.dataset.file;
     const title = item.dataset.title;
 
@@ -832,7 +989,21 @@ function setupChartPreview() {
     preview.download.setAttribute("download", filePath.split("/").pop());
     preview.frame.src = `${filePath}#toolbar=0&navpanes=0`;
     preview.preview.classList.remove("hidden-panel");
+    preview.preview.dataset.activeCodes = item.dataset.codes || "";
+    preview.preview.dataset.activeChartType = item.dataset.chartType || "";
+
+    // Highlight the selected card; clear previous selection in the same panel
+    document.querySelectorAll(`.chart-result-item[data-panel="${panel}"]`).forEach((c) => c.classList.remove("is-selected"));
+    item.classList.add("is-selected");
   });
+}
+
+function clearSelectedCard(previewEl) {
+  if (!previewEl) return;
+  const panel = previewEl.id?.replace("ChartPreview", "").toLowerCase();
+  if (panel) {
+    document.querySelectorAll(`.chart-result-item[data-panel="${panel}"]`).forEach((c) => c.classList.remove("is-selected"));
+  }
 }
 
 function closeAirportSuggestions(exceptBox) {
@@ -898,7 +1069,7 @@ function renderAirportSuggestions(input) {
 
 function setupAirportSearch() {
   airportSearchInputs.forEach((input) => {
-    const requiresSelection = ["origin", "destination"].includes(input.dataset.routeRole);
+    const requiresSelection = ["origin", "destination", "alterno1"].includes(input.dataset.routeRole);
 
     input.addEventListener("input", () => {
       if (input.dataset.confirmedAirport !== normalizeSearch(input.value)) {
@@ -939,11 +1110,15 @@ function setupAirportSearch() {
       updateRouteAirportClearButtons();
       updateRouteChartTitles();
       updateRouteLineOnMap();
-      loadOriginRunways();
-      loadSidOptions();
-      loadDestinationRunways();
-      loadStarOptions();
-      loadIacOptions();
+      const role = input.dataset.routeRole;
+      if (role === "origin") {
+        loadOriginRunways();
+        loadSidOptions();
+      } else if (role === "destination") {
+        loadDestinationRunways();
+        loadStarOptions();
+        loadIacOptions();
+      }
     });
   });
 
@@ -1004,12 +1179,15 @@ function loadOriginRunways() {
   const airport = getAirportForPanel("origin");
   if (!airport || !airport.runways?.length) {
     originRunwaySelect.innerHTML = `<option value="">Seleccione pista</option>`;
+    syncSelectPlaceholder(originRunwaySelect);
     return;
   }
   originRunwaySelect.innerHTML = `
     <option value="">Seleccione pista</option>
+    <option value="todas">Todas</option>
     ${airport.runways.map((rwy) => `<option value="${rwy}">${rwy}</option>`).join("")}
   `;
+  syncSelectPlaceholder(originRunwaySelect);
 }
 
 function loadDestinationRunways() {
@@ -1017,12 +1195,15 @@ function loadDestinationRunways() {
   const airport = getAirportForPanel("destination");
   if (!airport || !airport.runways?.length) {
     destinationRunwaySelect.innerHTML = `<option value="">Seleccione pista</option>`;
+    syncSelectPlaceholder(destinationRunwaySelect);
     return;
   }
   destinationRunwaySelect.innerHTML = `
     <option value="">Seleccione pista</option>
+    <option value="todas">Todas</option>
     ${airport.runways.map((rwy) => `<option value="${rwy}">${rwy}</option>`).join("")}
   `;
+  syncSelectPlaceholder(destinationRunwaySelect);
 }
 
 async function loadStarOptions() {
@@ -1040,50 +1221,110 @@ async function loadStarOptions() {
   }
 }
 
-function renderStarOptions(index, icao) {
-  if (!starProcedureSelect) return;
+let cachedStarProcedures = null;
+
+function buildStarOptions(runwayFilter) {
+  if (!starProcedureSelect || !cachedStarProcedures) return;
+
   const previousValue = starProcedureSelect.value;
-  const procedures = getProcedureCards(index);
-  if (!procedures.length) {
-    starProcedureSelect.innerHTML = `<option value="">Sin llegada disponible para ${icao}</option>`;
+
+  let filtered = cachedStarProcedures;
+  if (runwayFilter) {
+    const normalizedFilter = normalizeRunwayLabel(runwayFilter);
+    filtered = cachedStarProcedures.filter((p) => {
+      if (!p.runway) return true;
+      const padded = " " + normalizeRunwayLabel(p.runway) + " ";
+      return padded.includes(" " + normalizedFilter + " ");
+    });
+  }
+
+  const grouped = groupProcedureOptions(filtered);
+
+  if (!grouped.length) {
+    starProcedureSelect.innerHTML = `<option value="">Sin llegadas para pista ${runwayFilter}</option>`;
+    syncSelectPlaceholder(starProcedureSelect);
     return;
   }
+
   starProcedureSelect.innerHTML = `
     <option value="">Seleccione una llegada</option>
     <option value="NO_STAR">Sin llegada</option>
-    ${groupProcedureOptions(procedures).map((p) => `<option value="${p.code}">${formatProcedureOption(p)}</option>`).join("")}
+    ${grouped.map((p) => `<option value="${p.code}">${formatProcedureOption(p)}</option>`).join("")}
   `;
-  if (previousValue && Array.from(starProcedureSelect.options).some((option) => option.value === previousValue)) {
+
+  if (previousValue && Array.from(starProcedureSelect.options).some((o) => o.value === previousValue)) {
     starProcedureSelect.value = previousValue;
   }
+
+  syncSelectPlaceholder(starProcedureSelect);
 }
 
-function renderSidOptions(index) {
-  if (!sidProcedureSelect) {
+function renderStarOptions(index, icao) {
+  if (!starProcedureSelect) return;
+
+  cachedStarProcedures = getProcedureCards(index);
+
+  if (!cachedStarProcedures.length) {
+    starProcedureSelect.innerHTML = `<option value="">Sin llegada disponible para ${icao}</option>`;
+    syncSelectPlaceholder(starProcedureSelect);
     return;
   }
 
-  const previousValue = sidProcedureSelect.value;
-  const procedures = getProcedureCards(index);
+  const currentRwy = destinationRunwaySelect?.value;
+  buildStarOptions(currentRwy && currentRwy !== "todas" ? currentRwy : null);
+}
 
-  if (!procedures.length) {
-    sidProcedureSelect.innerHTML = `<option>Sin salida disponible</option>`;
+let cachedSidProcedures = null;
+
+function buildSidOptions(runwayFilter) {
+  if (!sidProcedureSelect || !cachedSidProcedures) return;
+
+  const previousValue = sidProcedureSelect.value;
+
+  let filtered = cachedSidProcedures;
+  if (runwayFilter) {
+    const normalizedFilter = normalizeRunwayLabel(runwayFilter);
+    filtered = cachedSidProcedures.filter((p) => {
+      if (!p.runway) return true;
+      const padded = " " + normalizeRunwayLabel(p.runway) + " ";
+      return padded.includes(" " + normalizedFilter + " ");
+    });
+  }
+
+  const grouped = groupProcedureOptions(filtered);
+
+  if (!grouped.length) {
+    sidProcedureSelect.innerHTML = `<option value="">Sin salidas para pista ${runwayFilter}</option>`;
+    syncSelectPlaceholder(sidProcedureSelect);
     return;
   }
 
   sidProcedureSelect.innerHTML = `
     <option value="">Seleccione una salida</option>
     <option value="NO_SID">Sin salida</option>
-    ${groupProcedureOptions(procedures)
-      .map(
-        (procedure) =>
-          `<option value="${procedure.code}">${formatProcedureOption(procedure)}</option>`,
-      )
-      .join("")}
+    ${grouped.map((p) => `<option value="${p.code}">${formatProcedureOption(p)}</option>`).join("")}
   `;
-  if (previousValue && Array.from(sidProcedureSelect.options).some((option) => option.value === previousValue)) {
+
+  if (previousValue && Array.from(sidProcedureSelect.options).some((o) => o.value === previousValue)) {
     sidProcedureSelect.value = previousValue;
   }
+
+  syncSelectPlaceholder(sidProcedureSelect);
+}
+
+function renderSidOptions(index) {
+  if (!sidProcedureSelect) return;
+
+  cachedSidProcedures = getProcedureCards(index);
+
+  if (!cachedSidProcedures.length) {
+    sidProcedureSelect.innerHTML = `<option value="">Sin salida disponible</option>`;
+    syncSelectPlaceholder(sidProcedureSelect);
+    return;
+  }
+
+  const currentRwy = originRunwaySelect?.value;
+  buildSidOptions(currentRwy && currentRwy !== "todas" ? currentRwy : null);
 }
 
 async function loadWaypoints() {
@@ -1172,7 +1413,7 @@ async function loadIacOptions() {
     iacProcedureSelect.innerHTML = `
       <option value="">Seleccione una aproximacion</option>
       <option value="NO_IAC">Sin aproximacion</option>
-      ${procedures.map((p) => `<option value="${p.code}">${p.name}${p.runway ? ` / ${p.runway}` : ""}</option>`).join("")}
+      ${procedures.map((p) => `<option value="${p.code}" data-path="${p.filePath || ""}">${p.name}${p.runway ? ` / ${p.runway}` : ""}</option>`).join("")}
     `;
   } catch {
     iacProcedureSelect.innerHTML = `<option value="">Sin aproximacion disponible para ${airport.icao}</option>`;
@@ -1187,7 +1428,7 @@ async function loadSidOptions() {
   const airport = getAirportForPanel("origin");
 
   if (!airport) {
-    sidProcedureSelect.innerHTML = `<option>Selecciona primero un origen</option>`;
+    sidProcedureSelect.innerHTML = `<option value="">Selecciona primero un origen</option>`;
     return;
   }
 
@@ -1195,14 +1436,25 @@ async function loadSidOptions() {
     const index = await getChartIndex("SID", airport.icao);
     renderSidOptions(index);
   } catch (error) {
-    sidProcedureSelect.innerHTML = `<option>Sin salida disponible para ${airport?.icao ?? "este aeropuerto"}</option>`;
+    sidProcedureSelect.innerHTML = `<option value="">Sin salida disponible para ${airport?.icao ?? "este aeropuerto"}</option>`;
   }
 }
 
 setupAirportSearch();
 setupChartButtons();
 setupChartPreview();
+setupChartPinning();
 setupEnrouteCharts();
+
+originRunwaySelect?.addEventListener("change", () => {
+  const rwy = originRunwaySelect.value;
+  buildSidOptions(rwy && rwy !== "todas" ? rwy : null);
+});
+
+destinationRunwaySelect?.addEventListener("change", () => {
+  const rwy = destinationRunwaySelect.value;
+  buildStarOptions(rwy && rwy !== "todas" ? rwy : null);
+});
 const waypointsReady = loadWaypoints();
 const navaidsReady = loadNavaids();
 const airportsReady = loadAirports();
@@ -1212,6 +1464,24 @@ loadSidOptions();
 loadStarOptions();
 loadIacOptions();
 initDashboardMap(airportsReady, waypointsReady, navaidsReady);
+
+function syncSelectPlaceholder(sel) {
+  sel.classList.toggle("select-placeholder", sel.value === "");
+}
+document.querySelectorAll(".field select").forEach((sel) => {
+  sel.addEventListener("change", () => syncSelectPlaceholder(sel));
+  syncSelectPlaceholder(sel);
+});
+
+const selectObserver = new MutationObserver((mutations) => {
+  mutations.forEach((m) => {
+    const sel = m.target;
+    if (sel.tagName === "SELECT") syncSelectPlaceholder(sel);
+  });
+});
+document.querySelectorAll(".field select").forEach((sel) => {
+  selectObserver.observe(sel, { childList: true });
+});
 
 function setupWaypointInput() {
   const input = document.querySelector("#routeWaypointsInput");
@@ -1334,46 +1604,57 @@ setupCreateRouteBtn();
 setupClearRouteBtn();
 setupCustomScrollStrip();
 
-function setupClearRouteBtn() {
-  const btn = document.getElementById("clearRouteBtn");
-  if (!btn) return;
+function syncClearRouteBtn() {
+  const panel = document.getElementById("routeSummaryPanel");
+  const routeVisible = panel && !panel.classList.contains("hidden-panel");
+  document.getElementById("clearRouteBtn")?.classList.toggle("hidden-panel", !routeVisible);
+  document.getElementById("clearFormBtn")?.classList.toggle("hidden-panel", routeVisible);
+}
 
-  btn.addEventListener("click", () => {
-    // Clear all airport inputs
-    [originAirportInput, destinationAirportInput].forEach((input) => {
-      if (input) { input.value = ""; input.dispatchEvent(new Event("input")); }
-    });
-    document.querySelectorAll(".airport-search-input[data-route-role='alterno1'], .airport-search-input[data-route-role='alterno2']").forEach((input) => {
-      input.value = "";
-    });
-    // Reset all airport-combobox inputs in the route panel (catches alternos too)
-    document.querySelectorAll(".flight-airports-panel .airport-search-input").forEach((input) => {
-      input.value = "";
-    });
+function clearRouteSummary() {
+  const panel = document.getElementById("routeSummaryPanel");
+  if (panel) panel.classList.add("hidden-panel");
+  syncClearRouteBtn();
+  updateRouteLineOnMap();
+}
 
-    // Reset selects
-    ["originRunwaySelect", "sidProcedureSelect", "destinationRunwaySelect", "starProcedureSelect", "iacProcedureSelect"].forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) el.selectedIndex = 0;
-    });
-
-    // Clear waypoints
-    routeWaypoints = [];
-    const tagsBox = document.querySelector("#waypointTags");
-    if (tagsBox) tagsBox.innerHTML = "";
-    const wpInput = document.querySelector("#routeWaypointsInput");
-    if (wpInput) wpInput.value = "";
-
-    // Hide route summary panel
-    const panel = document.getElementById("routeSummaryPanel");
-    if (panel) panel.classList.add("hidden-panel");
-
-    // Clear map line
-    updateRouteLineOnMap();
-
-    closeAirportSuggestions();
-    updateRouteChartTitles();
+function clearRouteForm() {
+  [originAirportInput, destinationAirportInput].forEach((input) => {
+    if (input) { input.value = ""; input.dispatchEvent(new Event("input")); }
   });
+  document.querySelectorAll(".airport-search-input[data-route-role='alterno1'], .airport-search-input[data-route-role='alterno2']").forEach((input) => {
+    input.value = "";
+  });
+  document.querySelectorAll(".flight-airports-panel .airport-search-input").forEach((input) => {
+    input.value = "";
+  });
+
+  ["originRunwaySelect", "sidProcedureSelect", "destinationRunwaySelect", "starProcedureSelect", "iacProcedureSelect"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) { el.selectedIndex = 0; syncSelectPlaceholder(el); }
+  });
+
+  routeWaypoints = [];
+  const tagsBox = document.querySelector("#waypointTags");
+  if (tagsBox) tagsBox.innerHTML = "";
+  const wpInput = document.querySelector("#routeWaypointsInput");
+  if (wpInput) wpInput.value = "";
+
+  clearRouteSummary();
+  closeAirportSuggestions();
+  updateRouteChartTitles();
+}
+
+function setupClearRouteBtn() {
+  const clearRoute = document.getElementById("clearRouteBtn");
+  if (clearRoute) {
+    clearRoute.addEventListener("click", () => clearRouteSummary());
+  }
+
+  const clearForm = document.getElementById("clearFormBtn");
+  if (clearForm) {
+    clearForm.addEventListener("click", () => clearRouteForm());
+  }
 }
 
 function setupCustomScrollStrip() {
@@ -1430,8 +1711,23 @@ function setupCreateRouteBtn() {
   if (!btn || !panel) return;
 
   btn.addEventListener("click", () => {
-    const originIcao = getSelectedAirportCode(originAirportInput);
-    const destIcao = getSelectedAirportCode(destinationAirportInput);
+    const originIcao  = getSelectedAirportCode(originAirportInput);
+    const altOneIcao  = getSelectedAirportCode(alternateOneInput);
+    const destIcao    = getSelectedAirportCode(destinationAirportInput);
+
+    const missing = [];
+    if (!originIcao) missing.push({ input: originAirportInput, label: "Origen" });
+    if (!altOneIcao) missing.push({ input: alternateOneInput, label: "Alterno 1" });
+    if (!destIcao)   missing.push({ input: destinationAirportInput, label: "Destino" });
+
+    if (missing.length) {
+      missing.forEach(({ input }) => {
+        input?.classList.add("input-error");
+        input?.addEventListener("input", () => input.classList.remove("input-error"), { once: true });
+      });
+      missing[0]?.input?.focus();
+      return;
+    }
     const originAirport = colombianAirports.find((a) => a.icao === originIcao);
     const destAirport   = colombianAirports.find((a) => a.icao === destIcao);
 
@@ -1466,11 +1762,13 @@ function setupCreateRouteBtn() {
     `;
 
     panel.classList.remove("hidden-panel");
+    syncClearRouteBtn();
     panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
   });
 
   panel.querySelector(".route-summary-close")?.addEventListener("click", () => {
     panel.classList.add("hidden-panel");
+    syncClearRouteBtn();
   });
 }
 
@@ -1735,7 +2033,7 @@ function resetOriginFields() {
     originRunwaySelect.innerHTML = `<option value="">Seleccione pista</option>`;
   }
   if (sidProcedureSelect) {
-    sidProcedureSelect.innerHTML = `<option>Selecciona primero un origen</option>`;
+    sidProcedureSelect.innerHTML = `<option value="">Selecciona primero un origen</option>`;
   }
 }
 

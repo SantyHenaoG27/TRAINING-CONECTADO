@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IFR Colombia Data Dashboard</title>
-    <link rel="stylesheet" href="styles.css?v=5" />
+    <link rel="stylesheet" href="styles.css?v=30" />
     <link rel="stylesheet" href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" />
     <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js" defer></script>
-    <script src="src/scripts/dashboard.js?v=30" defer></script>
+    <script src="src/scripts/dashboard.js?v=51" defer></script>
   </head>
   <body class="dashboard-page">
     <main class="shell">
@@ -24,69 +24,68 @@
       </header>
 
       <section class="data-dashboard" aria-label="Dashboard solo lectura">
-        <div class="dashboard-row dashboard-row-1">
+
+        <!-- RUTA IFR -->
         <article class="read-card flight-airports-panel">
           <div class="module-head">
             <h2>RUTA IFR</h2>
             <span class="chip ok" id="routeAirportStatus">LOAD</span>
           </div>
-          <div class="flight-airports-grid">
-            <label class="field airport-combobox">
-              <span>Origen</span>
-              <div class="route-airport-row">
-                <div class="airport-combobox">
-                  <input class="airport-search-input" data-route-role="origin" autocomplete="off" placeholder="SKBO o El Dorado" aria-label="Origen" />
-                  <div class="airport-suggestions" role="listbox"></div>
+
+          <!-- Módulo 1: ORIGEN -->
+          <div class="route-module">
+            <p class="route-module-label">ORIGEN</p>
+            <div class="flight-airports-grid cols-3">
+              <label class="field airport-combobox">
+                <span>Origen</span>
+                <div class="route-airport-row">
+                  <div class="airport-combobox">
+                    <input class="airport-search-input" data-route-role="origin" autocomplete="off" placeholder="SKBO o El Dorado" aria-label="Origen" />
+                    <div class="airport-suggestions" role="listbox"></div>
+                  </div>
+                  <button type="button" id="originAirportClear" class="btn-clear-search route-airport-clear hidden-panel" style="background-color:#dc2626;color:#fff;border:1px solid #b91c1c;" aria-label="Quitar origen">&#x2715;</button>
                 </div>
-                <button type="button" id="originAirportClear" class="btn-clear-search route-airport-clear hidden-panel" style="background-color:#dc2626;color:#fff;border:1px solid #b91c1c;" aria-label="Quitar origen">&#x2715;</button>
-              </div>
-            </label>
-            <label class="field airport-combobox">
-              <span>Destino</span>
-              <div class="route-airport-row">
-                <div class="airport-combobox">
-                  <input class="airport-search-input" data-route-role="destination" autocomplete="off" placeholder="SKPE o Matecana" aria-label="Destino" />
-                  <div class="airport-suggestions" role="listbox"></div>
+              </label>
+              <label class="field airport-combobox">
+                <span>Alterno 1</span>
+                <div class="route-airport-row">
+                  <div class="airport-combobox">
+                    <input class="airport-search-input" data-route-role="alterno1" autocomplete="off" placeholder="Codigo o nombre" aria-label="Alterno 1" />
+                    <div class="airport-suggestions" role="listbox"></div>
+                  </div>
+                  <button type="button" id="alternateOneClear" class="btn-clear-search route-airport-clear hidden-panel" style="background-color:#dc2626;color:#fff;border:1px solid #b91c1c;" aria-label="Quitar alterno 1">&#x2715;</button>
                 </div>
-                <button type="button" id="destinationAirportClear" class="btn-clear-search route-airport-clear hidden-panel" style="background-color:#dc2626;color:#fff;border:1px solid #b91c1c;" aria-label="Quitar destino">&#x2715;</button>
-              </div>
-            </label>
-            <label class="field airport-combobox">
-              <span>Alterno 1</span>
-              <div class="route-airport-row">
-                <div class="airport-combobox">
-                  <input class="airport-search-input" data-route-role="alterno1" autocomplete="off" placeholder="Codigo o nombre" aria-label="Alterno 1" />
-                  <div class="airport-suggestions" role="listbox"></div>
+              </label>
+              <label class="field airport-combobox">
+                <span>Alterno 2</span>
+                <div class="route-airport-row">
+                  <div class="airport-combobox">
+                    <input class="airport-search-input" data-route-role="alterno2" autocomplete="off" placeholder="Codigo o nombre" aria-label="Alterno 2" />
+                    <div class="airport-suggestions" role="listbox"></div>
+                  </div>
+                  <button type="button" id="alternateTwoClear" class="btn-clear-search route-airport-clear hidden-panel" style="background-color:#dc2626;color:#fff;border:1px solid #b91c1c;" aria-label="Quitar alterno 2">&#x2715;</button>
                 </div>
-                <button type="button" id="alternateOneClear" class="btn-clear-search route-airport-clear hidden-panel" style="background-color:#dc2626;color:#fff;border:1px solid #b91c1c;" aria-label="Quitar alterno 1">&#x2715;</button>
-              </div>
-            </label>
-            <label class="field airport-combobox">
-              <span>Alterno 2</span>
-              <div class="route-airport-row">
-                <div class="airport-combobox">
-                  <input class="airport-search-input" data-route-role="alterno2" autocomplete="off" placeholder="Codigo o nombre" aria-label="Alterno 2" />
-                  <div class="airport-suggestions" role="listbox"></div>
-                </div>
-                <button type="button" id="alternateTwoClear" class="btn-clear-search route-airport-clear hidden-panel" style="background-color:#dc2626;color:#fff;border:1px solid #b91c1c;" aria-label="Quitar alterno 2">&#x2715;</button>
-              </div>
-            </label>
+              </label>
+            </div>
+            <div class="flight-airports-grid" style="margin-top:8px;">
+              <label class="field">
+                <span>Pistas de origen disponibles</span>
+                <select id="originRunwaySelect" aria-label="Pista de origen">
+                  <option value="">Seleccione pista</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Salidas SID disponibles</span>
+                <select id="sidProcedureSelect" aria-label="Seleccion de salida SID">
+                  <option value="">Seleccione una salida</option>
+                </select>
+              </label>
+            </div>
           </div>
-          <div class="flight-airports-grid" style="margin-top:10px;">
-            <label class="field">
-              <span>Pista origen</span>
-              <select id="originRunwaySelect" aria-label="Pista de origen">
-                <option value="">Seleccione pista</option>
-              </select>
-            </label>
-            <label class="field">
-              <span>Salida SID</span>
-              <select id="sidProcedureSelect" aria-label="Seleccion de salida SID">
-                <option>Seleccione una salida</option>
-              </select>
-            </label>
-          </div>
-          <div class="route-waypoints-section">
+
+          <!-- Módulo 2: WAYPOINTS -->
+          <div class="route-module">
+            <p class="route-module-label">WAYPOINTS</p>
             <div class="field">
               <span>Puntos de ruta / Waypoints</span>
               <div id="waypointTags" class="waypoint-tags" aria-label="Waypoints seleccionados"></div>
@@ -95,29 +94,49 @@
                 <div id="waypointSuggestions" class="waypoint-drop"></div>
               </div>
             </div>
-            <div class="flight-airports-grid" style="margin-top:10px;">
-              <label class="field">
-                <span>Pista destino</span>
-                <select id="destinationRunwaySelect" aria-label="Pista de destino">
-                  <option value="">Seleccione pista</option>
-                </select>
-              </label>
-              <label class="field">
-                <span>Llegada STAR</span>
-                <select id="starProcedureSelect" aria-label="Seleccion de llegada STAR">
-                  <option value="">Selecciona primero un destino</option>
-                </select>
-              </label>
-              <div class="field sid-select-field">
-                <span>Aproximacion IAC</span>
-                <div class="iac-row">
+          </div>
+
+          <!-- Módulo 3: DESTINO -->
+          <div class="route-module">
+            <p class="route-module-label">DESTINO</p>
+            <div class="route-module-cols">
+              <div class="route-module-col">
+                <label class="field airport-combobox">
+                  <span>Destino</span>
+                  <div class="route-airport-row">
+                    <div class="airport-combobox">
+                      <input class="airport-search-input" data-route-role="destination" autocomplete="off" placeholder="SKPE o Matecana" aria-label="Destino" />
+                      <div class="airport-suggestions" role="listbox"></div>
+                    </div>
+                    <button type="button" id="destinationAirportClear" class="btn-clear-search route-airport-clear hidden-panel" style="background-color:#dc2626;color:#fff;border:1px solid #b91c1c;" aria-label="Quitar destino">&#x2715;</button>
+                  </div>
+                </label>
+                <label class="field">
+                  <span>Pistas de destino disponibles</span>
+                  <select id="destinationRunwaySelect" aria-label="Pista de destino">
+                    <option value="">Seleccione pista</option>
+                  </select>
+                </label>
+              </div>
+              <div class="route-module-col">
+                <label class="field">
+                  <span>Llegadas STAR disponibles</span>
+                  <select id="starProcedureSelect" aria-label="Seleccion de llegada STAR">
+                    <option value="">Selecciona primero un destino</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Aproximaciones IAC disponibles</span>
                   <select id="iacProcedureSelect" aria-label="Seleccion de aproximacion IAC">
                     <option value="">Seleccione una aproximacion</option>
                   </select>
-                  <button type="button" id="createRouteBtn" class="btn-create-route">Crear Ruta</button>
-                  <button type="button" id="clearRouteBtn" class="btn-clear-route">Limpiar Ruta</button>
-                </div>
+                </label>
               </div>
+            </div>
+            <div class="route-module-actions">
+              <button type="button" id="clearFormBtn" class="btn-clear-form">Limpiar formulario</button>
+              <button type="button" id="clearRouteBtn" class="btn-clear-route hidden-panel">Limpiar Ruta</button>
+              <button type="button" id="createRouteBtn" class="btn-create-route">Crear Ruta</button>
             </div>
           </div>
           <div id="routeSummaryPanel" class="route-summary-panel hidden-panel">
@@ -130,110 +149,232 @@
           </div>
         </article>
 
+        <!-- Cartas del Origen -->
         <article class="read-card pdf-card">
           <div class="module-head">
             <h2 id="originChartAirportTitle">Cartas del origen</h2>
             <span class="chip active" id="originChartAirportCode">ORIG</span>
           </div>
-          <div class="data-note" id="originChartNote">
-            Selecciona el aeropuerto de origen para preparar sus cartas disponibles.
-          </div>
-          <div class="chart-type-menu" aria-label="Tipos de cartas">
-            <button type="button" data-chart-panel="origin" data-chart-type="ADC">ADC</button>
-            <button type="button" data-chart-panel="origin" data-chart-type="ENR">ENR</button>
-            <button type="button" data-chart-panel="origin" data-chart-type="GMC">GMC</button>
-            <button type="button" data-chart-panel="origin" data-chart-type="IAC">IAC</button>
-            <button type="button" data-chart-panel="origin" data-chart-type="SID">SID</button>
-            <button type="button" data-chart-panel="origin" data-chart-type="STAR">STAR</button>
-          </div>
-          <div class="chart-result-list" id="originChartResults"></div>
-          <div class="chart-preview hidden-panel" id="originChartPreview">
-            <div class="chart-preview-head">
-              <div>
-                <span>Previsualizacion</span>
-                <strong id="originPreviewTitle">Carta seleccionada</strong>
+          <div class="chart-h-body">
+            <div class="chart-h-left">
+              <div class="data-note" id="originChartNote">
+                Selecciona el aeropuerto de origen para preparar sus cartas disponibles.
               </div>
-              <div class="chart-preview-actions">
-                <a id="originPreviewView" href="#" target="_blank" rel="noreferrer">Ver</a>
-                <a id="originPreviewDownload" href="#" download>Descargar</a>
-                <button id="originPreviewHide" type="button">Ocultar</button>
+              <div class="chart-type-menu" aria-label="Tipos de cartas">
+                <button type="button" data-chart-panel="origin" data-chart-type="ADC">ADC</button>
+                <button type="button" data-chart-panel="origin" data-chart-type="ENR">ENR</button>
+                <button type="button" data-chart-panel="origin" data-chart-type="GMC">GMC</button>
+                <button type="button" data-chart-panel="origin" data-chart-type="SID">SID</button>
+                <button type="button" data-chart-panel="origin" data-chart-type="STAR">STAR</button>
+                <button type="button" data-chart-panel="origin" data-chart-type="IAC">IAC</button>
+              </div>
+              <div class="chart-result-list" id="originChartResults"></div>
+              <div class="pdf-viewer hidden-panel">
+                <iframe
+                  title="SKPE STAR RWY 08"
+                  src="storage/uploads/pdfs/SKPE/STAR/18%20SKPE_STAR_2_RWY_08.pdf#toolbar=0&navpanes=0"
+                ></iframe>
               </div>
             </div>
-            <iframe id="originPreviewFrame" title="Previsualizacion carta origen"></iframe>
-          </div>
-          <div class="pdf-viewer hidden-panel">
-            <iframe
-              title="SKPE STAR RWY 08"
-              src="storage/uploads/pdfs/SKPE/STAR/18%20SKPE_STAR_2_RWY_08.pdf#toolbar=0&navpanes=0"
-            ></iframe>
+            <div class="chart-h-right">
+              <div class="chart-h-placeholder">Selecciona una carta para previsualizarla</div>
+              <div class="chart-pinned hidden-panel" id="originChartPinned">
+                <div class="chart-preview-head">
+                  <div>
+                    <span class="pinned-label">Fijada</span>
+                    <strong id="originPinnedTitle">—</strong>
+                  </div>
+                  <div class="chart-preview-actions">
+                    <a id="originPinnedView" href="#" target="_blank" rel="noreferrer">Ver</a>
+                    <a id="originPinnedDownload" href="#" download>Descargar</a>
+                    <button id="originPinnedUnpin" type="button">Desfijar</button>
+                  </div>
+                </div>
+                <iframe id="originPinnedFrame" title="Carta fijada origen"></iframe>
+              </div>
+              <div class="chart-preview hidden-panel" id="originChartPreview">
+                <div class="chart-preview-head">
+                  <div>
+                    <span>Previsualizacion</span>
+                    <strong id="originPreviewTitle">Carta seleccionada</strong>
+                  </div>
+                  <div class="chart-preview-actions">
+                    <a id="originPreviewView" href="#" target="_blank" rel="noreferrer">Ver</a>
+                    <a id="originPreviewDownload" href="#" download>Descargar</a>
+                    <button id="originPreviewPin" type="button">Fijar</button>
+                    <button id="originPreviewHide" type="button">Ocultar</button>
+                  </div>
+                </div>
+                <iframe id="originPreviewFrame" title="Previsualizacion carta origen"></iframe>
+              </div>
+            </div>
           </div>
         </article>
 
+        <!-- Cartas del Destino -->
         <article class="read-card chart-destination-card">
           <div class="module-head">
             <h2 id="destinationChartAirportTitle">Cartas del destino</h2>
             <span class="chip active" id="destinationChartAirportCode">DEST</span>
           </div>
-          <div class="data-note" id="destinationChartNote">
-            Selecciona el aeropuerto de destino para preparar sus cartas disponibles.
-          </div>
-          <div class="chart-type-menu" aria-label="Tipos de cartas destino">
-            <button type="button" data-chart-panel="destination" data-chart-type="ADC">ADC</button>
-            <button type="button" data-chart-panel="destination" data-chart-type="ENR">ENR</button>
-            <button type="button" data-chart-panel="destination" data-chart-type="GMC">GMC</button>
-            <button type="button" data-chart-panel="destination" data-chart-type="IAC">IAC</button>
-            <button type="button" data-chart-panel="destination" data-chart-type="SID">SID</button>
-            <button type="button" data-chart-panel="destination" data-chart-type="STAR">STAR</button>
-          </div>
-          <div class="chart-result-list" id="destinationChartResults"></div>
-          <div class="chart-preview hidden-panel" id="destinationChartPreview">
-            <div class="chart-preview-head">
-              <div>
-                <span>Previsualizacion</span>
-                <strong id="destinationPreviewTitle">Carta seleccionada</strong>
+          <div class="chart-h-body">
+            <div class="chart-h-left">
+              <div class="data-note" id="destinationChartNote">
+                Selecciona el aeropuerto de destino para preparar sus cartas disponibles.
               </div>
-              <div class="chart-preview-actions">
-                <a id="destinationPreviewView" href="#" target="_blank" rel="noreferrer">Ver</a>
-                <a id="destinationPreviewDownload" href="#" download>Descargar</a>
-                <button id="destinationPreviewHide" type="button">Ocultar</button>
+              <div class="chart-type-menu" aria-label="Tipos de cartas destino">
+                <button type="button" data-chart-panel="destination" data-chart-type="ADC">ADC</button>
+                <button type="button" data-chart-panel="destination" data-chart-type="ENR">ENR</button>
+                <button type="button" data-chart-panel="destination" data-chart-type="GMC">GMC</button>
+                <button type="button" data-chart-panel="destination" data-chart-type="SID">SID</button>
+                <button type="button" data-chart-panel="destination" data-chart-type="STAR">STAR</button>
+                <button type="button" data-chart-panel="destination" data-chart-type="IAC">IAC</button>
+              </div>
+              <div class="chart-result-list" id="destinationChartResults"></div>
+            </div>
+            <div class="chart-h-right">
+              <div class="chart-h-placeholder">Selecciona una carta para previsualizarla</div>
+              <div class="chart-pinned hidden-panel" id="destinationChartPinned">
+                <div class="chart-preview-head">
+                  <div>
+                    <span class="pinned-label">STAR</span>
+                    <strong id="destinationPinnedTitle">—</strong>
+                  </div>
+                  <div class="chart-preview-actions">
+                    <a id="destinationPinnedView" href="#" target="_blank" rel="noreferrer">Ver</a>
+                    <a id="destinationPinnedDownload" href="#" download>Descargar</a>
+                    <button id="destinationPinnedUnpin" type="button">Desfijar</button>
+                  </div>
+                </div>
+                <iframe id="destinationPinnedFrame" title="Carta STAR fijada destino"></iframe>
+              </div>
+              <div class="chart-pinned hidden-panel" id="destinationChartPinned2">
+                <div class="chart-preview-head">
+                  <div>
+                    <span class="pinned-label">IAC</span>
+                    <strong id="destinationPinned2Title">—</strong>
+                  </div>
+                  <div class="chart-preview-actions">
+                    <a id="destinationPinned2View" href="#" target="_blank" rel="noreferrer">Ver</a>
+                    <a id="destinationPinned2Download" href="#" download>Descargar</a>
+                    <button id="destinationPinned2Unpin" type="button">Desfijar</button>
+                  </div>
+                </div>
+                <iframe id="destinationPinned2Frame" title="Carta IAC fijada destino"></iframe>
+              </div>
+              <div class="chart-preview hidden-panel" id="destinationChartPreview">
+                <div class="chart-preview-head">
+                  <div>
+                    <span>Previsualizacion</span>
+                    <strong id="destinationPreviewTitle">Carta seleccionada</strong>
+                  </div>
+                  <div class="chart-preview-actions">
+                    <a id="destinationPreviewView" href="#" target="_blank" rel="noreferrer">Ver</a>
+                    <a id="destinationPreviewDownload" href="#" download>Descargar</a>
+                    <button id="destinationPreviewPin" type="button">Fijar</button>
+                    <button id="destinationPreviewHide" type="button">Ocultar</button>
+                  </div>
+                </div>
+                <iframe id="destinationPreviewFrame" title="Previsualizacion carta destino"></iframe>
               </div>
             </div>
-            <iframe id="destinationPreviewFrame" title="Previsualizacion carta destino"></iframe>
           </div>
         </article>
-        </div>
 
-        <div class="dashboard-row dashboard-row-2">
+        <!-- Cartas en Ruta -->
+        <article class="read-card favorites-card" aria-label="Cartas en Ruta">
+          <div class="module-head">
+            <h2>Cartas en Ruta</h2>
+            <span class="chip" id="enrouteChartCount">000</span>
+          </div>
+          <div class="chart-h-body">
+            <div class="chart-h-left">
+              <div class="chart-type-menu enroute-type-list" id="enrouteTypeList" aria-label="Tipos de cartas en ruta"></div>
+              <div class="chart-result-list enroute-chart-list" id="enrouteChartResults"></div>
+            </div>
+            <div class="chart-h-right">
+              <div class="chart-h-placeholder">Selecciona una carta para previsualizarla</div>
+              <div class="chart-pinned hidden-panel" id="enrouteChartPinned">
+                <div class="chart-preview-head">
+                  <div>
+                    <span class="pinned-label">Fijada</span>
+                    <strong id="enroutePinnedTitle">—</strong>
+                  </div>
+                  <div class="chart-preview-actions">
+                    <a id="enroutePinnedView" href="#" target="_blank" rel="noreferrer">Ver</a>
+                    <a id="enroutePinnedDownload" href="#" download>Descargar</a>
+                    <button id="enroutePinnedUnpin" type="button">Desfijar</button>
+                  </div>
+                </div>
+                <iframe id="enroutePinnedFrame" title="Carta fijada en ruta"></iframe>
+              </div>
+              <div class="chart-preview hidden-panel" id="enrouteChartPreview">
+                <div class="chart-preview-head">
+                  <div>
+                    <span>Previsualizacion</span>
+                    <strong id="enroutePreviewTitle">Carta seleccionada</strong>
+                  </div>
+                  <div class="chart-preview-actions">
+                    <a id="enroutePreviewView" href="#" target="_blank" rel="noreferrer">Ver</a>
+                    <a id="enroutePreviewDownload" href="#" download>Descargar</a>
+                    <button id="enroutePreviewPin" type="button">Fijar</button>
+                    <button id="enroutePreviewHide" type="button">Ocultar</button>
+                  </div>
+                </div>
+                <iframe id="enroutePreviewFrame" title="Previsualizacion carta en ruta"></iframe>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Busqueda de Aeropuerto -->
         <article class="read-card chart-custom-card">
           <div class="module-head">
             <h2 id="customChartAirportTitle">Busqueda de aeropuerto</h2>
             <span class="chip active" id="customChartAirportCode">ICAO</span>
           </div>
-          <div class="chart-custom-inner" id="chartCustomInner">
-            <div class="data-note" id="customChartNote">
-              Busca cualquier aeropuerto colombiano para consultar sus cartas disponibles.
-            </div>
-            <div class="custom-search-field">
-              <span class="custom-search-label">Aeropuerto</span>
-              <div class="custom-search-row">
-                <div class="airport-combobox">
-                  <input class="airport-search-input custom-search-input" data-route-role="custom" autocomplete="off" placeholder="SKBO o El Dorado" aria-label="Aeropuerto personalizado" />
-                  <div class="airport-suggestions" role="listbox"></div>
-                </div>
-                <button type="button" id="customSearchClear" class="btn-clear-search" style="background-color:#dc2626;color:#fff;border:1px solid #b91c1c;" aria-label="Cancelar busqueda">&#x2715;</button>
+          <div class="chart-h-body">
+            <div class="chart-h-left" id="chartCustomInner">
+              <div class="data-note" id="customChartNote">
+                Busca cualquier aeropuerto colombiano para consultar sus cartas disponibles.
               </div>
+              <div class="custom-search-field">
+                <span class="custom-search-label">Aeropuerto</span>
+                <div class="custom-search-row">
+                  <div class="airport-combobox">
+                    <input class="airport-search-input custom-search-input" data-route-role="custom" autocomplete="off" placeholder="SKBO o El Dorado" aria-label="Aeropuerto personalizado" />
+                    <div class="airport-suggestions" role="listbox"></div>
+                  </div>
+                  <button type="button" id="customSearchClear" class="btn-clear-search" style="background-color:#dc2626;color:#fff;border:1px solid #b91c1c;" aria-label="Cancelar busqueda">&#x2715;</button>
+                </div>
+              </div>
+              <div class="chart-type-menu" aria-label="Tipos de cartas personalizadas">
+                <button type="button" data-chart-panel="custom" data-chart-type="ADC">ADC</button>
+                <button type="button" data-chart-panel="custom" data-chart-type="ENR">ENR</button>
+                <button type="button" data-chart-panel="custom" data-chart-type="GMC">GMC</button>
+                <button type="button" data-chart-panel="custom" data-chart-type="SID">SID</button>
+                <button type="button" data-chart-panel="custom" data-chart-type="STAR">STAR</button>
+                <button type="button" data-chart-panel="custom" data-chart-type="IAC">IAC</button>
+                <button type="button" data-chart-panel="custom" data-chart-type="VAC">VAC</button>
+              </div>
+              <div class="chart-result-list" id="customChartResults"></div>
             </div>
-            <div class="chart-type-menu" aria-label="Tipos de cartas personalizadas">
-              <button type="button" data-chart-panel="custom" data-chart-type="ADC">ADC</button>
-              <button type="button" data-chart-panel="custom" data-chart-type="ENR">ENR</button>
-              <button type="button" data-chart-panel="custom" data-chart-type="GMC">GMC</button>
-              <button type="button" data-chart-panel="custom" data-chart-type="IAC">IAC</button>
-              <button type="button" data-chart-panel="custom" data-chart-type="SID">SID</button>
-              <button type="button" data-chart-panel="custom" data-chart-type="STAR">STAR</button>
-              <button type="button" data-chart-panel="custom" data-chart-type="VAC">VAC</button>
-            </div>
-            <div class="chart-result-list" id="customChartResults"></div>
-            <div class="chart-preview-scroll-wrap">
+            <div class="chart-h-right">
+              <div class="chart-h-placeholder">Selecciona una carta para previsualizarla</div>
+              <div class="chart-pinned hidden-panel" id="customChartPinned">
+                <div class="chart-preview-head">
+                  <div>
+                    <span class="pinned-label">Fijada</span>
+                    <strong id="customPinnedTitle">—</strong>
+                  </div>
+                  <div class="chart-preview-actions">
+                    <a id="customPinnedView" href="#" target="_blank" rel="noreferrer">Ver</a>
+                    <a id="customPinnedDownload" href="#" download>Descargar</a>
+                    <button id="customPinnedUnpin" type="button">Desfijar</button>
+                  </div>
+                </div>
+                <iframe id="customPinnedFrame" title="Carta fijada personalizada"></iframe>
+              </div>
               <div class="chart-preview hidden-panel" id="customChartPreview">
                 <div class="chart-preview-head">
                   <div>
@@ -243,6 +384,7 @@
                   <div class="chart-preview-actions">
                     <a id="customPreviewView" href="#" target="_blank" rel="noreferrer">Ver</a>
                     <a id="customPreviewDownload" href="#" download>Descargar</a>
+                    <button id="customPreviewPin" type="button">Fijar</button>
                     <button id="customPreviewHide" type="button">Ocultar</button>
                   </div>
                 </div>
@@ -252,69 +394,79 @@
           </div>
         </article>
 
-        <div class="scroll-strip" id="chartScrollStrip" aria-hidden="true">
-          <div class="scroll-strip-inner" id="chartScrollStripInner"></div>
-        </div>
+        <!-- Mapa + Meteorologia -->
+        <article class="read-card map-card" aria-label="Mapa y meteorologia">
+          <div class="map-card-body">
 
-        <article class="read-card map-card" aria-label="Mapa aeronautico Colombia">
-          <div class="module-head">
-            <h2>Mapa IFR Colombia</h2>
-            <span class="chip active" id="dashMapStatus">LOAD</span>
-          </div>
-          <div class="dash-map-controls">
-            <div class="dash-style-group">
-              <button type="button" class="dash-style-btn is-active" data-dash-style="liberty">Mapa</button>
-              <button type="button" class="dash-style-btn" data-dash-style="dark">Dark</button>
-              <button type="button" class="dash-style-btn" data-dash-style="satellite">Satelite</button>
-            </div>
-            <span class="map-layer-label">Capas</span>
-            <button type="button" id="dashToggleAirports" class="map-layer-btn is-active">
-              <span class="map-layer-dot" style="background:#fbbf24;"></span>
-              Aeropuertos
-              <code id="dashAirportCount">---</code>
-            </button>
-            <button type="button" id="dashToggleWaypoints" class="map-layer-btn is-active">
-              <span class="map-layer-dot" style="background:#67e8f9;"></span>
-              Waypoints
-              <code id="dashWaypointCount">----</code>
-            </button>
-            <button type="button" id="dashToggleGpsWaypoints" class="map-layer-btn is-active">
-              <span class="map-layer-dot" style="background:#34d399;"></span>
-              GPS Waypoints
-              <code id="dashGpsWaypointCount">----</code>
-            </button>
-            <button type="button" id="dashToggleNavaids" class="map-layer-btn is-active">
-              <span class="map-layer-dot" style="background:#a3e635;"></span>
-              RADIO AYUDAS
-              <code id="dashNavaidCount">---</code>
-            </button>
-          </div>
-          <div id="dashMapContainer" class="dash-map-container"></div>
-        </article>
-
-        <article class="read-card favorites-card" aria-label="Cartas en Ruta">
-          <div class="module-head">
-            <h2>Cartas en Ruta</h2>
-            <span class="chip" id="enrouteChartCount">000</span>
-          </div>
-          <div class="chart-type-menu enroute-type-list" id="enrouteTypeList" aria-label="Tipos de cartas en ruta"></div>
-          <div class="chart-result-list enroute-chart-list" id="enrouteChartResults"></div>
-          <div class="chart-preview hidden-panel" id="enrouteChartPreview">
-            <div class="chart-preview-head">
-              <div>
-                <span>Previsualizacion</span>
-                <strong id="enroutePreviewTitle">Carta seleccionada</strong>
+            <!-- Columna izquierda: Búsqueda meteorológica -->
+            <div class="wx-panel">
+              <div class="module-head">
+                <h2>Información Meteorológica</h2>
+                <span class="chip">WX</span>
               </div>
-              <div class="chart-preview-actions">
-                <a id="enroutePreviewView" href="#" target="_blank" rel="noreferrer">Ver</a>
-                <a id="enroutePreviewDownload" href="#" download>Descargar</a>
-                <button id="enroutePreviewHide" type="button">Ocultar</button>
+              <div class="wx-search-block">
+                <label class="wx-search-label" for="wxAirportSearch">Aeropuerto</label>
+                <div class="wx-search-row">
+                  <input
+                    id="wxAirportSearch"
+                    class="wx-search-input"
+                    type="text"
+                    autocomplete="off"
+                    placeholder="SKBO o El Dorado"
+                    aria-label="Buscar aeropuerto para información meteorológica"
+                  />
+                  <button type="button" id="wxSearchBtn" class="btn-wx-search">Buscar</button>
+                </div>
+              </div>
+              <div class="wx-tabs" role="tablist">
+                <button type="button" class="wx-tab is-active" data-wx-tab="metar" role="tab">METAR</button>
+                <button type="button" class="wx-tab" data-wx-tab="taf" role="tab">TAF</button>
+                <button type="button" class="wx-tab" data-wx-tab="notam" role="tab">NOTAMs</button>
+              </div>
+              <div class="wx-result" id="wxResult">
+                <p class="wx-empty">Busca un aeropuerto para consultar su información meteorológica, TAF y NOTAMs.</p>
               </div>
             </div>
-            <iframe id="enroutePreviewFrame" title="Previsualizacion carta en ruta"></iframe>
+
+            <!-- Columna derecha: Mapa -->
+            <div class="map-panel">
+              <div class="module-head">
+                <h2>Mapa IFR Colombia</h2>
+                <span class="chip active" id="dashMapStatus">LOAD</span>
+              </div>
+              <div class="dash-map-controls">
+                <div class="dash-style-group">
+                  <button type="button" class="dash-style-btn is-active" data-dash-style="liberty">Mapa</button>
+                  <button type="button" class="dash-style-btn" data-dash-style="dark">Dark</button>
+                  <button type="button" class="dash-style-btn" data-dash-style="satellite">Satelite</button>
+                </div>
+                <span class="map-layer-label">Capas</span>
+                <button type="button" id="dashToggleAirports" class="map-layer-btn is-active">
+                  <span class="map-layer-dot" style="background:#fbbf24;"></span>
+                  Aeropuertos
+                  <code id="dashAirportCount">---</code>
+                </button>
+                <button type="button" id="dashToggleWaypoints" class="map-layer-btn is-active">
+                  <span class="map-layer-dot" style="background:#67e8f9;"></span>
+                  Waypoints
+                  <code id="dashWaypointCount">----</code>
+                </button>
+                <button type="button" id="dashToggleGpsWaypoints" class="map-layer-btn is-active">
+                  <span class="map-layer-dot" style="background:#34d399;"></span>
+                  GPS Waypoints
+                  <code id="dashGpsWaypointCount">----</code>
+                </button>
+                <button type="button" id="dashToggleNavaids" class="map-layer-btn is-active">
+                  <span class="map-layer-dot" style="background:#a3e635;"></span>
+                  RADIO AYUDAS
+                  <code id="dashNavaidCount">---</code>
+                </button>
+              </div>
+              <div id="dashMapContainer" class="dash-map-container"></div>
+            </div>
+
           </div>
         </article>
-        </div>
 
       </section>
     </main>

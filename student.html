@@ -1,0 +1,1039 @@
+<!doctype html>
+<!-- IFR TRAINING COL | student.html -->
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IFR TRAINING COL | Panel Estudiante</title>
+  <style>body { visibility: hidden; }</style>
+  <style>
+    :root {
+      --bg: #0d0d0f;
+      --surface: #161618;
+      --surface-warm: #1e1e22;
+      --fg: #f0f0f2;
+      --fg-2: #b0b0be;
+      --muted: #9a9aaa;
+      --border: #2a2a30;
+      --border-soft: #38383f;
+      --accent: #38bdf8;
+      --accent-on: #040408;
+      --accent-hover: #7dd3fc;
+      --success: #4ade80;
+      --danger: #e63946;
+      --magenta: #e879f9;
+      --amber: #fb923c;
+      --font-display: "Eurostile", "Arial Narrow", Arial, sans-serif;
+      --font-body: "Inter", Arial, sans-serif;
+      --font-mono: "SF Mono", ui-monospace, Menlo, monospace;
+      --focus-ring: 0 0 0 4px rgba(56,189,248,0.22);
+      --motion-fast: 120ms;
+      --ease: cubic-bezier(0.16,1,0.3,1);
+      --topbar-h: 54px;
+      --sidebar-w: 248px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; overflow: hidden; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; font: inherit; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--topbar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 100;
+      gap: 16px;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      width: 30px; height: 30px;
+      display: grid; place-items: center;
+      border: 1px solid var(--border-soft);
+      clip-path: polygon(25% 4%, 75% 4%, 100% 50%, 75% 96%, 25% 96%, 0 50%);
+      color: var(--fg-2);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      flex-shrink: 0;
+    }
+    .brand-name {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .role-badge {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-on);
+      background: var(--accent);
+      padding: 3px 8px;
+      font-weight: 700;
+    }
+    .topbar-center {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .btn-logout {
+      background: transparent;
+      border: 1px solid var(--border-soft);
+      color: var(--fg-2);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      transition: border-color var(--motion-fast), color var(--motion-fast);
+    }
+    .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* ── LAYOUT ── */
+    .layout {
+      display: flex;
+      height: 100vh;
+      padding-top: var(--topbar-h);
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: var(--bg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 20px 0;
+    }
+    .sidebar-section { padding: 0 16px; margin-bottom: 24px; }
+    .sidebar-section-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 8px;
+      margin-bottom: 6px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 0;
+      color: var(--fg-2);
+      font-size: 13px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background var(--motion-fast), color var(--motion-fast), border-color var(--motion-fast);
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item:hover { background: var(--surface); color: var(--fg); }
+    .nav-item.active {
+      background: var(--surface-warm);
+      color: var(--accent);
+      border-color: var(--border);
+    }
+    .nav-item .nav-icon { font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
+    .nav-item .nav-label { font-family: var(--font-body); font-size: 13px; }
+    .nav-item .nav-badge {
+      margin-left: auto;
+      background: var(--accent);
+      color: var(--accent-on);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+    }
+
+    .sidebar-spacer { flex: 1; }
+
+    /* ── SESSION CODE BLOCK ── */
+    .sidebar-session {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+    }
+    .session-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .session-code-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .session-code {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      color: var(--magenta);
+    }
+    .session-copy-btn {
+      background: none;
+      border: 1px solid var(--border-soft);
+      color: var(--muted);
+      font-size: 13px;
+      padding: 2px 6px;
+      cursor: pointer;
+      transition: color var(--motion-fast), border-color var(--motion-fast);
+    }
+    .session-copy-btn:hover { color: var(--magenta); border-color: var(--magenta); }
+    .session-hint {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      color: var(--border-soft);
+      margin-top: 4px;
+    }
+
+    .sidebar-status {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+      margin-top: auto;
+    }
+    .conn-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .conn-dot {
+      width: 8px; height: 8px;
+      background: var(--muted);
+      flex-shrink: 0;
+      position: relative;
+    }
+    .conn-dot.online { background: var(--success); }
+    .conn-dot.online::after {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      background: var(--success);
+      opacity: 0.25;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.25; }
+      50% { transform: scale(1.6); opacity: 0; }
+    }
+
+    /* ── CONTENT ── */
+    .content {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tab-panel { display: none; flex: 1; overflow-y: auto; padding: 28px 32px; flex-direction: column; gap: 24px; }
+    .tab-panel.active { display: flex; }
+    .tab-panel.fullframe { padding: 0; overflow: hidden; }
+
+    /* iframe */
+    .dashboard-frame {
+      flex: 1;
+      border: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ── PANEL HEADERS ── */
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    .panel-title-wrap { display: flex; align-items: center; gap: 12px; }
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .count-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(56,189,248,0.1);
+      border: 1px solid rgba(56,189,248,0.25);
+      padding: 3px 10px;
+    }
+    .tech-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    /* ── VUELO CARDS ── */
+    .flights-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .flight-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .flight-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      gap: 16px;
+    }
+    .route-label {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .route-label .sep {
+      color: var(--accent);
+      margin: 0 6px;
+    }
+    .flight-meta {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+    .flight-card-body {
+      padding: 16px 20px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .flight-tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border: 1px solid;
+    }
+    .tag-type { color: var(--magenta); border-color: rgba(232,121,249,0.3); background: rgba(232,121,249,0.06); }
+    .tag-info { color: var(--muted); border-color: var(--border); }
+    .flight-desc {
+      font-size: 13px;
+      color: var(--fg-2);
+      margin-top: 8px;
+      max-width: 580px;
+      line-height: 1.6;
+    }
+    .flight-card-footer {
+      padding: 12px 20px;
+      background: rgba(0,0,0,0.18);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .status-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border: 1px solid;
+    }
+    .status-pending    { color: var(--amber);   border-color: rgba(251,146,60,0.35);  background: rgba(251,146,60,0.07); }
+    .status-progress   { color: var(--accent);  border-color: rgba(56,189,248,0.35);  background: rgba(56,189,248,0.07); }
+    .status-done       { color: var(--success); border-color: rgba(74,222,128,0.35);  background: rgba(74,222,128,0.07); }
+    .status-cancelled  { color: var(--muted);   border-color: var(--border);          background: transparent; }
+    .flights-loading {
+      display: flex; align-items: center; justify-content: center;
+      padding: 60px 20px;
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-soft);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 7px 16px;
+      transition: border-color var(--motion-fast), background var(--motion-fast);
+    }
+    .btn-outline:hover { border-color: var(--accent); background: rgba(56,189,248,0.07); }
+
+    /* ── SIM WIDGET ── */
+    .sim-widget {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+    .sim-widget-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg);
+      font-weight: 600;
+    }
+    .sim-widget-hint { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .sim-widget-machine {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .btn-connect-sim {
+      background: var(--accent);
+      border: none;
+      color: var(--accent-on);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 8px 20px;
+      transition: background var(--motion-fast);
+      flex-shrink: 0;
+    }
+    .btn-connect-sim:hover { background: var(--accent-hover); }
+    .btn-connect-sim:disabled { opacity: 0.5; cursor: not-allowed; }
+    .link-msg { font-size: 11px; font-family: var(--font-mono); margin-top: 8px; min-height: 16px; }
+
+    /* Empty state */
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--muted);
+      padding: 60px 20px;
+    }
+    .empty-icon { font-size: 36px; opacity: 0.4; }
+    .empty-text { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+
+    /* ── HISTORIAL ── */
+    .history-table { width: 100%; border-collapse: collapse; }
+    .history-table th {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: left;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 400;
+    }
+    .history-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--fg-2);
+      vertical-align: middle;
+    }
+    .history-table tbody tr { cursor: pointer; transition: background var(--motion-fast); }
+    .history-table tbody tr:hover { background: var(--surface-warm); }
+    .history-table td .route-code { font-family: var(--font-display); font-size: 15px; color: var(--fg); text-transform: uppercase; }
+
+    /* flight detail expand */
+    .flight-detail-row { display: none; }
+    .flight-detail-row.open { display: table-row; }
+    .flight-detail-row td { padding: 0; border-bottom: 1px solid var(--border-soft); }
+    .flight-detail-inner {
+      padding: 20px 24px;
+      background: var(--bg);
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 20px;
+    }
+    .flight-map-placeholder {
+      background: var(--surface-warm);
+      border: 1px solid var(--border);
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: var(--muted);
+    }
+    .flight-map-placeholder svg { opacity: 0.3; }
+    .flight-map-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+    .flight-stats { display: flex; flex-direction: column; gap: 12px; }
+    .stat-row {
+      display: flex; flex-direction: column; gap: 2px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .stat-value { font-family: var(--font-display); font-size: 22px; color: var(--accent); text-transform: uppercase; }
+    .stat-unit { font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+
+    /* altitude chart placeholder */
+    .alt-chart {
+      margin-top: 16px;
+      background: var(--surface-warm);
+      border: 1px solid var(--border);
+      height: 64px;
+      position: relative;
+      overflow: hidden;
+    }
+    .alt-chart svg { width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <a href="student.html" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;">
+        <div class="brand-mark">AC</div>
+        <span class="brand-name">IFR Training Col</span>
+      </a>
+      <span class="role-badge">Estudiante</span>
+    </div>
+    <div class="topbar-center" id="userLabel">Juan García</div>
+    <div class="topbar-right">
+      <button class="btn-logout" onclick="handleLogout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Navegación</div>
+        <button class="nav-item active" onclick="switchPanel('vuelos', this)">
+          <span class="nav-icon">📋</span>
+          <span class="nav-label">Vuelos Asignados</span>
+          <span class="nav-badge" id="pendingCount">2</span>
+        </button>
+        <button class="nav-item" onclick="switchPanel('planificacion', this)">
+          <span class="nav-icon">🗺️</span>
+          <span class="nav-label">Planificación IFR</span>
+        </button>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Mi Progreso</div>
+        <button class="nav-item" onclick="switchPanel('historial', this)">
+          <span class="nav-icon">✈️</span>
+          <span class="nav-label">Historial de Vuelos</span>
+        </button>
+        <button class="nav-item" onclick="switchPanel('estadisticas', this)">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Mis Estadísticas</span>
+        </button>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+<div class="sidebar-status">
+        <div class="conn-indicator">
+          <div class="conn-dot" id="simDot"></div>
+          <span id="simStatus">Sin simulador</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+      <!-- VUELOS ASIGNADOS -->
+      <div class="tab-panel active" id="panel-vuelos">
+        <div class="panel-head">
+          <div class="panel-title-wrap">
+            <div>
+              <div class="tech-label">Panel / Estudiante / Vuelos</div>
+              <h1 class="panel-title">Vuelos Asignados</h1>
+            </div>
+            <span class="count-badge" id="assignedBadge">2 pendientes</span>
+          </div>
+        </div>
+
+        <div class="sim-widget" id="simWidget">
+          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:160px;">
+              <div class="sim-widget-title">Simulador no vinculado</div>
+              <div class="sim-widget-hint">Abre X-Plane en este PC, luego haz clic en conectar</div>
+            </div>
+            <button class="btn-connect-sim" id="btnLinkSim" onclick="linkSimulator()">Conectar simulador</button>
+          </div>
+          <div class="link-msg" id="linkMsg"></div>
+        </div>
+
+        <div class="flights-list" id="flightsList">
+          <div class="flights-loading">Cargando vuelos...</div>
+        </div>
+      </div>
+
+      <!-- PLANIFICACIÓN IFR (iframe) -->
+      <div class="tab-panel fullframe" id="panel-planificacion">
+        <iframe class="dashboard-frame" src="dashboard.html" title="Planificación IFR" loading="lazy"></iframe>
+      </div>
+
+      <!-- HISTORIAL -->
+      <div class="tab-panel" id="panel-historial">
+        <div class="panel-head">
+          <div>
+            <div class="tech-label">Panel / Estudiante / Historial</div>
+            <h1 class="panel-title">Historial de Vuelos</h1>
+          </div>
+        </div>
+
+        <div style="border: 1px solid var(--border); overflow: hidden;">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Ruta</th>
+                <th>Tipo</th>
+                <th>Duración</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr onclick="toggleDetail('d1', this)">
+                <td><span style="font-family:var(--font-mono);font-size:11px;">28 May 2025</span></td>
+                <td><span class="route-code">SKBO → SKCL</span></td>
+                <td><span class="tag tag-type" style="display:inline-block;">ILS</span></td>
+                <td><span style="font-family:var(--font-mono);font-size:12px;">1h 12min</span></td>
+                <td><span class="status-badge status-done">Completado</span></td>
+              </tr>
+              <tr class="flight-detail-row" id="d1">
+                <td colspan="5">
+                  <div class="flight-detail-inner">
+                    <div>
+                      <div class="flight-map-placeholder">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                        <span class="flight-map-label">Trayectoria del vuelo</span>
+                        <span style="font-family:var(--font-mono);font-size:9px;color:var(--border-soft);">Disponible con servidor activo</span>
+                      </div>
+                      <div class="alt-chart">
+                        <svg viewBox="0 0 400 64" preserveAspectRatio="none">
+                          <polyline points="0,60 40,55 80,40 120,22 160,18 200,16 240,14 280,18 320,30 360,48 400,58"
+                            fill="none" stroke="#38bdf8" stroke-width="1.5" opacity="0.7"/>
+                          <polygon points="0,60 40,55 80,40 120,22 160,18 200,16 240,14 280,18 320,30 360,48 400,58 400,64 0,64"
+                            fill="rgba(56,189,248,0.06)"/>
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="flight-stats">
+                      <div class="stat-row">
+                        <div class="stat-label">Altitud máxima</div>
+                        <div class="stat-value">8 500 <span class="stat-unit">FT</span></div>
+                      </div>
+                      <div class="stat-row">
+                        <div class="stat-label">IAS máxima</div>
+                        <div class="stat-value">145 <span class="stat-unit">KT</span></div>
+                      </div>
+                      <div class="stat-row">
+                        <div class="stat-label">Duración total</div>
+                        <div class="stat-value">1:12 <span class="stat-unit">H</span></div>
+                      </div>
+                      <div class="stat-row">
+                        <div class="stat-label">Puntos grabados</div>
+                        <div class="stat-value">864 <span class="stat-unit">pts</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr onclick="toggleDetail('d2', this)">
+                <td><span style="font-family:var(--font-mono);font-size:11px;">22 May 2025</span></td>
+                <td><span class="route-code">SKRG → SKBO</span></td>
+                <td><span class="tag tag-type" style="display:inline-block;">RNAV</span></td>
+                <td><span style="font-family:var(--font-mono);font-size:12px;">0h 58min</span></td>
+                <td><span class="status-badge status-done">Completado</span></td>
+              </tr>
+              <tr class="flight-detail-row" id="d2">
+                <td colspan="5">
+                  <div class="flight-detail-inner">
+                    <div>
+                      <div class="flight-map-placeholder">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                        <span class="flight-map-label">Trayectoria del vuelo</span>
+                        <span style="font-family:var(--font-mono);font-size:9px;color:var(--border-soft);">Disponible con servidor activo</span>
+                      </div>
+                      <div class="alt-chart">
+                        <svg viewBox="0 0 400 64" preserveAspectRatio="none">
+                          <polyline points="0,62 60,50 120,30 180,15 240,13 300,25 360,50 400,60"
+                            fill="none" stroke="#38bdf8" stroke-width="1.5" opacity="0.7"/>
+                          <polygon points="0,62 60,50 120,30 180,15 240,13 300,25 360,50 400,60 400,64 0,64"
+                            fill="rgba(56,189,248,0.06)"/>
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="flight-stats">
+                      <div class="stat-row">
+                        <div class="stat-label">Altitud máxima</div>
+                        <div class="stat-value">7 200 <span class="stat-unit">FT</span></div>
+                      </div>
+                      <div class="stat-row">
+                        <div class="stat-label">IAS máxima</div>
+                        <div class="stat-value">132 <span class="stat-unit">KT</span></div>
+                      </div>
+                      <div class="stat-row">
+                        <div class="stat-label">Duración total</div>
+                        <div class="stat-value">0:58 <span class="stat-unit">H</span></div>
+                      </div>
+                      <div class="stat-row">
+                        <div class="stat-label">Puntos grabados</div>
+                        <div class="stat-value">696 <span class="stat-unit">pts</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ESTADÍSTICAS -->
+      <div class="tab-panel" id="panel-estadisticas">
+        <div class="panel-head">
+          <div>
+            <div class="tech-label">Panel / Estudiante / Estadísticas</div>
+            <h1 class="panel-title">Mis Estadísticas</h1>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+          <div style="background:var(--surface);border:1px solid var(--border);padding:20px 18px;display:flex;flex-direction:column;gap:6px;">
+            <div class="stat-label">Vuelos completados</div>
+            <div style="font-family:var(--font-display);font-size:36px;color:var(--accent);line-height:1;">02</div>
+            <div class="stat-label" style="color:var(--border-soft);">Este mes</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);padding:20px 18px;display:flex;flex-direction:column;gap:6px;">
+            <div class="stat-label">Horas de vuelo</div>
+            <div style="font-family:var(--font-display);font-size:36px;color:var(--accent);line-height:1;">2.2</div>
+            <div class="stat-label" style="color:var(--border-soft);">Horas totales</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);padding:20px 18px;display:flex;flex-direction:column;gap:6px;">
+            <div class="stat-label">Vuelos asignados</div>
+            <div style="font-family:var(--font-display);font-size:36px;color:var(--amber);line-height:1;">02</div>
+            <div class="stat-label" style="color:var(--border-soft);">Pendientes</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);padding:20px 18px;display:flex;flex-direction:column;gap:6px;">
+            <div class="stat-label">Vuelo más largo</div>
+            <div style="font-family:var(--font-display);font-size:36px;color:var(--success);line-height:1;">1:12</div>
+            <div class="stat-label" style="color:var(--border-soft);">Horas:minutos</div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="src/scripts/supabase-client.js"></script>
+  <script>const REQUIRED_ROLE = 'estudiante';</script>
+  <script src="src/scripts/auth-guard.js"></script>
+
+  <script>
+    function switchPanel(name, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+      document.getElementById('panel-' + name).classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+
+    function toggleDetail(id, row) {
+      const detail = document.getElementById(id);
+      const isOpen = detail.classList.toggle('open');
+      row.style.background = isOpen ? 'var(--surface-warm)' : '';
+    }
+
+    // ── VUELOS ASIGNADOS ──
+    const STATUS_MAP = {
+      pendiente:   { cls: 'status-pending',   txt: 'Pendiente'   },
+      en_progreso: { cls: 'status-progress',  txt: 'En progreso' },
+      completado:  { cls: 'status-done',      txt: 'Completado'  },
+      cancelado:   { cls: 'status-cancelled', txt: 'Cancelado'   },
+    };
+
+    function fmtDate(iso) {
+      return new Date(iso).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function renderCard(f) {
+      const st          = STATUS_MAP[f.estado] || STATUS_MAP.pendiente;
+      const createdDate = fmtDate(f.created_at);
+      const limitTag    = f.fecha_limite
+        ? `<span class="tag tag-info">Límite: ${fmtDate(f.fecha_limite + 'T12:00:00')}</span>`
+        : '';
+      const desc        = f.instrucciones
+        ? `<p class="flight-desc">${escapeHtml(f.instrucciones)}</p>`
+        : '';
+
+      return `
+        <article class="flight-card">
+          <div class="flight-card-head">
+            <div class="route-label">${f.origen} <span class="sep">→</span> ${f.destino}</div>
+            <div class="flight-meta">Asignado: ${createdDate}</div>
+          </div>
+          <div class="flight-card-body">
+            <div>
+              <div class="flight-tags">
+                <span class="tag tag-info">IFR</span>
+                ${limitTag}
+              </div>
+              ${desc}
+            </div>
+          </div>
+          <div class="flight-card-footer">
+            <span class="status-badge ${st.cls}">${st.txt}</span>
+            <button class="btn-outline"
+              onclick="switchPanel('planificacion', document.querySelectorAll('.nav-item')[1])">
+              Ver planificación
+            </button>
+          </div>
+        </article>`;
+    }
+
+    async function loadFlights() {
+      const list = document.getElementById('flightsList');
+
+      const { data, error } = await supabaseClient
+        .from('flight_assignments')
+        .select('*')
+        .eq('student_id', window.currentUser.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        list.innerHTML = `<div class="empty-state">
+          <div class="empty-icon">⚠</div>
+          <div class="empty-text">Error al cargar vuelos</div>
+        </div>`;
+        return;
+      }
+
+      const pending = data.filter(f => f.estado === 'pendiente').length;
+      const badge   = document.getElementById('pendingCount');
+      badge.textContent = pending;
+      badge.style.display = pending > 0 ? '' : 'none';
+      document.getElementById('assignedBadge').textContent =
+        pending === 0 ? 'Sin pendientes' : `${pending} pendiente${pending !== 1 ? 's' : ''}`;
+
+      if (!data.length) {
+        list.innerHTML = `<div class="empty-state">
+          <div class="empty-icon">✈</div>
+          <div class="empty-text">No tienes vuelos asignados aún</div>
+        </div>`;
+        return;
+      }
+
+      list.innerHTML = data.map(renderCard).join('');
+    }
+
+    if (window.__authComplete) {
+      loadFlights();
+    } else {
+      window.addEventListener('authReady', loadFlights);
+    }
+
+    // ── SIMULADOR EN TIEMPO REAL ──────────────────────────────────────────────
+    let simTimeout = null;
+    let _simChannel = null;
+
+    function setSimOnline(point) {
+      document.getElementById('simDot').classList.add('online');
+      document.getElementById('simStatus').textContent =
+        `${Math.round(point.altitude_ft).toLocaleString()} ft · ${Math.round(point.ias_kt)} kt`;
+      clearTimeout(simTimeout);
+      simTimeout = setTimeout(() => {
+        document.getElementById('simDot').classList.remove('online');
+        document.getElementById('simStatus').textContent = 'Sin simulador';
+      }, 5000);
+    }
+
+    function subscribeToSim(sessionCode) {
+      if (_simChannel) supabaseClient.removeChannel(_simChannel);
+      if (!sessionCode) return;
+      _simChannel = supabaseClient
+        .channel('sim:' + sessionCode)
+        .on('postgres_changes', {
+          event: 'INSERT', schema: 'public', table: 'flight_telemetry',
+          filter: `session_code=eq.${sessionCode}`
+        }, (payload) => {
+          setSimOnline(payload.new);
+          const hint = document.getElementById('simWidgetHint');
+          if (hint) {
+            const p = payload.new;
+            hint.textContent = `${p.on_ground ? 'En tierra' : 'En vuelo'} · ${Math.round(p.altitude_ft).toLocaleString()} ft · ${Math.round(p.ias_kt)} kt`;
+          }
+          document.querySelectorAll('#simWidget .conn-dot').forEach(d => d.classList.add('online'));
+        })
+        .subscribe();
+    }
+
+    // ── SIMULATOR LINK ──────────────────────────────────────────────────────
+    async function checkSimulatorLink() {
+      try {
+        const code = window.currentUser?.session_code;
+        if (!code) return; // HTML default already shows unlinked state
+
+        const { data: session } = await supabaseClient
+          .from('flight_sessions')
+          .select('session_code, last_seen, on_ground')
+          .eq('session_code', code)
+          .single();
+
+        if (session) {
+          renderSimLinked(code, session);
+          subscribeToSim(code);
+        }
+        // else: HTML default already shows unlinked state
+      } catch (e) {
+        // leave the default unlinked state visible
+      }
+    }
+
+    function renderSimUnlinked() {
+      document.getElementById('simWidget').innerHTML = `
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:160px;">
+            <div class="sim-widget-title">Simulador no vinculado</div>
+            <div class="sim-widget-hint">Abre X-Plane en este PC, luego haz clic en conectar</div>
+          </div>
+          <button class="btn-connect-sim" id="btnLinkSim" onclick="linkSimulator()">Conectar simulador</button>
+        </div>
+        <div class="link-msg" id="linkMsg"></div>`;
+    }
+
+    function renderSimLinked(code, session) {
+      const isLive = Date.now() - new Date(session.last_seen).getTime() < 10000;
+      document.getElementById('simWidget').innerHTML = `
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+          <div class="conn-dot ${isLive ? 'online' : ''}" style="flex-shrink:0;"></div>
+          <div style="flex:1;">
+            <div class="sim-widget-machine">${escapeHtml(code)}</div>
+            <div class="sim-widget-hint" id="simWidgetHint">
+              ${isLive ? (session.on_ground ? 'En tierra' : 'En vuelo') : 'Abre X-Plane para iniciar sesión'}
+            </div>
+          </div>
+          <button class="btn-outline" onclick="linkSimulator()" style="font-size:10px;padding:6px 14px;">Cambiar</button>
+        </div>
+        <div class="link-msg" id="linkMsg"></div>`;
+      if (isLive) {
+        document.getElementById('simDot').classList.add('online');
+        document.getElementById('simStatus').textContent = 'Simulador activo';
+      }
+    }
+
+    async function linkSimulator() {
+      const btn = document.getElementById('btnLinkSim') || document.querySelector('.btn-connect-sim');
+      if (btn) { btn.disabled = true; btn.textContent = 'Buscando...'; }
+      setLinkMsg('', false);
+
+      const since = new Date(Date.now() - 60000).toISOString();
+      const { data: recent, error } = await supabaseClient
+        .from('flight_sessions')
+        .select('session_code, last_seen, on_ground')
+        .gte('last_seen', since)
+        .order('last_seen', { ascending: false });
+
+      if (error || !recent?.length) {
+        if (btn) { btn.disabled = false; btn.textContent = 'Conectar simulador'; }
+        setLinkMsg('No se detectó X-Plane activo. Ábrelo y vuelve a intentar.', true);
+        return;
+      }
+
+      const { data: claimed } = await supabaseClient
+        .from('profiles')
+        .select('session_code, id')
+        .in('session_code', recent.map(s => s.session_code));
+
+      const claimedByOthers = new Set(
+        (claimed || []).filter(p => p.id !== window.currentUser.id).map(p => p.session_code)
+      );
+
+      const pick = recent.find(s => !claimedByOthers.has(s.session_code));
+      if (!pick) {
+        if (btn) { btn.disabled = false; btn.textContent = 'Conectar simulador'; }
+        setLinkMsg('Todas las sesiones activas están asignadas a otros estudiantes.', true);
+        return;
+      }
+
+      const { error: upErr } = await supabaseClient
+        .from('profiles')
+        .update({ session_code: pick.session_code })
+        .eq('id', window.currentUser.id);
+
+      if (upErr) {
+        if (btn) { btn.disabled = false; btn.textContent = 'Conectar simulador'; }
+        setLinkMsg('Error al vincular: ' + upErr.message, true);
+        return;
+      }
+
+      window.currentUser.session_code = pick.session_code;
+      renderSimLinked(pick.session_code, pick);
+      subscribeToSim(pick.session_code);
+    }
+
+    function setLinkMsg(text, isError) {
+      const el = document.getElementById('linkMsg');
+      if (!el) return;
+      el.textContent = text;
+      el.style.color = isError ? 'var(--danger)' : 'var(--success)';
+    }
+
+    function initSessionUI() {
+      checkSimulatorLink();
+    }
+
+    if (window.__authComplete) {
+      initSessionUI();
+    } else {
+      window.addEventListener('authReady', initSessionUI);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,474 @@
+<!doctype html>
+<!-- IFR TRAINING COL | login.html -->
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IFR TRAINING COL | Acceso</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="src/scripts/supabase-client.js"></script>
+  <style>body { visibility: hidden; }</style>
+  <script>
+    // Safety net: show the page after 3s no matter what
+    setTimeout(() => { document.body.style.visibility = 'visible'; }, 3000);
+    (async () => {
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+          const { data: profile } = await supabaseClient
+            .from('profiles').select('role').eq('id', session.user.id).single();
+          window.location.replace(profile?.role === 'admin' ? 'admin.html' : 'student.html');
+          return;
+        }
+      } catch (e) {}
+      document.body.style.visibility = 'visible';
+    })();
+  </script>
+  <style>
+    :root {
+      --bg: #0d0d0f;
+      --surface: #161618;
+      --surface-warm: #1e1e22;
+      --fg: #f0f0f2;
+      --fg-2: #b0b0be;
+      --muted: #9a9aaa;
+      --border: #2a2a30;
+      --border-soft: #38383f;
+      --accent: #38bdf8;
+      --accent-on: #040408;
+      --accent-hover: #7dd3fc;
+      --success: #4ade80;
+      --danger: #e63946;
+      --magenta: #e879f9;
+      --font-display: "Eurostile", "Arial Narrow", Arial, sans-serif;
+      --font-body: "Inter", Arial, sans-serif;
+      --font-mono: "SF Mono", ui-monospace, Menlo, monospace;
+      --focus-ring: 0 0 0 4px rgba(56,189,248,0.22);
+      --motion-fast: 120ms;
+      --ease: cubic-bezier(0.16,1,0.3,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { background: var(--bg); }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      display: grid;
+      place-items: center;
+      padding: 24px 16px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Grid background */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        linear-gradient(rgba(42,42,48,0.32) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(42,42,48,0.32) 1px, transparent 1px);
+      background-size: 52px 52px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Watermark coords */
+    .watermark {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--border-soft);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .panel {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      padding: 36px 32px 32px;
+    }
+
+    /* Brand */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border-soft);
+      clip-path: polygon(25% 4%, 75% 4%, 100% 50%, 75% 96%, 25% 96%, 0 50%);
+      color: var(--fg-2);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+    .brand-name {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--fg);
+    }
+    .brand-sub {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0 0 24px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 10px 0;
+      cursor: pointer;
+      transition: color var(--motion-fast) var(--ease), background var(--motion-fast) var(--ease);
+      border-right: 1px solid var(--border);
+    }
+    .tab-btn:last-child { border-right: none; }
+    .tab-btn.active {
+      background: var(--accent);
+      color: var(--accent-on);
+      font-weight: 700;
+    }
+    .tab-btn:hover:not(.active) { color: var(--fg); background: var(--surface-warm); }
+
+    /* Form */
+    .form-section { display: none; }
+    .form-section.active { display: flex; flex-direction: column; gap: 16px; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .input-wrap { position: relative; }
+    .field input {
+      width: 100%;
+      min-height: 44px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      border-radius: 0;
+      padding: 0 40px 0 14px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      outline: none;
+      transition: border-color var(--motion-fast) var(--ease);
+    }
+    .field input:focus { border-color: var(--accent); box-shadow: var(--focus-ring); }
+    .field input::placeholder { color: var(--muted); }
+
+    .toggle-pw {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 4px;
+      transition: color var(--motion-fast);
+    }
+    .toggle-pw:hover { color: var(--accent); }
+
+    .btn-primary {
+      width: 100%;
+      min-height: 46px;
+      background: var(--accent);
+      color: var(--accent-on);
+      border: 1px solid var(--accent);
+      border-radius: 0;
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background var(--motion-fast) var(--ease);
+      margin-top: 4px;
+    }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-primary:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+    .form-hint {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.5;
+      margin-top: 4px;
+    }
+
+    .forgot-link {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      text-align: right;
+      display: block;
+      margin-top: -8px;
+      transition: color var(--motion-fast);
+    }
+    .forgot-link:hover { color: var(--accent); }
+
+    .panel-footer {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .panel-footer span {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--border-soft);
+    }
+    .status-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .status-dot::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      background: var(--success);
+      display: inline-block;
+    }
+
+    @media (max-width: 480px) {
+      .panel { padding: 24px 20px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="watermark">04°42'N 074°08'W — IFR TRAINING COL — FL350 — SKBO → SKPE</div>
+
+  <div class="panel" role="main">
+    <a href="index.html" class="brand" style="text-decoration:none;color:inherit;">
+      <div class="brand-mark">AC</div>
+      <div>
+        <div class="brand-name">IFR Training Col</div>
+        <div class="brand-sub">Plataforma de entrenamiento IFR</div>
+      </div>
+    </a>
+
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;margin-bottom:20px;transition:color 120ms;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">← Volver al inicio</a>
+
+    <hr class="divider" />
+
+    <div id="auth-msg" style="display:none;padding:10px 14px;margin-bottom:16px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;border:1px solid;"></div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true"
+              onclick="switchTab('login', this)">Iniciar sesión</button>
+      <button class="tab-btn" role="tab" aria-selected="false"
+              onclick="switchTab('register', this)">Registrarse</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="form-section active" id="form-login">
+      <div class="field">
+        <label for="login-email">Correo electrónico</label>
+        <input type="email" id="login-email" placeholder="piloto@ejemplo.com" autocomplete="email" />
+      </div>
+      <div class="field">
+        <label for="login-pw">Contraseña</label>
+        <div class="input-wrap">
+          <input type="password" id="login-pw" placeholder="••••••••" autocomplete="current-password" />
+          <button class="toggle-pw" type="button" onclick="togglePw('login-pw', this)">ver</button>
+        </div>
+      </div>
+      <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+      <button class="btn-primary" id="btn-login" type="button" onclick="handleLogin()">Ingresar</button>
+    </div>
+
+    <!-- REGISTRO -->
+    <div class="form-section" id="form-register">
+      <div class="field">
+        <label for="reg-name">Nombre completo</label>
+        <input type="text" id="reg-name" placeholder="Juan García" autocomplete="name" />
+      </div>
+      <div class="field">
+        <label for="reg-email">Correo electrónico</label>
+        <input type="email" id="reg-email" placeholder="piloto@ejemplo.com" autocomplete="email" />
+      </div>
+      <div class="field">
+        <label for="reg-pw">Contraseña</label>
+        <div class="input-wrap">
+          <input type="password" id="reg-pw" placeholder="Mínimo 8 caracteres" autocomplete="new-password" />
+          <button class="toggle-pw" type="button" onclick="togglePw('reg-pw', this)">ver</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="reg-pw2">Confirmar contraseña</label>
+        <div class="input-wrap">
+          <input type="password" id="reg-pw2" placeholder="Repite tu contraseña" autocomplete="new-password" />
+          <button class="toggle-pw" type="button" onclick="togglePw('reg-pw2', this)">ver</button>
+        </div>
+      </div>
+      <button class="btn-primary" id="btn-register" type="button" onclick="handleRegister()">Crear cuenta</button>
+      <p class="form-hint">Recibirás un correo para confirmar tu cuenta antes de ingresar.</p>
+    </div>
+
+    <div class="panel-footer">
+      <span>IFR Training Col © 2025</span>
+      <span class="status-dot">Sistema activo</span>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tab, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+      document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+      document.getElementById('form-' + tab).classList.add('active');
+      clearMsg();
+    }
+
+    function togglePw(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const isText = input.type === 'text';
+      input.type = isText ? 'password' : 'text';
+      btn.textContent = isText ? 'ver' : 'ocultar';
+    }
+
+    function showMsg(text, isError) {
+      const el = document.getElementById('auth-msg');
+      el.textContent = text;
+      el.style.display = 'block';
+      el.style.color      = isError ? 'var(--danger)' : 'var(--success)';
+      el.style.borderColor = isError ? 'var(--danger)' : 'var(--success)';
+      el.style.background  = isError ? 'rgba(230,57,70,0.08)' : 'rgba(74,222,128,0.08)';
+    }
+
+    function clearMsg() {
+      const el = document.getElementById('auth-msg');
+      el.style.display = 'none';
+      el.textContent = '';
+    }
+
+    function setLoading(btnId, loading) {
+      const btn = document.getElementById(btnId);
+      if (!btn) return;
+      btn.disabled = loading;
+      btn.textContent = loading ? 'Cargando...' : (btnId === 'btn-register' ? 'Crear cuenta' : 'Ingresar');
+    }
+
+    async function handleLogin() {
+      clearMsg();
+      const email = document.getElementById('login-email').value.trim();
+      const pw    = document.getElementById('login-pw').value;
+      if (!email || !pw) { showMsg('Completa todos los campos.', true); return; }
+
+      setLoading('btn-login', true);
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pw });
+      setLoading('btn-login', false);
+
+      if (error) { showMsg(error.message, true); return; }
+
+      const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single();
+
+      window.location.replace(profile?.role === 'admin' ? 'admin.html' : 'student.html');
+    }
+
+    async function handleRegister() {
+      clearMsg();
+      const name  = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const pw    = document.getElementById('reg-pw').value;
+      const pw2   = document.getElementById('reg-pw2').value;
+
+      if (!name || !email || !pw || !pw2) { showMsg('Completa todos los campos.', true); return; }
+      if (pw !== pw2)    { showMsg('Las contraseñas no coinciden.', true); return; }
+      if (pw.length < 8) { showMsg('La contraseña debe tener al menos 8 caracteres.', true); return; }
+
+      setLoading('btn-register', true);
+      const { error } = await supabaseClient.auth.signUp({
+        email,
+        password: pw,
+        options: { data: { full_name: name } },
+      });
+      setLoading('btn-register', false);
+
+      if (error) { showMsg(error.message, true); return; }
+
+      showMsg('Cuenta creada. Revisa tu correo para confirmar tu acceso.', false);
+      document.getElementById('reg-name').value  = '';
+      document.getElementById('reg-email').value = '';
+      document.getElementById('reg-pw').value    = '';
+      document.getElementById('reg-pw2').value   = '';
+    }
+  </script>
+</body>
+</html>

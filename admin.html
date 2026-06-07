@@ -1,0 +1,1160 @@
+<!doctype html>
+<!-- IFR TRAINING COL | admin.html -->
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IFR TRAINING COL | Panel Instructor</title>
+  <style>body { visibility: hidden; }</style>
+  <style>
+    :root {
+      --bg: #0d0d0f;
+      --surface: #161618;
+      --surface-warm: #1e1e22;
+      --fg: #f0f0f2;
+      --fg-2: #b0b0be;
+      --muted: #9a9aaa;
+      --border: #2a2a30;
+      --border-soft: #38383f;
+      --accent: #38bdf8;
+      --accent-on: #040408;
+      --accent-hover: #7dd3fc;
+      --success: #4ade80;
+      --danger: #e63946;
+      --magenta: #e879f9;
+      --amber: #fb923c;
+      --font-display: "Eurostile", "Arial Narrow", Arial, sans-serif;
+      --font-body: "Inter", Arial, sans-serif;
+      --font-mono: "SF Mono", ui-monospace, Menlo, monospace;
+      --focus-ring: 0 0 0 4px rgba(232,121,249,0.22);
+      --motion-fast: 120ms;
+      --ease: cubic-bezier(0.16,1,0.3,1);
+      --topbar-h: 54px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; overflow: hidden; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; font: inherit; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--topbar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 100;
+      gap: 16px;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      width: 30px; height: 30px;
+      display: grid; place-items: center;
+      border: 1px solid var(--border-soft);
+      clip-path: polygon(25% 4%, 75% 4%, 100% 50%, 75% 96%, 25% 96%, 0 50%);
+      color: var(--fg-2);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      flex-shrink: 0;
+    }
+    .brand-name {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .role-badge {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #040408;
+      background: var(--magenta);
+      padding: 3px 8px;
+      font-weight: 700;
+    }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .btn-logout {
+      background: transparent;
+      border: 1px solid var(--border-soft);
+      color: var(--fg-2);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      transition: border-color var(--motion-fast), color var(--motion-fast);
+    }
+    .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* ── MAIN LAYOUT ── */
+    .main-layout {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding-top: var(--topbar-h);
+    }
+
+    /* ── HORIZONTAL TABS ── */
+    .page-tabs {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: stretch;
+      padding: 0 24px;
+      gap: 0;
+      flex-shrink: 0;
+    }
+    .page-tab {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0 20px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: color var(--motion-fast), border-color var(--motion-fast);
+      white-space: nowrap;
+    }
+    .page-tab:hover { color: var(--fg); }
+    .page-tab.active { color: var(--magenta); border-bottom-color: var(--magenta); }
+    .tab-count {
+      background: var(--surface-warm);
+      border: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      padding: 1px 6px;
+      color: var(--muted);
+    }
+    .page-tab.active .tab-count { border-color: var(--magenta); color: var(--magenta); background: rgba(232,121,249,0.08); }
+
+    /* ── CONTENT ── */
+    .page-content {
+      flex: 1;
+      overflow: hidden;
+    }
+    .tab-panel { display: none; height: 100%; overflow-y: auto; padding: 28px 32px; }
+    .tab-panel.active { display: block; }
+
+    /* ── PANEL HEADERS ── */
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .panel-title-wrap { display: flex; align-items: center; gap: 12px; }
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .tech-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: var(--magenta);
+      color: #040408;
+      border: 1px solid var(--magenta);
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 9px 20px;
+      transition: background var(--motion-fast), border-color var(--motion-fast);
+    }
+    .btn-primary:hover { background: #f0abfc; border-color: #f0abfc; }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-soft);
+      color: var(--fg-2);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      transition: border-color var(--motion-fast), color var(--motion-fast);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-danger-outline {
+      background: transparent;
+      border: 1px solid var(--border-soft);
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      transition: border-color var(--motion-fast), color var(--motion-fast);
+    }
+    .btn-danger-outline:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* Status badges */
+    .status-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border: 1px solid;
+    }
+    .status-active   { color: var(--success); border-color: rgba(74,222,128,0.35); background: rgba(74,222,128,0.07); }
+    .status-pending  { color: var(--amber); border-color: rgba(251,146,60,0.35); background: rgba(251,146,60,0.07); }
+    .status-inactive { color: var(--muted); border-color: var(--border); background: transparent; }
+    .status-live     { color: var(--magenta); border-color: rgba(232,121,249,0.35); background: rgba(232,121,249,0.07); }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    /* ── TABLE ── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .data-table th {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: left;
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 400;
+      background: var(--bg);
+    }
+    .data-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--fg-2);
+      vertical-align: middle;
+    }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr { transition: background var(--motion-fast); }
+    .data-table tbody tr:hover { background: var(--surface-warm); }
+    .student-name { font-size: 14px; color: var(--fg); font-weight: 500; }
+    .student-email { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+    .td-actions { display: flex; align-items: center; gap: 8px; }
+
+    /* ── LIVE FLIGHT CARDS ── */
+    .live-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 14px;
+    }
+    .live-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .live-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .live-route {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .live-route .sep { color: var(--magenta); margin: 0 5px; }
+    .live-card-body { padding: 14px 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .telemetry-pair { display: flex; flex-direction: column; gap: 2px; }
+    .tele-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .tele-value { font-family: var(--font-display); font-size: 18px; color: var(--fg); }
+    .tele-unit { font-family: var(--font-mono); font-size: 9px; color: var(--muted); }
+    .live-card-foot {
+      padding: 10px 18px;
+      background: rgba(0,0,0,0.18);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .live-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--magenta);
+    }
+    .live-dot {
+      width: 7px; height: 7px;
+      background: var(--magenta);
+      position: relative;
+    }
+    .live-dot::after {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      background: var(--magenta);
+      opacity: 0.25;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.25; }
+      50% { transform: scale(1.6); opacity: 0; }
+    }
+    .no-live {
+      padding: 80px 40px;
+      text-align: center;
+      color: var(--muted);
+    }
+    .no-live-icon { font-size: 40px; opacity: 0.25; margin-bottom: 12px; }
+    .no-live-text { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
+
+    /* ── ASSIGN FLIGHT FORM ── */
+    /* ── SIMULADORES PANEL ── */
+    .flights-loading {
+      padding: 60px 20px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .sim-grid { display: flex; flex-direction: column; gap: 10px; max-width: 860px; }
+    .sim-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 20px;
+    }
+    .sim-card.is-live { border-color: rgba(74,222,128,0.35); }
+    .sim-machine {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--fg);
+    }
+    .sim-meta {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .sim-assign-wrap { display: flex; align-items: center; gap: 8px; }
+    .sim-assign-wrap select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      font-family: var(--font-body);
+      font-size: 13px;
+      padding: 6px 10px;
+      outline: none;
+    }
+    .sim-assign-wrap select:focus { border-color: var(--magenta); }
+    .sim-empty {
+      padding: 60px 20px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 28px 28px;
+      max-width: 680px;
+    }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .field input, .field select, .field textarea {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      border-radius: 0;
+      padding: 10px 14px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      outline: none;
+      transition: border-color var(--motion-fast);
+      -webkit-appearance: none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--magenta);
+      box-shadow: 0 0 0 4px rgba(232,121,249,0.12);
+    }
+    .field input::placeholder, .field textarea::placeholder { color: var(--muted); }
+    .field select option { background: var(--surface); }
+    .field textarea { resize: vertical; min-height: 90px; }
+    .form-footer {
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .assign-msg {
+      width: 100%;
+      font-size: 13px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.03em;
+      padding: 4px 0;
+    }
+    .assign-msg.ok   { color: var(--success); }
+    .assign-msg.err  { color: var(--danger); }
+
+    /* ── MULTI-SELECT ── */
+    .multi-select { position: relative; }
+    .multi-select-trigger {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      padding: 10px 14px;
+      text-align: left;
+      font-family: var(--font-body);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: border-color var(--motion-fast);
+      border-radius: 0;
+    }
+    .multi-select-trigger:focus { outline: none; border-color: var(--magenta); box-shadow: 0 0 0 4px rgba(232,121,249,0.12); }
+    .trigger-arrow { color: var(--muted); font-size: 10px; transition: transform var(--motion-fast); }
+    .multi-select.is-open .trigger-arrow { transform: rotate(180deg); }
+    .multi-select-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+      z-index: 50;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    .multi-select.is-open .multi-select-dropdown { display: block; }
+    .multi-select-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--fg-2);
+      border-bottom: 1px solid var(--border);
+      transition: background var(--motion-fast);
+      user-select: none;
+    }
+    .multi-select-option:last-child { border-bottom: none; }
+    .multi-select-option:hover { background: var(--surface-warm); color: var(--fg); }
+    .multi-select-option.all-option { color: var(--accent); border-bottom: 1px solid var(--border-soft); }
+    .multi-select-option input[type="checkbox"] { accent-color: var(--magenta); width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; }
+    .multi-select-option:has(input.student-check:checked) { background: rgba(74,222,128,0.07); color: var(--success); }
+    .multi-select-option:has(input.student-check:checked)::after { content: '›'; color: var(--success); margin-left: auto; font-size: 16px; font-weight: bold; line-height: 1; }
+    .multi-select-empty { padding: 12px 14px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* ── TAGS ── */
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border: 1px solid;
+    }
+    .tag-type { color: var(--magenta); border-color: rgba(232,121,249,0.3); background: rgba(232,121,249,0.06); }
+    .tag-info { color: var(--muted); border-color: var(--border); }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <a href="admin.html" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;">
+        <div class="brand-mark">AC</div>
+        <span class="brand-name">IFR Training Col</span>
+      </a>
+      <span class="role-badge">Instructor</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-logout" onclick="handleLogout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <div class="main-layout">
+
+    <!-- HORIZONTAL TABS -->
+    <nav class="page-tabs">
+      <button class="page-tab active" onclick="switchTab('estudiantes', this)">
+        Estudiantes <span class="tab-count">4</span>
+      </button>
+      <button class="page-tab" onclick="switchTab('vuelos-activos', this)">
+        Vuelos activos <span class="tab-count">0</span>
+      </button>
+      <button class="page-tab" onclick="switchTab('asignar', this)">
+        Asignar vuelo
+      </button>
+      <button class="page-tab" onclick="switchTab('simuladores', this)">
+        Simuladores <span class="tab-count" id="simActiveCount">0</span>
+      </button>
+      <button class="page-tab" onclick="switchTab('reportes', this)">
+        Reportes
+      </button>
+    </nav>
+
+    <div class="page-content">
+
+      <!-- ════ TAB: ESTUDIANTES ════ -->
+      <div class="tab-panel active" id="panel-estudiantes">
+
+        <!-- Stats row -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Estudiantes activos</div>
+            <div class="stat-value" style="color:var(--success);">04</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Vuelos asignados</div>
+            <div class="stat-value" style="color:var(--amber);">06</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Vuelos completados</div>
+            <div class="stat-value" style="color:var(--accent);">11</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Horas de vuelo</div>
+            <div class="stat-value" style="color:var(--magenta);">8.4</div>
+          </div>
+        </div>
+
+        <div class="panel-head">
+          <div>
+            <div class="tech-label">Panel / Instructor / Estudiantes</div>
+            <h1 class="panel-title">Gestión de Estudiantes</h1>
+          </div>
+          <button class="btn-primary" onclick="switchTab('asignar', document.querySelectorAll('.page-tab')[2])">
+            + Asignar vuelo
+          </button>
+        </div>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Estudiante</th>
+              <th>Vuelos completados</th>
+              <th>Vuelos asignados</th>
+              <th>Último vuelo</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="student-name">Juan García</div>
+                <div class="student-email">juan.garcia@ejemplo.com</div>
+              </td>
+              <td><span style="font-family:var(--font-display);font-size:20px;color:var(--accent);">02</span></td>
+              <td><span style="font-family:var(--font-display);font-size:20px;color:var(--amber);">02</span></td>
+              <td><span style="font-family:var(--font-mono);font-size:11px;">28 May 2025</span></td>
+              <td><span class="status-badge status-active">Activo</span></td>
+              <td>
+                <div class="td-actions">
+                  <button class="btn-outline" onclick="switchTab('asignar', document.querySelectorAll('.page-tab')[2])">Asignar</button>
+                  <button class="btn-danger-outline">Suspender</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="student-name">María Ospina</div>
+                <div class="student-email">maria.ospina@ejemplo.com</div>
+              </td>
+              <td><span style="font-family:var(--font-display);font-size:20px;color:var(--accent);">04</span></td>
+              <td><span style="font-family:var(--font-display);font-size:20px;color:var(--amber);">01</span></td>
+              <td><span style="font-family:var(--font-mono);font-size:11px;">02 Jun 2025</span></td>
+              <td><span class="status-badge status-active">Activo</span></td>
+              <td>
+                <div class="td-actions">
+                  <button class="btn-outline" onclick="switchTab('asignar', document.querySelectorAll('.page-tab')[2])">Asignar</button>
+                  <button class="btn-danger-outline">Suspender</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="student-name">Carlos Martínez</div>
+                <div class="student-email">carlos.m@ejemplo.com</div>
+              </td>
+              <td><span style="font-family:var(--font-display);font-size:20px;color:var(--accent);">03</span></td>
+              <td><span style="font-family:var(--font-display);font-size:20px;color:var(--amber);">02</span></td>
+              <td><span style="font-family:var(--font-mono);font-size:11px;">01 Jun 2025</span></td>
+              <td><span class="status-badge status-active">Activo</span></td>
+              <td>
+                <div class="td-actions">
+                  <button class="btn-outline" onclick="switchTab('asignar', document.querySelectorAll('.page-tab')[2])">Asignar</button>
+                  <button class="btn-danger-outline">Suspender</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="student-name">Valentina Ríos</div>
+                <div class="student-email">v.rios@ejemplo.com</div>
+              </td>
+              <td><span style="font-family:var(--font-display);font-size:20px;color:var(--accent);">02</span></td>
+              <td><span style="font-family:var(--font-display);font-size:20px;color:var(--amber);">01</span></td>
+              <td><span style="font-family:var(--font-mono);font-size:11px;">30 May 2025</span></td>
+              <td><span class="status-badge status-pending">Pendiente</span></td>
+              <td>
+                <div class="td-actions">
+                  <button class="btn-outline" onclick="switchTab('asignar', document.querySelectorAll('.page-tab')[2])">Asignar</button>
+                  <button class="btn-danger-outline">Suspender</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ════ TAB: VUELOS ACTIVOS ════ -->
+      <div class="tab-panel" id="panel-vuelos-activos">
+        <div class="panel-head">
+          <div>
+            <div class="tech-label">Panel / Instructor / Vuelos activos</div>
+            <h1 class="panel-title">Vuelos en Curso</h1>
+          </div>
+        </div>
+
+        <!-- Placeholder: sin vuelos activos -->
+        <div class="no-live">
+          <div class="no-live-icon">✈</div>
+          <div class="no-live-text">Sin vuelos activos en este momento</div>
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--border-soft);margin-top:8px;letter-spacing:0.1em;text-transform:uppercase;">
+            Los datos aparecerán aquí cuando el plugin esté conectado
+          </div>
+        </div>
+
+        <!-- Live cards — se mostrarán cuando el plugin envíe datos -->
+        <!--
+        <div class="live-grid">
+          <div class="live-card">
+            <div class="live-card-head">
+              <div class="live-route">SKBO <span class="sep">→</span> SKPE</div>
+              <span class="status-badge status-live">En vuelo</span>
+            </div>
+            <div class="live-card-body">
+              <div class="telemetry-pair">
+                <div class="tele-label">Altitud</div>
+                <div class="tele-value">8 450 <span class="tele-unit">FT</span></div>
+              </div>
+              <div class="telemetry-pair">
+                <div class="tele-label">IAS</div>
+                <div class="tele-value">132 <span class="tele-unit">KT</span></div>
+              </div>
+              <div class="telemetry-pair">
+                <div class="tele-label">Rumbo</div>
+                <div class="tele-value">187 <span class="tele-unit">°</span></div>
+              </div>
+              <div class="telemetry-pair">
+                <div class="tele-label">V/S</div>
+                <div class="tele-value">+0 <span class="tele-unit">FT/MIN</span></div>
+              </div>
+            </div>
+            <div class="live-card-foot">
+              <div class="live-indicator"><div class="live-dot"></div> En vivo</div>
+              <span style="font-family:var(--font-mono);font-size:10px;color:var(--muted);">Juan García</span>
+            </div>
+          </div>
+        </div>
+        -->
+      </div>
+
+      <!-- ════ TAB: ASIGNAR VUELO ════ -->
+      <div class="tab-panel" id="panel-asignar">
+        <div class="panel-head">
+          <div>
+            <div class="tech-label">Panel / Instructor / Asignar vuelo</div>
+            <h1 class="panel-title">Asignar vuelo a Estudiante</h1>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-grid">
+
+            <div class="field">
+              <label>Estudiante(s)</label>
+              <div class="multi-select" id="studentMultiSelect">
+                <button type="button" class="multi-select-trigger" id="studentTrigger">
+                  <span class="trigger-label">Cargando estudiantes...</span>
+                  <span class="trigger-arrow">▼</span>
+                </button>
+                <div class="multi-select-dropdown">
+                  <label class="multi-select-option all-option">
+                    <input type="checkbox" id="selectAllStudents">
+                    Todos los estudiantes
+                  </label>
+                  <div id="studentList"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="inp-origen">Aeropuerto origen (ICAO)</label>
+              <input type="text" id="inp-origen" placeholder="SKBO" maxlength="4" style="text-transform:uppercase;" />
+            </div>
+
+            <div class="field">
+              <label for="inp-destino">Aeropuerto destino (ICAO)</label>
+              <input type="text" id="inp-destino" placeholder="SKPE" maxlength="4" style="text-transform:uppercase;" />
+            </div>
+
+            <div class="field">
+              <label for="inp-fecha">Fecha límite</label>
+              <input type="date" id="inp-fecha" />
+            </div>
+
+            <div class="field full">
+              <label for="inp-instrucciones">Instrucciones para el estudiante</label>
+              <textarea id="inp-instrucciones" placeholder="Describe el ejercicio, los puntos que se evaluarán y cualquier restricción especial..."></textarea>
+            </div>
+
+          </div>
+
+          <div class="form-footer">
+            <button class="btn-primary" id="btn-assign" onclick="handleAssign()">Asignar vuelo</button>
+            <button class="btn-outline" onclick="clearForm()">Limpiar</button>
+            <div id="assign-msg" class="assign-msg" role="status"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ TAB: SIMULADORES ════ -->
+      <div class="tab-panel" id="panel-simuladores">
+        <div class="panel-head">
+          <div>
+            <div class="tech-label">Panel / Instructor / Simuladores</div>
+            <h1 class="panel-title">Simuladores Conectados</h1>
+          </div>
+          <button class="btn-outline" onclick="loadSimuladores()">↺ Actualizar</button>
+        </div>
+
+        <div id="simSessionsList">
+          <div class="flights-loading">Cargando sesiones...</div>
+        </div>
+      </div>
+
+      <!-- ════ TAB: REPORTES ════ -->
+      <div class="tab-panel" id="panel-reportes">
+        <div class="panel-head">
+          <div>
+            <div class="tech-label">Panel / Instructor / Reportes</div>
+            <h1 class="panel-title">Reportes del Curso</h1>
+          </div>
+        </div>
+
+        <div class="stats-row" style="grid-template-columns:repeat(3,1fr);">
+          <div class="stat-card">
+            <div class="stat-label">Vuelos este mes</div>
+            <div class="stat-value" style="color:var(--accent);">06</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total horas registradas</div>
+            <div class="stat-value" style="color:var(--magenta);">8.4 <span style="font-family:var(--font-mono);font-size:14px;color:var(--muted);">H</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Tasa de completado</div>
+            <div class="stat-value" style="color:var(--success);">73 <span style="font-family:var(--font-mono);font-size:14px;color:var(--muted);">%</span></div>
+          </div>
+        </div>
+
+        <div style="margin-top:8px;background:var(--surface);border:1px solid var(--border);">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Estudiante</th>
+                <th>Ruta</th>
+                <th>Tipo</th>
+                <th>Duración</th>
+                <th>Fecha</th>
+                <th>Resultado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="student-name">María Ospina</span></td>
+                <td><span style="font-family:var(--font-display);font-size:14px;text-transform:uppercase;">SKBO → SKCL</span></td>
+                <td><span class="tag tag-type">ILS</span></td>
+                <td><span style="font-family:var(--font-mono);font-size:12px;">1h 28min</span></td>
+                <td><span style="font-family:var(--font-mono);font-size:11px;">03 Jun 2025</span></td>
+                <td><span class="status-badge status-active">Completado</span></td>
+              </tr>
+              <tr>
+                <td><span class="student-name">Juan García</span></td>
+                <td><span style="font-family:var(--font-display);font-size:14px;text-transform:uppercase;">SKBO → SKCL</span></td>
+                <td><span class="tag tag-type">ILS</span></td>
+                <td><span style="font-family:var(--font-mono);font-size:12px;">1h 12min</span></td>
+                <td><span style="font-family:var(--font-mono);font-size:11px;">28 May 2025</span></td>
+                <td><span class="status-badge status-active">Completado</span></td>
+              </tr>
+              <tr>
+                <td><span class="student-name">Carlos Martínez</span></td>
+                <td><span style="font-family:var(--font-display);font-size:14px;text-transform:uppercase;">SKRG → SKBO</span></td>
+                <td><span class="tag tag-type">RNAV</span></td>
+                <td><span style="font-family:var(--font-mono);font-size:12px;">0h 55min</span></td>
+                <td><span style="font-family:var(--font-mono);font-size:11px;">01 Jun 2025</span></td>
+                <td><span class="status-badge status-active">Completado</span></td>
+              </tr>
+              <tr>
+                <td><span class="student-name">Juan García</span></td>
+                <td><span style="font-family:var(--font-display);font-size:14px;text-transform:uppercase;">SKRG → SKBO</span></td>
+                <td><span class="tag tag-type">RNAV</span></td>
+                <td><span style="font-family:var(--font-mono);font-size:12px;">0h 58min</span></td>
+                <td><span style="font-family:var(--font-mono);font-size:11px;">22 May 2025</span></td>
+                <td><span class="status-badge status-active">Completado</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="src/scripts/supabase-client.js"></script>
+  <script>const REQUIRED_ROLE = 'admin';</script>
+  <script src="src/scripts/auth-guard.js"></script>
+
+  <script>
+    function switchTab(name, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.page-tab').forEach(b => b.classList.remove('active'));
+      document.getElementById('panel-' + name).classList.add('active');
+      if (btn) btn.classList.add('active');
+      if (name === 'simuladores') loadSimuladores();
+    }
+
+    // ── MULTI-SELECT ESTUDIANTES ──
+    document.getElementById('studentTrigger').addEventListener('click', () => {
+      document.getElementById('studentMultiSelect').classList.toggle('is-open');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!document.getElementById('studentMultiSelect').contains(e.target)) {
+        document.getElementById('studentMultiSelect').classList.remove('is-open');
+      }
+    });
+
+    document.getElementById('selectAllStudents').addEventListener('change', function () {
+      document.querySelectorAll('.student-check').forEach(cb => { cb.checked = this.checked; });
+      updateStudentTrigger(true);
+    });
+
+    function updateStudentTrigger(fromSelectAll) {
+      const checked = document.querySelectorAll('.student-check:checked');
+      const total   = document.querySelectorAll('.student-check').length;
+      const label   = document.querySelector('#studentTrigger .trigger-label');
+      const allCb   = document.getElementById('selectAllStudents');
+
+      if (checked.length === 0) {
+        label.textContent = 'Seleccionar estudiante(s)';
+        allCb.checked = false;
+        allCb.indeterminate = false;
+      } else if (checked.length === total) {
+        label.textContent = fromSelectAll === true
+          ? 'Todos los estudiantes'
+          : (checked.length === 1 ? checked[0].dataset.nombre : `${checked.length} estudiantes`);
+        allCb.checked = true;
+        allCb.indeterminate = false;
+      } else {
+        label.textContent = checked.length === 1
+          ? checked[0].dataset.nombre
+          : `${checked.length} estudiantes`;
+        allCb.checked = false;
+        allCb.indeterminate = true;
+      }
+    }
+
+    function getSelectedStudents() {
+      return Array.from(document.querySelectorAll('.student-check:checked'))
+        .map(cb => ({ id: cb.value, nombre: cb.dataset.nombre }));
+    }
+
+    async function loadStudents() {
+      const list  = document.getElementById('studentList');
+      const label = document.querySelector('#studentTrigger .trigger-label');
+
+      const { data, error } = await supabaseClient
+        .from('profiles')
+        .select('id, nombre')
+        .eq('role', 'estudiante')
+        .order('nombre');
+
+      if (error || !data?.length) {
+        list.innerHTML = '<div class="multi-select-empty">Sin estudiantes registrados</div>';
+        label.textContent = 'Sin estudiantes';
+        return;
+      }
+
+      label.textContent = 'Seleccionar estudiante(s)';
+      list.innerHTML = data.map(s => `
+        <label class="multi-select-option">
+          <input type="checkbox" class="student-check" value="${s.id}" data-nombre="${s.nombre}">
+          ${s.nombre}
+        </label>
+      `).join('');
+
+      document.querySelectorAll('.student-check').forEach(cb => {
+        cb.addEventListener('change', () => updateStudentTrigger(false));
+      });
+    }
+
+    if (window.__authComplete) {
+      loadStudents();
+    } else {
+      window.addEventListener('authReady', loadStudents);
+    }
+
+    async function handleAssign() {
+      const students      = getSelectedStudents();
+      const origen        = document.getElementById('inp-origen').value.trim().toUpperCase();
+      const destino       = document.getElementById('inp-destino').value.trim().toUpperCase();
+      const fecha_limite  = document.getElementById('inp-fecha').value || null;
+      const instrucciones = document.getElementById('inp-instrucciones').value.trim() || null;
+
+      if (!students.length) {
+        showAssignMsg('Selecciona al menos un estudiante.', true); return;
+      }
+      if (origen.length !== 4) {
+        showAssignMsg('El código ICAO de origen debe tener 4 letras (ej: SKBO).', true); return;
+      }
+      if (destino.length !== 4) {
+        showAssignMsg('El código ICAO de destino debe tener 4 letras (ej: SKPE).', true); return;
+      }
+
+      const btn = document.getElementById('btn-assign');
+      btn.disabled = true;
+      btn.textContent = 'Asignando...';
+      showAssignMsg('', false);
+
+      const rows = students.map(s => ({
+        instructor_id: window.currentUser.id,
+        student_id:    s.id,
+        origen,
+        destino,
+        fecha_limite,
+        instrucciones,
+      }));
+
+      const { error } = await supabaseClient.from('flight_assignments').insert(rows);
+
+      btn.disabled = false;
+      btn.textContent = 'Asignar vuelo';
+
+      if (error) {
+        showAssignMsg('Error: ' + error.message, true);
+        return;
+      }
+
+      const nombres = students.map(s => s.nombre).join(', ');
+      showAssignMsg(`Vuelo ${origen} → ${destino} asignado a ${nombres}.`, false);
+      clearForm();
+    }
+
+    function showAssignMsg(text, isError) {
+      const el = document.getElementById('assign-msg');
+      el.textContent = text;
+      el.className = 'assign-msg ' + (isError ? 'err' : 'ok');
+      if (!isError && text) {
+        setTimeout(() => { el.textContent = ''; el.className = 'assign-msg'; }, 5000);
+      }
+    }
+
+    function clearForm() {
+      ['inp-origen','inp-destino','inp-fecha','inp-instrucciones']
+        .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      document.querySelectorAll('.student-check').forEach(cb => { cb.checked = false; });
+      document.getElementById('selectAllStudents').checked = false;
+      document.getElementById('selectAllStudents').indeterminate = false;
+      document.querySelector('#studentTrigger .trigger-label').textContent = 'Seleccionar estudiante(s)';
+    }
+
+    // ── PANEL SIMULADORES ─────────────────────────────────────────────────────
+    async function loadSimuladores() {
+      const container = document.getElementById('simSessionsList');
+      container.innerHTML = '<div class="flights-loading">Cargando sesiones...</div>';
+
+      // Load sessions and students in parallel
+      const [sessionsRes, studentsRes] = await Promise.all([
+        supabaseClient.from('flight_sessions').select('*').order('last_seen', { ascending: false }),
+        supabaseClient.from('profiles').select('id, nombre, session_code').eq('role', 'estudiante').order('nombre'),
+      ]);
+
+      if (sessionsRes.error) {
+        container.innerHTML = '<div class="sim-empty">Error al cargar sesiones.</div>';
+        return;
+      }
+
+      const sessions  = sessionsRes.data  || [];
+      const students  = studentsRes.data  || [];
+
+      // Map session_code → student for display
+      const codeToStudent = {};
+      students.forEach(s => { if (s.session_code) codeToStudent[s.session_code] = s; });
+
+      // Active = seen in the last 10 seconds
+      const now = Date.now();
+      const active = sessions.filter(s => now - new Date(s.last_seen).getTime() < 10000).length;
+      document.getElementById('simActiveCount').textContent = active;
+
+      if (!sessions.length) {
+        container.innerHTML = '<div class="sim-empty">Ningún simulador se ha conectado aún.</div>';
+        return;
+      }
+
+      container.innerHTML = '<div class="sim-grid">' + sessions.map(s => {
+        const isLive   = now - new Date(s.last_seen).getTime() < 10000;
+        const assigned = codeToStudent[s.session_code];
+        const lastSeen = timeSince(s.last_seen);
+        const estado   = s.on_ground ? 'En tierra' : 'En vuelo';
+
+        return `
+          <div class="sim-card ${isLive ? 'is-live' : ''}">
+            <div style="flex:1;">
+              <div class="sim-machine">
+                ${isLive ? '<span style="color:var(--success);margin-right:8px;">●</span>' : '<span style="color:var(--border-soft);margin-right:8px;">○</span>'}
+                ${escSim(s.session_code)}
+              </div>
+              <div class="sim-meta">
+                Última señal: ${lastSeen} &nbsp;·&nbsp; ${estado}
+                ${assigned ? `&nbsp;·&nbsp; <span style="color:var(--accent);">${escSim(assigned.nombre)}</span>` : '&nbsp;·&nbsp; <span style="color:var(--muted);">Sin asignar</span>'}
+              </div>
+            </div>
+          </div>`;
+      }).join('') + '</div>';
+    }
+
+    async function assignSim(sessionCode, btn) {
+      const sel       = document.getElementById('sel-' + sessionCode);
+      const studentId = sel?.value || null;
+
+      btn.disabled    = true;
+      btn.textContent = '...';
+
+      // Clear this session_code from any student who had it
+      await supabaseClient
+        .from('profiles')
+        .update({ session_code: null })
+        .eq('session_code', sessionCode);
+
+      // Assign to the selected student (if any)
+      if (studentId) {
+        const { error } = await supabaseClient
+          .from('profiles')
+          .update({ session_code: sessionCode })
+          .eq('id', studentId);
+
+        if (error) {
+          btn.disabled = false; btn.textContent = 'Asignar';
+          alert('Error: ' + error.message);
+          return;
+        }
+      }
+
+      btn.disabled = false; btn.textContent = 'Asignar';
+      loadSimuladores(); // refresh
+    }
+
+    function timeSince(isoStr) {
+      const diff = Math.floor((Date.now() - new Date(isoStr).getTime()) / 1000);
+      if (diff <  10) return 'ahora';
+      if (diff <  60) return `hace ${diff}s`;
+      if (diff < 3600) return `hace ${Math.floor(diff / 60)}min`;
+      return `hace ${Math.floor(diff / 3600)}h`;
+    }
+
+    function escSim(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+  </script>
+</body>
+</html>
