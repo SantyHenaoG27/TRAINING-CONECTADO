@@ -1,0 +1,6 @@
+name = "trainingconectado"
+account_id = "135a9bc96bbdea4cf0aa90205d322dda"
+compatibility_date = "2026-06-08"
+
+[assets]
+directory = "./"
