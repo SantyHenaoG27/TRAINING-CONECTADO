@@ -1322,6 +1322,19 @@
     .atc-airspace-popup .pop-status.needs_review { color: var(--atc-amber,#fbbf24); border-color: rgba(251,191,36,0.4); }
     .atc-airspace-popup .pop-status.future_layer { color: var(--atc-text-dim,#8593ad); border-color: var(--atc-line,rgba(125,211,252,0.14)); }
     @media (max-width: 600px) { .atc-layers-drawer { width: 100%; } }
+
+    /* ── Vistas: Radar / Mapa / Híbrido ── */
+    /* El oscurecimiento del Radar se hace con una capa MapLibre negra debajo
+       de las capas de espacio aéreo — así los colores de las capas no se ven
+       afectados por ningún filtro CSS en el canvas. */
+    .atc-radar-canvas { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+
+    /* Radar: blips como círculos */
+    .atc-shell.view-radar .atc-blip { width: 8px !important; height: 8px !important; }
+    .atc-shell.view-radar .atc-blip-icon { clip-path: none !important; border-radius: 50% !important; width: 8px !important; height: 8px !important; box-shadow: 0 0 8px rgba(52,211,153,0.9) !important; }
+    .atc-shell.view-radar .atc-blip.status-warning .atc-blip-icon { box-shadow: 0 0 8px rgba(251,191,36,0.9) !important; }
+    .atc-shell.view-radar .atc-blip.selected .atc-blip-icon { background: var(--atc-cyan) !important; box-shadow: 0 0 14px rgba(34,211,238,1) !important; }
+    .atc-shell.view-radar .atc-datablock { opacity: 0.6; }
   </style>
 </head>
 <body>
@@ -1655,12 +1668,14 @@
                   <span class="atc-zoom-value" id="atcZoomValue">1.0×</span>
                   <button class="atc-icon-btn small" id="atcZoomIn" type="button">+</button>
                   <button class="atc-icon-btn small" id="atcRecenter" type="button">⌖ Centrar</button>
+                  <button class="atc-icon-btn small" id="atcRingLabelsBtn" type="button" title="Mostrar distancias en anillos de radar">⊙ Distancias</button>
                   <button class="atc-icon-btn small" id="atcLayersBtn" type="button">☰ Capas</button>
                 </div>
               </div>
 
               <div class="atc-radar-stage" id="atcRadarStage">
                 <div id="atcMap" class="atc-real-map" aria-label="Mapa de referencia del sector"></div>
+                <canvas id="atcRadarCanvas" class="atc-radar-canvas"></canvas>
               </div>
 
               <div class="atc-radar-footer">
@@ -1846,6 +1861,50 @@
               <span class="atc-layer-switch-track"></span>
             </label>
           </div>
+          <!-- Separador Navegación -->
+          <div style="margin:10px 0 8px;border-top:1px solid rgba(125,211,252,0.12);padding-top:10px;">
+            <div class="atc-layers-section-title" style="margin-bottom:6px;">Navegación</div>
+          </div>
+          <div class="atc-layer-toggle-row">
+            <div class="atc-layer-toggle-left">
+              <span class="atc-layer-color-dot" style="background:#22d3ee;box-shadow:0 0 5px rgba(34,211,238,0.6);"></span>
+              <span class="atc-layer-name">Aeropuertos</span>
+            </div>
+            <label class="atc-layer-switch">
+              <input type="checkbox" id="atcLayerAIRPORTS" data-layer-type="AIRPORTS">
+              <span class="atc-layer-switch-track"></span>
+            </label>
+          </div>
+          <div class="atc-layer-toggle-row">
+            <div class="atc-layer-toggle-left">
+              <span class="atc-layer-color-dot" style="background:#a3e635;box-shadow:0 0 5px rgba(163,230,53,0.6);"></span>
+              <span class="atc-layer-name">NAVAIDs <span style="font-size:0.52rem;opacity:0.7;">(VOR / NDB)</span></span>
+            </div>
+            <label class="atc-layer-switch">
+              <input type="checkbox" id="atcLayerNAVAIDS" data-layer-type="NAVAIDS">
+              <span class="atc-layer-switch-track"></span>
+            </label>
+          </div>
+          <div class="atc-layer-toggle-row">
+            <div class="atc-layer-toggle-left">
+              <span class="atc-layer-color-dot" style="background:#7dd3fc;box-shadow:0 0 5px rgba(125,211,252,0.6);"></span>
+              <span class="atc-layer-name">Waypoints</span>
+            </div>
+            <label class="atc-layer-switch">
+              <input type="checkbox" id="atcLayerWAYPOINTS" data-layer-type="WAYPOINTS">
+              <span class="atc-layer-switch-track"></span>
+            </label>
+          </div>
+          <div class="atc-layer-toggle-row">
+            <div class="atc-layer-toggle-left">
+              <span class="atc-layer-color-dot" style="background:#fbbf24;box-shadow:0 0 5px rgba(251,191,36,0.6);"></span>
+              <span class="atc-layer-name">RNAV / GPS</span>
+            </div>
+            <label class="atc-layer-switch">
+              <input type="checkbox" id="atcLayerRNAV" data-layer-type="RNAV">
+              <span class="atc-layer-switch-track"></span>
+            </label>
+          </div>
           <div class="atc-layer-toggle-row" style="opacity:0.45;pointer-events:none;">
             <div class="atc-layer-toggle-left">
               <span class="atc-layer-color-dot" style="background:#6b7280;"></span>
@@ -1899,6 +1958,23 @@
           </div>
           <div style="display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:0.625rem;color:var(--atc-text-dim);letter-spacing:0.05em;">
             <span style="display:inline-block;width:18px;height:3px;background:#06b6d4;flex-shrink:0;"></span>CTA — Área de Control
+          </div>
+          <div style="margin-top:8px;border-top:1px solid rgba(125,211,252,0.1);padding-top:8px;display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:0.625rem;color:var(--atc-text-dim);letter-spacing:0.05em;">
+              <svg width="14" height="14" style="flex-shrink:0;"><polygon points="7,1 13,7 7,13 1,7" fill="none" stroke="#22d3ee" stroke-width="1.3"/><rect x="5.7" y="2" width="2.6" height="10" rx="1.3" fill="#22d3ee"/></svg>Aeropuertos — símbolo con orientación de pista
+            </div>
+            <div style="display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:0.625rem;color:var(--atc-text-dim);letter-spacing:0.05em;">
+              <svg width="14" height="14" style="flex-shrink:0;"><polygon points="7,1 12.2,4 12.2,10 7,13 1.8,10 1.8,4" fill="none" stroke="#a3e635" stroke-width="1.2"/><circle cx="7" cy="7" r="1.2" fill="#a3e635"/></svg>VOR — rosa de compás hexagonal
+            </div>
+            <div style="display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:0.625rem;color:var(--atc-text-dim);letter-spacing:0.05em;">
+              <svg width="14" height="14" style="flex-shrink:0;"><circle cx="7" cy="7" r="5.5" fill="none" stroke="#f97316" stroke-width="1" stroke-dasharray="2.5,1.5"/><circle cx="7" cy="7" r="2" fill="#f97316"/></svg>NDB / ADF — anillo punteado
+            </div>
+            <div style="display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:0.625rem;color:var(--atc-text-dim);letter-spacing:0.05em;">
+              <svg width="14" height="14" style="flex-shrink:0;"><polygon points="7,0.5 13.5,13.5 0.5,13.5" fill="none" stroke="#7dd3fc" stroke-width="1.3"/></svg>Waypoints — fijo de navegación
+            </div>
+            <div style="display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:0.625rem;color:var(--atc-text-dim);letter-spacing:0.05em;">
+              <svg width="14" height="14" style="flex-shrink:0;"><polygon points="7,0.5 13.5,7 7,13.5 0.5,7" fill="none" stroke="#fbbf24" stroke-width="1.3"/></svg>RNAV / GPS — punto de ruta
+            </div>
           </div>
         </div>
       </div>
@@ -4470,11 +4546,12 @@
       range: 40,
       zoom: 1,
       emptyDemo: false,
-      pttState: 'idle', // idle | armed | transmitting
+      pttState: 'idle',
       pttTarget: 'selected',
       pttHotkey: '␣ Espacio',
       bottomTab: 'strips',
       initialized: false,
+      showRingLabels: false,
     };
 
     // Mini-notificación propia del módulo (no depende de utilidades globales
@@ -4517,13 +4594,14 @@
       if (atcState.initialized) return;
       atcState.initialized = true;
 
-      // Vista (radar / mapa / híbrido) — solo cambia el segmento activo, visual.
+      // Vista (radar / mapa / híbrido)
       document.getElementById('atcViewSeg').addEventListener('click', (e) => {
         const btn = e.target.closest('.atc-seg-btn');
         if (!btn) return;
         document.querySelectorAll('#atcViewSeg .atc-seg-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         atcState.view = btn.dataset.atcView;
+        atcApplyView(atcState.view);
       });
 
       // Rango del radar (mock): solo ajusta la etiqueta y el texto de coordenadas.
@@ -4736,6 +4814,7 @@
     function atcRefreshRangeUI() {
       document.getElementById('atcRangeValue').textContent = atcState.range + ' NM';
       atcRenderCoords();
+      if (atcState.view === 'radar') atcDrawRadarRings();
     }
 
     function atcSetZoom(value) {
@@ -4844,8 +4923,152 @@
             'line-dasharray': [5, 4],
           },
         });
+        // Capa oscura para modo Radar — insertada ANTES de atc-vectors-layer
+        // para quedar debajo de capas de espacio aéreo y navegación
+        atcMap.addSource('atc-dark-overlay', {
+          type: 'geojson',
+          data: { type: 'Feature', geometry: { type: 'Polygon', coordinates: [[[-180,-85],[180,-85],[180,85],[-180,85],[-180,-85]]] } },
+        });
+        atcMap.addLayer({
+          id: 'atc-dark-overlay-layer', type: 'fill', source: 'atc-dark-overlay',
+          paint: { 'fill-color': '#000814', 'fill-opacity': 0 },
+          layout: { visibility: 'none' },
+        }, 'atc-vectors-layer');
         atcLayersInitMap();
         atcSyncMapMarkers(atcState.flights);
+        atcMap.on('moveend', () => { if (atcState.view === 'radar') atcDrawRadarRings(); });
+        atcMap.on('zoomend', () => { if (atcState.view === 'radar') atcDrawRadarRings(); });
+        const _roStage = document.getElementById('atcRadarStage');
+        if (_roStage && window.ResizeObserver) {
+          new ResizeObserver(() => { if (atcState.view === 'radar') atcDrawRadarRings(); }).observe(_roStage);
+        }
+        atcApplyView(atcState.view);
+      });
+    }
+
+    function atcApplyView(view) {
+      const shell = document.getElementById('atcShell');
+      if (!shell) return;
+      shell.classList.remove('view-radar', 'view-map', 'view-hybrid');
+      shell.classList.add('view-' + view);
+
+      // Oscurecer mapa con capa MapLibre (no CSS filter — preserva colores de capas de espacio aéreo)
+      if (atcMap && atcMap.getLayer('atc-dark-overlay-layer')) {
+        if (view === 'radar') {
+          atcMap.setLayoutProperty('atc-dark-overlay-layer', 'visibility', 'visible');
+          atcMap.setPaintProperty('atc-dark-overlay-layer', 'fill-opacity', 1);
+        } else {
+          atcMap.setLayoutProperty('atc-dark-overlay-layer', 'visibility', 'none');
+        }
+      }
+
+      const canvas = document.getElementById('atcRadarCanvas');
+      if (view === 'radar') {
+        atcDrawRadarRings();
+      } else if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      if (view === 'hybrid') {
+        const anyOn = ATC_LAYER_TYPES.some(t => atcLayersState.visible[t]);
+        if (!anyOn) {
+          atcLayersState.visible = { ...ATC_PRESETS.ifr_training };
+          atcLayersApply();
+          atcLayersRenderUI();
+        }
+      }
+    }
+
+    function atcDrawRadarRings() {
+      const canvas = document.getElementById('atcRadarCanvas');
+      if (!canvas || !atcMap) return;
+      const stage = document.getElementById('atcRadarStage');
+      canvas.width  = stage ? stage.offsetWidth  : canvas.offsetWidth;
+      canvas.height = stage ? stage.offsetHeight : canvas.offsetHeight;
+      const w = canvas.width, h = canvas.height;
+      if (!w || !h) return;
+      const cx = w / 2, cy = h / 2;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, w, h);
+      if (atcState.view !== 'radar') return;
+
+      // Pixels per NM via MapLibre projection
+      let pxPerNm = 18;
+      try {
+        const center = atcMap.getCenter();
+        const p0 = atcMap.project(center);
+        const p1 = atcMap.project(new maplibregl.LngLat(center.lng, center.lat + 1 / 60));
+        pxPerNm = Math.abs(p1.y - p0.y);
+      } catch (e) {}
+
+      const rings = 4;
+      const nmStep = atcState.range / rings;
+
+      // Azimuth lines every 30°
+      ctx.save();
+      ctx.strokeStyle = 'rgba(34,211,238,0.07)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 12]);
+      for (let deg = 0; deg < 360; deg += 30) {
+        const rad = (deg - 90) * Math.PI / 180;
+        const maxR = Math.hypot(w, h);
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(rad) * maxR, cy + Math.sin(rad) * maxR);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Range rings
+      for (let i = 1; i <= rings; i++) {
+        const nmDist = nmStep * i;
+        const r = pxPerNm * nmDist;
+        const isOuter = i === rings;
+        ctx.save();
+        ctx.strokeStyle = isOuter ? 'rgba(34,211,238,0.32)' : 'rgba(34,211,238,0.15)';
+        ctx.lineWidth = isOuter ? 1.5 : 1;
+        ctx.setLineDash([5, 8]);
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.stroke();
+        if (atcState.showRingLabels) {
+          const labelAngle = -Math.PI / 6;
+          ctx.setLineDash([]);
+          ctx.fillStyle = isOuter ? 'rgba(34,211,238,0.45)' : 'rgba(34,211,238,0.28)';
+          ctx.font = '9px "SF Mono",ui-monospace,monospace';
+          ctx.textAlign = 'left';
+          ctx.fillText(Math.round(nmDist) + ' NM',
+            cx + Math.cos(labelAngle) * r + 4,
+            cy + Math.sin(labelAngle) * r - 3);
+        }
+        ctx.restore();
+      }
+
+      // Center crosshair + dot
+      ctx.save();
+      ctx.strokeStyle = 'rgba(34,211,238,0.4)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([]);
+      const ch = 9;
+      ctx.beginPath();
+      ctx.moveTo(cx - ch, cy); ctx.lineTo(cx + ch, cy);
+      ctx.moveTo(cx, cy - ch); ctx.lineTo(cx, cy + ch);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(34,211,238,0.55)';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Compass labels N E S W
+      ctx.fillStyle = 'rgba(34,211,238,0.28)';
+      ctx.font = 'bold 10px "SF Mono",ui-monospace,monospace';
+      ctx.textAlign = 'center';
+      const lR = Math.min(cx, cy) - 13;
+      [['N', 0], ['E', 90], ['S', 180], ['W', 270]].forEach(([lbl, deg]) => {
+        const rad = (deg - 90) * Math.PI / 180;
+        ctx.fillText(lbl, cx + Math.cos(rad) * lR, cy + Math.sin(rad) * lR + 4);
       });
     }
 
@@ -4968,7 +5191,8 @@
     };
 
     let atcLayersState = {
-      visible: { FIR: false, UIR: false, UTA: false, TMA: true, CTA: true },
+      visible: { FIR: false, UIR: false, UTA: false, TMA: true, CTA: true,
+                 NAVAIDS: false, AIRPORTS: false, WAYPOINTS: false, RNAV: false },
       opacity: 0.35,
       selectedId: null,
     };
@@ -5018,6 +5242,10 @@
         btn.classList.toggle('active', btn.dataset.preset === preset);
       });
       ATC_LAYER_TYPES.forEach(type => {
+        const chk = document.getElementById('atcLayer' + type);
+        if (chk) chk.checked = !!atcLayersState.visible[type];
+      });
+      ['NAVAIDS', 'AIRPORTS', 'WAYPOINTS', 'RNAV'].forEach(type => {
         const chk = document.getElementById('atcLayer' + type);
         if (chk) chk.checked = !!atcLayersState.visible[type];
       });
@@ -5085,6 +5313,7 @@
         });
       }
       atcLayersSaveState();
+      atcAviationLayersApply();
     }
 
     function atcLayersFocusOne(id) {
@@ -5165,6 +5394,11 @@
             const popup = document.getElementById('atcAirspacePopup');
             if (popup) popup.style.display = 'none';
           });
+
+          // Inicializar capas de navegación después de las capas de espacio aéreo
+          // para que queden por encima en el orden de renderizado
+          const anyNavEnabled = ['NAVAIDS','AIRPORTS','WAYPOINTS','RNAV'].some(k => atcLayersState.visible[k]);
+          if (anyNavEnabled) atcAviationLayersInit();
         })
         .catch(() => { atcAirspacesLoaded = false; });
     }
@@ -5233,22 +5467,231 @@
       if (popup) popup.style.display = 'none';
     }
 
+    // ─── CAPAS DE NAVEGACIÓN: NAVAIDs, Aeropuertos, Waypoints, RNAV ──────────
+
+    let atcAviationLoaded = false;
+
+    function atcSvgToImage(svgStr, w, h) {
+      return new Promise((resolve, reject) => {
+        const blob = new Blob([svgStr], { type: 'image/svg+xml' });
+        const url  = URL.createObjectURL(blob);
+        const img  = new Image(w, h);
+        img.onload  = () => { URL.revokeObjectURL(url); resolve(img); };
+        img.onerror = (e) => { URL.revokeObjectURL(url); reject(e); };
+        img.src = url;
+      });
+    }
+
+    async function atcLoadAviationImages() {
+      const VOR_SVG  = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><polygon points="14,2 24.4,8 24.4,20 14,26 3.6,20 3.6,8" fill="none" stroke="#a3e635" stroke-width="1.3"/><circle cx="14" cy="14" r="5" fill="none" stroke="#a3e635" stroke-width="1"/><line x1="14" y1="9" x2="14" y2="2" stroke="#a3e635" stroke-width="1"/><line x1="18.3" y1="11.5" x2="24.4" y2="8" stroke="#a3e635" stroke-width="1"/><line x1="18.3" y1="16.5" x2="24.4" y2="20" stroke="#a3e635" stroke-width="1"/><line x1="14" y1="19" x2="14" y2="26" stroke="#a3e635" stroke-width="1"/><line x1="9.7" y1="16.5" x2="3.6" y2="20" stroke="#a3e635" stroke-width="1"/><line x1="9.7" y1="11.5" x2="3.6" y2="8" stroke="#a3e635" stroke-width="1"/><circle cx="14" cy="14" r="2.5" fill="#a3e635"/></svg>`;
+      const NDB_SVG  = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"><circle cx="11" cy="11" r="9" fill="rgba(249,115,22,0.08)" stroke="#f97316" stroke-width="1.2" stroke-dasharray="3,2"/><circle cx="11" cy="11" r="3.5" fill="#f97316"/></svg>`;
+      const APT_SVG  = `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"><circle cx="13" cy="13" r="10" fill="rgba(34,211,238,0.1)" stroke="#22d3ee" stroke-width="1.5"/><rect x="11.5" y="3" width="3" height="20" rx="1.5" fill="#22d3ee"/></svg>`;
+      const WPT_SVG  = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><polygon points="8,1 15.5,15 0.5,15" fill="rgba(125,211,252,0.08)" stroke="#7dd3fc" stroke-width="1.5" stroke-linejoin="round"/></svg>`;
+      const RNAV_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"><polygon points="7,1 13,7 7,13 1,7" fill="rgba(251,191,36,0.08)" stroke="#fbbf24" stroke-width="1.4" stroke-linejoin="round"/></svg>`;
+      const [vorImg, ndbImg, aptImg, wptImg, rnavImg] = await Promise.all([
+        atcSvgToImage(VOR_SVG, 28, 28), atcSvgToImage(NDB_SVG, 22, 22),
+        atcSvgToImage(APT_SVG, 26, 26), atcSvgToImage(WPT_SVG, 16, 16),
+        atcSvgToImage(RNAV_SVG, 14, 14),
+      ]);
+      if (!atcMap.hasImage('atc-vor-icon'))  atcMap.addImage('atc-vor-icon',  vorImg);
+      if (!atcMap.hasImage('atc-ndb-icon'))  atcMap.addImage('atc-ndb-icon',  ndbImg);
+      if (!atcMap.hasImage('atc-apt-icon'))  atcMap.addImage('atc-apt-icon',  aptImg);
+      if (!atcMap.hasImage('atc-wpt-icon'))  atcMap.addImage('atc-wpt-icon',  wptImg);
+      if (!atcMap.hasImage('atc-rnav-icon')) atcMap.addImage('atc-rnav-icon', rnavImg);
+    }
+
+    async function atcLoadAviationData() {
+      const [navaidsRaw, airportsRaw, wayptsRaw] = await Promise.all([
+        fetch('storage/metadata/navaids-colombia.json').then(r => r.json()),
+        fetch('storage/metadata/airports-colombia-runways.json').then(r => r.json()),
+        fetch('storage/metadata/waypoints-colombia.json').then(r => r.json()),
+      ]);
+      // Navaids: tipo inferido desde frecuencia (VOR 108-118 MHz, el resto NDB)
+      const navaidsGJ = {
+        type: 'FeatureCollection',
+        features: navaidsRaw.map(n => {
+          const freq = parseFloat(n.frequency) || 0;
+          return {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [n.coordinates.longitude, n.coordinates.latitude] },
+            properties: { name: n.shortName, longName: n.longName, freq: n.frequency,
+                          navType: (freq >= 108 && freq <= 118) ? 'VOR' : 'NDB' },
+          };
+        }),
+      };
+      // Aeropuertos: heading = primer runway ID × 10
+      const airportsGJ = {
+        type: 'FeatureCollection',
+        features: airportsRaw
+          .filter(a => a.longitude && a.latitude)
+          .map(a => ({
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [a.longitude, a.latitude] },
+            properties: {
+              icao: a.icao, name: a.name,
+              rwyHdg: a.runways && a.runways.length ? parseInt(a.runways[0], 10) * 10 : 0,
+            },
+          })),
+      };
+      // Waypoints: nombre alfabético = fix convencional
+      const fixGJ = {
+        type: 'FeatureCollection',
+        features: wayptsRaw
+          .filter(w => /^[A-Z]/.test(w.name))
+          .map(w => ({
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [w.longitude, w.latitude] },
+            properties: { name: w.name },
+          })),
+      };
+      // RNAV: nombre empieza con número
+      const rnavGJ = {
+        type: 'FeatureCollection',
+        features: wayptsRaw
+          .filter(w => /^[0-9]/.test(w.name))
+          .map(w => ({
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [w.longitude, w.latitude] },
+            properties: { name: w.name },
+          })),
+      };
+      return { navaidsGJ, airportsGJ, fixGJ, rnavGJ };
+    }
+
+    async function atcAviationLayersInit() {
+      if (atcAviationLoaded) return;
+      atcAviationLoaded = true;
+      try {
+        await atcLoadAviationImages();
+        const { navaidsGJ, airportsGJ, fixGJ, rnavGJ } = await atcLoadAviationData();
+        const V = atcLayersState.visible;
+
+        if (!atcMap.getSource('atc-navaids'))     atcMap.addSource('atc-navaids',     { type: 'geojson', data: navaidsGJ });
+        if (!atcMap.getSource('atc-airports-av')) atcMap.addSource('atc-airports-av', { type: 'geojson', data: airportsGJ });
+        if (!atcMap.getSource('atc-fixes'))       atcMap.addSource('atc-fixes',       { type: 'geojson', data: fixGJ });
+        if (!atcMap.getSource('atc-rnav'))        atcMap.addSource('atc-rnav',        { type: 'geojson', data: rnavGJ });
+
+        if (!atcMap.getLayer('atc-vor-layer')) {
+          atcMap.addLayer({
+            id: 'atc-vor-layer', type: 'symbol', source: 'atc-navaids',
+            filter: ['==', ['get', 'navType'], 'VOR'],
+            layout: {
+              'icon-image': 'atc-vor-icon', 'icon-size': 0.9,
+              'icon-allow-overlap': true, 'icon-ignore-placement': true,
+              'text-field': ['concat', ['get', 'name'], '\n', ['get', 'freq']],
+              'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+              'text-size': 9, 'text-offset': [0, 2.2], 'text-anchor': 'top',
+              'text-allow-overlap': false,
+              visibility: V.NAVAIDS ? 'visible' : 'none',
+            },
+            paint: { 'text-color': '#a3e635', 'text-halo-color': 'rgba(0,0,0,0.8)', 'text-halo-width': 1 },
+          });
+        }
+        if (!atcMap.getLayer('atc-ndb-layer')) {
+          atcMap.addLayer({
+            id: 'atc-ndb-layer', type: 'symbol', source: 'atc-navaids',
+            filter: ['==', ['get', 'navType'], 'NDB'],
+            layout: {
+              'icon-image': 'atc-ndb-icon', 'icon-size': 0.9,
+              'icon-allow-overlap': true, 'icon-ignore-placement': true,
+              'text-field': ['concat', ['get', 'name'], '\n', ['get', 'freq']],
+              'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+              'text-size': 9, 'text-offset': [0, 1.8], 'text-anchor': 'top',
+              'text-allow-overlap': false,
+              visibility: V.NAVAIDS ? 'visible' : 'none',
+            },
+            paint: { 'text-color': '#f97316', 'text-halo-color': 'rgba(0,0,0,0.8)', 'text-halo-width': 1 },
+          });
+        }
+        if (!atcMap.getLayer('atc-airports-layer')) {
+          atcMap.addLayer({
+            id: 'atc-airports-layer', type: 'symbol', source: 'atc-airports-av',
+            layout: {
+              'icon-image': 'atc-apt-icon', 'icon-size': 0.9,
+              'icon-allow-overlap': true, 'icon-ignore-placement': true,
+              'icon-rotate': ['get', 'rwyHdg'], 'icon-rotation-alignment': 'map',
+              'text-field': ['get', 'icao'],
+              'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+              'text-size': 9, 'text-offset': [0, 2], 'text-anchor': 'top',
+              'text-allow-overlap': false,
+              visibility: V.AIRPORTS ? 'visible' : 'none',
+            },
+            paint: { 'text-color': '#22d3ee', 'text-halo-color': 'rgba(0,0,0,0.8)', 'text-halo-width': 1 },
+          });
+        }
+        if (!atcMap.getLayer('atc-fixes-layer')) {
+          atcMap.addLayer({
+            id: 'atc-fixes-layer', type: 'symbol', source: 'atc-fixes',
+            layout: {
+              'icon-image': 'atc-wpt-icon', 'icon-size': 1,
+              'icon-allow-overlap': false,
+              'text-field': ['get', 'name'],
+              'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+              'text-size': 8, 'text-offset': [0, 1.4], 'text-anchor': 'top',
+              'text-allow-overlap': false,
+              visibility: V.WAYPOINTS ? 'visible' : 'none',
+            },
+            paint: { 'text-color': '#7dd3fc', 'text-halo-color': 'rgba(0,0,0,0.8)', 'text-halo-width': 1 },
+          });
+        }
+        if (!atcMap.getLayer('atc-rnav-layer')) {
+          atcMap.addLayer({
+            id: 'atc-rnav-layer', type: 'symbol', source: 'atc-rnav',
+            layout: {
+              'icon-image': 'atc-rnav-icon', 'icon-size': 1,
+              'icon-allow-overlap': false,
+              'text-field': ['get', 'name'],
+              'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+              'text-size': 8, 'text-offset': [0, 1.3], 'text-anchor': 'top',
+              'text-allow-overlap': false,
+              visibility: V.RNAV ? 'visible' : 'none',
+            },
+            paint: { 'text-color': '#fbbf24', 'text-halo-color': 'rgba(0,0,0,0.8)', 'text-halo-width': 1 },
+          });
+        }
+      } catch (err) {
+        atcAviationLoaded = false;
+        console.warn('[ATC] Aviation layers error:', err);
+      }
+    }
+
+    function atcAviationLayersApply() {
+      if (!atcMap || !atcMap.isStyleLoaded() || !atcAviationLoaded) return;
+      const V = atcLayersState.visible;
+      const map = { NAVAIDS: ['atc-vor-layer', 'atc-ndb-layer'], AIRPORTS: ['atc-airports-layer'],
+                    WAYPOINTS: ['atc-fixes-layer'], RNAV: ['atc-rnav-layer'] };
+      Object.entries(map).forEach(([key, ids]) => {
+        const vis = V[key] ? 'visible' : 'none';
+        ids.forEach(id => { if (atcMap.getLayer(id)) atcMap.setLayoutProperty(id, 'visibility', vis); });
+      });
+      atcLayersSaveState();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+
     function atcLayersInitControls() {
       atcLayersLoadState();
       atcLayersRenderUI();
 
       document.getElementById('atcLayersBtn').addEventListener('click', atcOpenLayersDrawer);
 
+      document.getElementById('atcRingLabelsBtn').addEventListener('click', () => {
+        atcState.showRingLabels = !atcState.showRingLabels;
+        document.getElementById('atcRingLabelsBtn').classList.toggle('is-active', atcState.showRingLabels);
+        if (atcState.view === 'radar') atcDrawRadarRings();
+      });
+
       document.querySelectorAll('.atc-preset-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const preset = btn.dataset.preset;
           if (ATC_PRESETS[preset]) {
-            atcLayersState.visible = { ...ATC_PRESETS[preset] };
+            atcLayersState.visible = { ...atcLayersState.visible, ...ATC_PRESETS[preset] };
           } else {
-            // Personalizado: apaga todo para que el usuario elija desde cero
-            atcLayersState.visible = { FIR: false, UIR: false, UTA: false, TMA: false, CTA: false };
+            // Personalizado: apaga espacio aéreo para que el usuario elija desde cero
+            atcLayersState.visible = { ...atcLayersState.visible, FIR: false, UIR: false, UTA: false, TMA: false, CTA: false };
           }
           atcLayersApply();
+          atcAviationLayersApply();
           atcLayersRenderUI();
         });
       });
@@ -5259,6 +5702,20 @@
         chk.addEventListener('change', () => {
           atcLayersState.visible[type] = chk.checked;
           atcLayersApply();
+          atcLayersRenderUI();
+        });
+      });
+
+      ['NAVAIDS', 'AIRPORTS', 'WAYPOINTS', 'RNAV'].forEach(type => {
+        const chk = document.getElementById('atcLayer' + type);
+        if (!chk) return;
+        chk.addEventListener('change', () => {
+          atcLayersState.visible[type] = chk.checked;
+          if (chk.checked && !atcAviationLoaded) {
+            atcAviationLayersInit();
+          } else {
+            atcAviationLayersApply();
+          }
           atcLayersRenderUI();
         });
       });
