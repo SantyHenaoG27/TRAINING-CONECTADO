@@ -1266,6 +1266,62 @@
       .atc-body { grid-template-columns: 1fr; }
       .atc-radar-stage { min-height: 380px; }
     }
+
+    /* ── Configurar mapa — drawer de capas de espacio aéreo ── */
+    .atc-layers-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1200; }
+    .atc-layers-overlay.open { display: block; }
+    .atc-layers-drawer { position: fixed; top: var(--topbar-h); right: 0; bottom: 0; width: 360px; background: var(--atc-panel,#0b1120); border-left: 1px solid var(--atc-line,rgba(125,211,252,0.14)); display: flex; flex-direction: column; z-index: 1201; transform: translateX(100%); transition: transform 300ms cubic-bezier(0.16,1,0.3,1); overflow: hidden; }
+    .atc-layers-drawer.open { transform: none; }
+    .atc-layers-head { display: flex; align-items: center; justify-content: space-between; padding: 15px 18px; border-bottom: 1px solid var(--atc-line,rgba(125,211,252,0.14)); flex-shrink: 0; background: rgba(34,211,238,0.04); }
+    .atc-layers-title { font-family: var(--font-display); font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--atc-cyan,#22d3ee); }
+    .atc-layers-close { background: none; border: 1px solid var(--atc-line,rgba(125,211,252,0.14)); color: var(--atc-text-dim,#8593ad); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; transition: border-color var(--motion-fast), color var(--motion-fast); }
+    .atc-layers-close:hover { border-color: var(--atc-cyan,#22d3ee); color: var(--atc-cyan,#22d3ee); }
+    .atc-layers-body { flex: 1; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 20px; }
+    .atc-layers-section-title { font-family: var(--font-mono); font-size: 0.625rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--atc-text-dim,#8593ad); margin-bottom: 8px; }
+    .atc-layers-presets { display: flex; flex-direction: column; gap: 5px; }
+    .atc-preset-btn { background: var(--atc-panel-soft,#101a2c); border: 1px solid var(--atc-line,rgba(125,211,252,0.14)); color: var(--atc-text-dim,#8593ad); font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: 0.07em; text-align: left; padding: 9px 13px; cursor: pointer; transition: border-color var(--motion-fast), color var(--motion-fast), background var(--motion-fast); }
+    .atc-preset-btn:hover { color: var(--atc-text,#e8eef8); border-color: rgba(255,255,255,0.2); }
+    .atc-preset-btn.active { color: var(--atc-cyan,#22d3ee); border-color: rgba(34,211,238,0.45); background: rgba(34,211,238,0.07); }
+    .atc-layers-search { width: 100%; background: var(--atc-panel-soft,#101a2c); border: 1px solid var(--atc-line,rgba(125,211,252,0.14)); color: var(--atc-text,#e8eef8); font-family: var(--font-mono); font-size: var(--text-2xs); padding: 9px 12px; outline: none; transition: border-color var(--motion-fast); }
+    .atc-layers-search:focus { border-color: var(--atc-cyan,#22d3ee); }
+    .atc-layers-search::placeholder { color: var(--atc-text-dim,#8593ad); }
+    .atc-layer-toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--atc-line,rgba(125,211,252,0.14)); }
+    .atc-layer-toggle-row:last-child { border-bottom: none; }
+    .atc-layer-toggle-left { display: flex; align-items: center; gap: 10px; }
+    .atc-layer-color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .atc-layer-name { font-family: var(--font-display); font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--atc-text,#e8eef8); }
+    .atc-layer-coming { font-family: var(--font-mono); font-size: 0.5625rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--atc-amber,#fbbf24); border: 1px solid rgba(251,191,36,0.35); padding: 2px 6px; }
+    .atc-layer-switch { position: relative; width: 36px; height: 20px; flex-shrink: 0; cursor: pointer; }
+    .atc-layer-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .atc-layer-switch-track { display: block; width: 100%; height: 100%; background: rgba(125,211,252,0.1); border: 1px solid var(--atc-line,rgba(125,211,252,0.14)); cursor: pointer; transition: background var(--motion-fast), border-color var(--motion-fast); position: relative; }
+    .atc-layer-switch input:checked + .atc-layer-switch-track { background: rgba(34,211,238,0.25); border-color: var(--atc-cyan,#22d3ee); }
+    .atc-layer-switch-track::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; background: var(--atc-text-dim,#8593ad); transition: transform var(--motion-fast), background var(--motion-fast); }
+    .atc-layer-switch input:checked + .atc-layer-switch-track::after { transform: translateX(16px); background: var(--atc-cyan,#22d3ee); }
+    .atc-opacity-row { display: flex; flex-direction: column; gap: 8px; }
+    .atc-opacity-label { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--atc-text-dim,#8593ad); letter-spacing: 0.08em; }
+    .atc-opacity-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 3px; background: var(--atc-line,rgba(125,211,252,0.14)); outline: none; cursor: pointer; }
+    .atc-opacity-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; background: var(--atc-cyan,#22d3ee); cursor: pointer; border: 2px solid var(--atc-bg,#060911); box-shadow: 0 0 6px rgba(34,211,238,0.5); }
+    .atc-opacity-slider::-moz-range-thumb { width: 14px; height: 14px; background: var(--atc-cyan,#22d3ee); cursor: pointer; border: 2px solid var(--atc-bg,#060911); border-radius: 0; box-shadow: 0 0 6px rgba(34,211,238,0.5); }
+    .atc-layers-disclaimer { font-size: var(--text-2xs); color: var(--atc-amber,#fbbf24); border: 1px solid rgba(251,191,36,0.25); background: rgba(251,191,36,0.05); padding: 10px 12px; line-height: 1.55; }
+    .atc-layers-disclaimer b { display: block; margin-bottom: 3px; font-family: var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.625rem; }
+    .atc-airspace-popup { position: fixed; z-index: 1500; background: var(--atc-panel,#0b1120); border: 1px solid var(--atc-line,rgba(125,211,252,0.14)); padding: 14px 16px; min-width: 240px; max-width: 320px; box-shadow: 0 8px 32px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04); pointer-events: all; }
+    .atc-airspace-popup .pop-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+    .atc-airspace-popup .pop-name { font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700; letter-spacing: 0.04em; color: var(--atc-text,#e8eef8); margin-top: 5px; }
+    .atc-airspace-popup .pop-type { font-family: var(--font-mono); font-size: 0.5625rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border: 1px solid; }
+    .atc-airspace-popup .pop-close { background: none; border: none; color: var(--atc-text-dim,#8593ad); cursor: pointer; font-size: 14px; padding: 0; line-height: 1; transition: color var(--motion-fast); flex-shrink: 0; }
+    .atc-airspace-popup .pop-close:hover { color: var(--atc-cyan,#22d3ee); }
+    .atc-airspace-popup .pop-row { display: flex; justify-content: space-between; gap: 10px; font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--atc-text-dim,#8593ad); padding: 5px 0; border-bottom: 1px solid var(--atc-line,rgba(125,211,252,0.14)); }
+    .atc-airspace-popup .pop-row:last-of-type { border-bottom: none; }
+    .atc-airspace-popup .pop-row b { color: var(--atc-text,#e8eef8); font-weight: 600; }
+    .atc-airspace-popup .pop-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .atc-airspace-popup .pop-btn { flex: 1; background: var(--atc-panel-soft,#101a2c); border: 1px solid var(--atc-line,rgba(125,211,252,0.14)); color: var(--atc-text-dim,#8593ad); font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: 0.06em; text-transform: uppercase; padding: 7px 10px; cursor: pointer; text-align: center; transition: border-color var(--motion-fast), color var(--motion-fast); }
+    .atc-airspace-popup .pop-btn:hover { border-color: var(--atc-cyan,#22d3ee); color: var(--atc-cyan,#22d3ee); }
+    .atc-airspace-popup .pop-status { font-family: var(--font-mono); font-size: 0.5625rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border: 1px solid; display: inline-block; }
+    .atc-airspace-popup .pop-status.verified { color: var(--atc-green,#34d399); border-color: rgba(52,211,153,0.4); }
+    .atc-airspace-popup .pop-status.generated_from_pdf { color: var(--atc-cyan,#22d3ee); border-color: rgba(34,211,238,0.4); }
+    .atc-airspace-popup .pop-status.needs_review { color: var(--atc-amber,#fbbf24); border-color: rgba(251,191,36,0.4); }
+    .atc-airspace-popup .pop-status.future_layer { color: var(--atc-text-dim,#8593ad); border-color: var(--atc-line,rgba(125,211,252,0.14)); }
+    @media (max-width: 600px) { .atc-layers-drawer { width: 100%; } }
   </style>
 </head>
 <body>
@@ -1599,6 +1655,7 @@
                   <span class="atc-zoom-value" id="atcZoomValue">1.0×</span>
                   <button class="atc-icon-btn small" id="atcZoomIn" type="button">+</button>
                   <button class="atc-icon-btn small" id="atcRecenter" type="button">⌖ Centrar</button>
+                  <button class="atc-icon-btn small" id="atcLayersBtn" type="button">☰ Capas</button>
                 </div>
               </div>
 
@@ -1700,6 +1757,151 @@
 
     </div>
   </div>
+
+  <!-- ════ CAPAS DEL MAPA — DRAWER DE ESPACIO AÉREO ════ -->
+  <div id="atcLayersOverlay" class="atc-layers-overlay" onclick="atcCloseLayersDrawer()"></div>
+  <div id="atcLayersDrawer" class="atc-layers-drawer">
+    <div class="atc-layers-head">
+      <span class="atc-layers-title">Capas del mapa</span>
+      <button class="atc-layers-close" type="button" onclick="atcCloseLayersDrawer()">✕</button>
+    </div>
+    <div class="atc-layers-body">
+
+      <div class="atc-layers-disclaimer">
+        <b>⚠ Solo entrenamiento IFR</b>
+        Polígonos aproximados basados en AIP Colombia ENR 2.1. No usar para navegación real. Verificar con publicaciones AIP vigentes.
+      </div>
+
+      <div>
+        <div class="atc-layers-section-title">Presets</div>
+        <div class="atc-layers-presets" id="atcLayersPresets">
+          <button class="atc-preset-btn" type="button" data-preset="clean">Mapa limpio — sin capas de espacio aéreo</button>
+          <button class="atc-preset-btn" type="button" data-preset="ifr_training">Entrenamiento IFR — TMA + CTA activas</button>
+          <button class="atc-preset-btn" type="button" data-preset="ats_space">Espacio ATS — FIR + UIR + UTA</button>
+          <button class="atc-preset-btn" type="button" data-preset="full_airspace">Espacio aéreo completo — todas las capas</button>
+          <button class="atc-preset-btn" type="button" data-preset="custom">Personalizado</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="atc-layers-section-title">Buscar espacio aéreo</div>
+        <input type="text" class="atc-layers-search" id="atcLayersSearch" placeholder="Nombre, tipo o identificador..." autocomplete="off" />
+        <div id="atcLayersSearchResults" style="margin-top:8px;display:flex;flex-direction:column;gap:5px;"></div>
+      </div>
+
+      <div>
+        <div class="atc-layers-section-title">Capas activas</div>
+        <div id="atcLayersTogglesContainer">
+          <div class="atc-layer-toggle-row">
+            <div class="atc-layer-toggle-left">
+              <span class="atc-layer-color-dot" style="background:#3b82f6;box-shadow:0 0 5px rgba(59,130,246,0.65);"></span>
+              <span class="atc-layer-name">FIR</span>
+            </div>
+            <label class="atc-layer-switch">
+              <input type="checkbox" id="atcLayerFIR" data-layer-type="FIR">
+              <span class="atc-layer-switch-track"></span>
+            </label>
+          </div>
+          <div class="atc-layer-toggle-row">
+            <div class="atc-layer-toggle-left">
+              <span class="atc-layer-color-dot" style="background:#1d4ed8;box-shadow:0 0 5px rgba(29,78,216,0.65);"></span>
+              <span class="atc-layer-name">UIR</span>
+            </div>
+            <label class="atc-layer-switch">
+              <input type="checkbox" id="atcLayerUIR" data-layer-type="UIR">
+              <span class="atc-layer-switch-track"></span>
+            </label>
+          </div>
+          <div class="atc-layer-toggle-row">
+            <div class="atc-layer-toggle-left">
+              <span class="atc-layer-color-dot" style="background:#7c3aed;box-shadow:0 0 5px rgba(124,58,237,0.65);"></span>
+              <span class="atc-layer-name">UTA</span>
+            </div>
+            <label class="atc-layer-switch">
+              <input type="checkbox" id="atcLayerUTA" data-layer-type="UTA">
+              <span class="atc-layer-switch-track"></span>
+            </label>
+          </div>
+          <div class="atc-layer-toggle-row">
+            <div class="atc-layer-toggle-left">
+              <span class="atc-layer-color-dot" style="background:#f59e0b;box-shadow:0 0 5px rgba(245,158,11,0.65);"></span>
+              <span class="atc-layer-name">TMA</span>
+            </div>
+            <label class="atc-layer-switch">
+              <input type="checkbox" id="atcLayerTMA" data-layer-type="TMA">
+              <span class="atc-layer-switch-track"></span>
+            </label>
+          </div>
+          <div class="atc-layer-toggle-row">
+            <div class="atc-layer-toggle-left">
+              <span class="atc-layer-color-dot" style="background:#06b6d4;box-shadow:0 0 5px rgba(6,182,212,0.65);"></span>
+              <span class="atc-layer-name">CTA</span>
+            </div>
+            <label class="atc-layer-switch">
+              <input type="checkbox" id="atcLayerCTA" data-layer-type="CTA">
+              <span class="atc-layer-switch-track"></span>
+            </label>
+          </div>
+          <div class="atc-layer-toggle-row" style="opacity:0.45;pointer-events:none;">
+            <div class="atc-layer-toggle-left">
+              <span class="atc-layer-color-dot" style="background:#6b7280;"></span>
+              <span class="atc-layer-name">CTR</span>
+              <span class="atc-layer-coming">Próximamente</span>
+            </div>
+            <label class="atc-layer-switch">
+              <input type="checkbox" disabled>
+              <span class="atc-layer-switch-track"></span>
+            </label>
+          </div>
+          <div class="atc-layer-toggle-row" style="opacity:0.45;pointer-events:none;">
+            <div class="atc-layer-toggle-left">
+              <span class="atc-layer-color-dot" style="background:#ef4444;"></span>
+              <span class="atc-layer-name">P / R / D</span>
+              <span class="atc-layer-coming">Próximamente</span>
+            </div>
+            <label class="atc-layer-switch">
+              <input type="checkbox" disabled>
+              <span class="atc-layer-switch-track"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="atc-layers-section-title">Opacidad de relleno</div>
+        <div class="atc-opacity-row">
+          <div class="atc-opacity-label">
+            <span>Transparencia del relleno</span>
+            <span id="atcLayersOpacityLabel">35%</span>
+          </div>
+          <input type="range" class="atc-opacity-slider" id="atcLayersOpacity" min="0" max="80" value="35" />
+        </div>
+      </div>
+
+      <div>
+        <div class="atc-layers-section-title">Leyenda</div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:0.625rem;color:var(--atc-text-dim);letter-spacing:0.05em;">
+            <span style="display:inline-block;width:18px;height:3px;background:#3b82f6;flex-shrink:0;"></span>FIR — Región de Información de Vuelo
+          </div>
+          <div style="display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:0.625rem;color:var(--atc-text-dim);letter-spacing:0.05em;">
+            <span style="display:inline-block;width:18px;height:3px;background:#1d4ed8;flex-shrink:0;"></span>UIR — Región Superior de Información de Vuelo
+          </div>
+          <div style="display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:0.625rem;color:var(--atc-text-dim);letter-spacing:0.05em;">
+            <span style="display:inline-block;width:18px;height:3px;background:#7c3aed;flex-shrink:0;"></span>UTA — Área de Tránsito Superior
+          </div>
+          <div style="display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:0.625rem;color:var(--atc-text-dim);letter-spacing:0.05em;">
+            <span style="display:inline-block;width:18px;height:3px;background:#f59e0b;flex-shrink:0;"></span>TMA — Área de Control Terminal
+          </div>
+          <div style="display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:0.625rem;color:var(--atc-text-dim);letter-spacing:0.05em;">
+            <span style="display:inline-block;width:18px;height:3px;background:#06b6d4;flex-shrink:0;"></span>CTA — Área de Control
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div id="atcAirspacePopup"></div>
 
   <!-- ════ MODAL: CONFIGURACIÓN RADAR ATC (visual, sin lógica real) ════ -->
   <div id="atcSettingsModal" class="flight-modal-overlay hidden-panel" onclick="if(event.target===this) closeAtcSettings()">
@@ -4400,6 +4602,7 @@
       bindAtcPtt();
       atcRenderAll();
       initAtcMap();
+      atcLayersInitControls();
     }
 
     // ── Tráfico activo (datos reales): mismo origen de datos que "Vuelos
@@ -4637,6 +4840,7 @@
             'line-dasharray': [5, 4],
           },
         });
+        atcLayersInitMap();
         atcSyncMapMarkers(atcState.flights);
       });
     }
@@ -4738,6 +4942,275 @@
 
       const vectorSource = atcMap.getSource('atc-vectors');
       if (vectorSource) vectorSource.setData(atcVectorsGeoJSON(flights));
+    }
+
+    // ── Capas de espacio aéreo (Configurar mapa) ───────────────────────────
+
+    const ATC_LAYER_COLORS = {
+      FIR: '#3b82f6',
+      UIR: '#1d4ed8',
+      UTA: '#7c3aed',
+      TMA: '#f59e0b',
+      CTA: '#06b6d4',
+    };
+
+    const ATC_LAYER_TYPES = ['FIR', 'UIR', 'UTA', 'TMA', 'CTA'];
+
+    const ATC_PRESETS = {
+      clean:         { FIR: false, UIR: false, UTA: false, TMA: false, CTA: false },
+      ifr_training:  { FIR: false, UIR: false, UTA: false, TMA: true,  CTA: true  },
+      ats_space:     { FIR: true,  UIR: true,  UTA: true,  TMA: false, CTA: false },
+      full_airspace: { FIR: true,  UIR: true,  UTA: true,  TMA: true,  CTA: true  },
+    };
+
+    let atcLayersState = {
+      visible: { FIR: false, UIR: false, UTA: false, TMA: true, CTA: true },
+      opacity: 0.35,
+    };
+
+    let atcAirspacesData = null;
+    let atcAirspacesLoaded = false;
+
+    function atcLayersLoadState() {
+      try {
+        const s = localStorage.getItem('atc_layers_config');
+        if (s) { const p = JSON.parse(s); atcLayersState = { ...atcLayersState, ...p, visible: { ...atcLayersState.visible, ...p.visible } }; }
+      } catch (e) {}
+    }
+
+    function atcLayersSaveState() {
+      try { localStorage.setItem('atc_layers_config', JSON.stringify(atcLayersState)); } catch (e) {}
+    }
+
+    function atcOpenLayersDrawer() {
+      document.getElementById('atcLayersDrawer').classList.add('open');
+      document.getElementById('atcLayersOverlay').classList.add('open');
+      atcLayersRenderUI();
+    }
+
+    function atcCloseLayersDrawer() {
+      document.getElementById('atcLayersDrawer').classList.remove('open');
+      document.getElementById('atcLayersOverlay').classList.remove('open');
+    }
+
+    function atcLayersGetPreset() {
+      for (const [name, cfg] of Object.entries(ATC_PRESETS)) {
+        if (ATC_LAYER_TYPES.every(t => !!atcLayersState.visible[t] === !!cfg[t])) return name;
+      }
+      return 'custom';
+    }
+
+    function atcLayersRenderUI() {
+      const preset = atcLayersGetPreset();
+      document.querySelectorAll('.atc-preset-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.preset === preset);
+      });
+      ATC_LAYER_TYPES.forEach(type => {
+        const chk = document.getElementById('atcLayer' + type);
+        if (chk) chk.checked = !!atcLayersState.visible[type];
+      });
+      const opSlider = document.getElementById('atcLayersOpacity');
+      const opLabel  = document.getElementById('atcLayersOpacityLabel');
+      if (opSlider) opSlider.value = Math.round(atcLayersState.opacity * 100);
+      if (opLabel)  opLabel.textContent = Math.round(atcLayersState.opacity * 100) + '%';
+    }
+
+    function atcLayersApply() {
+      if (!atcMap || !atcMap.isStyleLoaded()) return;
+      ATC_LAYER_TYPES.forEach(type => {
+        const vis    = atcLayersState.visible[type] ? 'visible' : 'none';
+        const fillId = 'atc-as-' + type.toLowerCase() + '-fill';
+        const lineId = 'atc-as-' + type.toLowerCase() + '-line';
+        if (atcMap.getLayer(fillId)) {
+          atcMap.setLayoutProperty(fillId, 'visibility', vis);
+          atcMap.setPaintProperty(fillId, 'fill-opacity', atcLayersState.opacity);
+        }
+        if (atcMap.getLayer(lineId)) atcMap.setLayoutProperty(lineId, 'visibility', vis);
+      });
+      atcLayersSaveState();
+    }
+
+    function atcLayersInitMap() {
+      if (!atcMap || atcAirspacesLoaded) return;
+      atcAirspacesLoaded = true;
+      atcLayersLoadState();
+
+      fetch('storage/data/airspaces/enr21.geojson')
+        .then(r => r.json())
+        .then(geojson => {
+          atcAirspacesData = geojson;
+          if (!atcMap.getSource('atc-airspaces')) {
+            atcMap.addSource('atc-airspaces', { type: 'geojson', data: geojson });
+          }
+          ATC_LAYER_TYPES.forEach(type => {
+            const color  = ATC_LAYER_COLORS[type];
+            const fillId = 'atc-as-' + type.toLowerCase() + '-fill';
+            const lineId = 'atc-as-' + type.toLowerCase() + '-line';
+            const vis    = atcLayersState.visible[type] ? 'visible' : 'none';
+
+            if (!atcMap.getLayer(fillId)) {
+              atcMap.addLayer({
+                id: fillId, type: 'fill', source: 'atc-airspaces',
+                filter: ['==', ['get', 'type'], type],
+                paint: { 'fill-color': color, 'fill-opacity': atcLayersState.opacity },
+                layout: { visibility: vis },
+              }, 'atc-vectors-layer');
+            }
+            if (!atcMap.getLayer(lineId)) {
+              atcMap.addLayer({
+                id: lineId, type: 'line', source: 'atc-airspaces',
+                filter: ['==', ['get', 'type'], type],
+                paint: { 'line-color': color, 'line-width': 1.5, 'line-opacity': 0.9 },
+                layout: { visibility: vis },
+              }, 'atc-vectors-layer');
+            }
+
+            atcMap.on('click', fillId, (e) => {
+              if (!e.features.length) return;
+              e.originalEvent.stopPropagation();
+              atcShowAirspacePopup(e.features[0].properties, e.originalEvent.clientX, e.originalEvent.clientY);
+            });
+            atcMap.on('mouseenter', fillId, () => { atcMap.getCanvas().style.cursor = 'pointer'; });
+            atcMap.on('mouseleave', fillId, () => { atcMap.getCanvas().style.cursor = ''; });
+          });
+
+          atcMap.on('click', () => {
+            const popup = document.getElementById('atcAirspacePopup');
+            if (popup) popup.style.display = 'none';
+          });
+        })
+        .catch(() => { atcAirspacesLoaded = false; });
+    }
+
+    function atcShowAirspacePopup(props, x, y) {
+      const popup = document.getElementById('atcAirspacePopup');
+      if (!popup) return;
+      const color = ATC_LAYER_COLORS[props.type] || '#8593ad';
+      let vertLines = '';
+      try {
+        const lims = typeof props.verticalLimits === 'string' ? JSON.parse(props.verticalLimits) : props.verticalLimits;
+        if (Array.isArray(lims)) {
+          lims.forEach(l => {
+            vertLines += `<div class="pop-row"><span>Clase ${escSim(l.class || '?')}</span><b>${escSim(l.lower)} → ${escSim(l.upper)}</b></div>`;
+          });
+        }
+      } catch (e) {}
+      const freq     = props.frequency   ? `<div class="pop-row"><span>Frecuencia</span><b>${escSim(props.frequency)}</b></div>` : '';
+      const oprHr    = props.oprHr       ? `<div class="pop-row"><span>Horario</span><b>${escSim(props.oprHr)}</b></div>` : '';
+      const callsign = props.callsign    ? `<div class="pop-row"><span>Indicativo</span><b>${escSim(props.callsign)}</b></div>` : '';
+      const statusLabels = { verified: 'Verificado', generated_from_pdf: 'Generado desde PDF', needs_review: 'Requiere revisión', future_layer: 'Próximamente' };
+      const statusText   = statusLabels[props.status] || props.status || '';
+      const noteTxt      = props.notes ? `<div style="font-family:var(--font-mono);font-size:0.5625rem;color:var(--atc-amber,#fbbf24);margin-top:6px;line-height:1.5;">${escSim(props.notes)}</div>` : '';
+
+      popup.innerHTML = `
+        <div class="atc-airspace-popup">
+          <div class="pop-header">
+            <div>
+              <span class="pop-type" style="color:${color};border-color:${color}60;">${escSim(props.type || '')}</span>
+              <div class="pop-name">${escSim(props.name || '')}</div>
+            </div>
+            <button class="pop-close" type="button" onclick="document.getElementById('atcAirspacePopup').style.display='none'">✕</button>
+          </div>
+          ${callsign}${freq}${oprHr}${vertLines}
+          <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+            <span class="pop-status ${escAttr(props.status || '')}">${statusText}</span>
+          </div>
+          ${noteTxt}
+          <div class="pop-actions">
+            <button class="pop-btn" type="button" onclick="atcCenterOnAirspace('${escAttr(props.id || '')}')">Centrar en este espacio</button>
+            <button class="pop-btn" type="button" onclick="document.getElementById('atcAirspacePopup').style.display='none'">Cerrar</button>
+          </div>
+        </div>`;
+
+      const pw = 320, ph = 300;
+      let px = x + 14, py = y + 14;
+      if (px + pw > window.innerWidth - 10)  px = x - pw - 14;
+      if (py + ph > window.innerHeight - 10) py = y - ph - 14;
+      if (px < 8) px = 8;
+      if (py < 8) py = 8;
+      popup.style.cssText = `display:block;position:fixed;left:${px}px;top:${py}px;z-index:1500;`;
+    }
+
+    function atcCenterOnAirspace(id) {
+      if (!atcMap || !atcAirspacesData) return;
+      const feat = atcAirspacesData.features.find(f => f.properties.id === id);
+      if (!feat || feat.geometry.type !== 'Polygon') return;
+      const coords = feat.geometry.coordinates[0];
+      if (!coords.length) return;
+      const lngs = coords.map(c => c[0]);
+      const lats  = coords.map(c => c[1]);
+      const center = [(Math.min(...lngs) + Math.max(...lngs)) / 2, (Math.min(...lats) + Math.max(...lats)) / 2];
+      atcMap.flyTo({ center, zoom: 7, duration: 900, essential: true });
+      const popup = document.getElementById('atcAirspacePopup');
+      if (popup) popup.style.display = 'none';
+    }
+
+    function atcLayersInitControls() {
+      atcLayersLoadState();
+      atcLayersRenderUI();
+
+      document.getElementById('atcLayersBtn').addEventListener('click', atcOpenLayersDrawer);
+
+      document.querySelectorAll('.atc-preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const preset = btn.dataset.preset;
+          if (preset !== 'custom' && ATC_PRESETS[preset]) {
+            atcLayersState.visible = { ...ATC_PRESETS[preset] };
+          }
+          atcLayersApply();
+          atcLayersRenderUI();
+        });
+      });
+
+      ATC_LAYER_TYPES.forEach(type => {
+        const chk = document.getElementById('atcLayer' + type);
+        if (!chk) return;
+        chk.addEventListener('change', () => {
+          atcLayersState.visible[type] = chk.checked;
+          atcLayersApply();
+          atcLayersRenderUI();
+        });
+      });
+
+      const opSlider = document.getElementById('atcLayersOpacity');
+      if (opSlider) {
+        opSlider.addEventListener('input', () => {
+          atcLayersState.opacity = parseInt(opSlider.value, 10) / 100;
+          const lbl = document.getElementById('atcLayersOpacityLabel');
+          if (lbl) lbl.textContent = opSlider.value + '%';
+          atcLayersApply();
+        });
+      }
+
+      const search = document.getElementById('atcLayersSearch');
+      if (search) {
+        search.addEventListener('input', () => {
+          const q = search.value.trim().toLowerCase();
+          const results = document.getElementById('atcLayersSearchResults');
+          if (!results) return;
+          if (!q || !atcAirspacesData) { results.innerHTML = ''; return; }
+          const matches = atcAirspacesData.features.filter(f => {
+            const p = f.properties;
+            return (p.name || '').toLowerCase().includes(q) ||
+                   (p.type || '').toLowerCase().includes(q) ||
+                   (p.id || '').toLowerCase().includes(q) ||
+                   (p.atsUnit || '').toLowerCase().includes(q);
+          }).slice(0, 7);
+          results.innerHTML = matches.map(f => {
+            const p = f.properties;
+            const c = ATC_LAYER_COLORS[p.type] || '#8593ad';
+            return `<button type="button"
+              onclick="atcCenterOnAirspace('${escAttr(p.id)}');document.getElementById('atcLayersSearch').value='';document.getElementById('atcLayersSearchResults').innerHTML='';"
+              style="background:var(--atc-panel-soft,#101a2c);border:1px solid var(--atc-line,rgba(125,211,252,0.14));color:var(--atc-text-dim,#8593ad);text-align:left;padding:8px 11px;cursor:pointer;font-family:var(--font-mono);font-size:var(--text-2xs);display:flex;gap:9px;align-items:center;transition:border-color 120ms,color 120ms;width:100%;"
+              onmouseover="this.style.borderColor='${c}';this.style.color='${c}'"
+              onmouseout="this.style.borderColor='rgba(125,211,252,0.14)';this.style.color='var(--atc-text-dim,#8593ad)'">
+              <span style="width:8px;height:8px;border-radius:50%;background:${c};flex-shrink:0;display:inline-block;"></span>
+              <span style="opacity:.7;min-width:30px;">${escSim(p.type)}</span>
+              <span style="color:var(--atc-text,#e8eef8);">${escSim(p.name)}</span>
+            </button>`;
+          }).join('');
+        });
+      }
     }
 
     function atcRenderDetail() {
