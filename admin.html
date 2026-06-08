@@ -1108,7 +1108,7 @@
     .atc-real-map .maplibregl-ctrl-attrib a { color: var(--atc-text-dim); }
 
     /* — Aeronaves animadas sobre el mapa real (marcadores MapLibre) — */
-    .atc-blip { cursor: pointer; }
+    .atc-blip { cursor: pointer; position: relative; width: 11px; height: 11px; }
     .atc-blip-trail { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--atc-text-dim); transform: translate(-50%,-50%); pointer-events: none; }
     .atc-blip-glow { position: absolute; inset: -11px; border-radius: 50%; background: radial-gradient(circle, rgba(52,211,153,0.28), transparent 70%); opacity: 0; transition: opacity var(--motion-fast); pointer-events: none; }
     .atc-blip.selected .atc-blip-glow { opacity: 1; animation: atcBlipPulse 1.6s ease-in-out infinite; background: radial-gradient(circle, rgba(34,211,238,0.34), transparent 70%); }
@@ -1301,7 +1301,7 @@
         Simuladores <span class="tab-count" id="simActiveCount">0</span>
       </button>
       <button class="page-tab" onclick="switchTab('radar-atc', this)">
-        Radar ATC <span class="tag tag-info" style="margin-left:6px;">Vista previa</span>
+        Radar ATC
       </button>
       <button class="page-tab" onclick="switchTab('reportes', this)">
         Reportes
@@ -1543,7 +1543,7 @@
                 <div class="tech-label" style="color: var(--atc-cyan);">Instructor · Supervisión en tiempo real</div>
                 <h1 class="atc-title">Radar ATC</h1>
               </div>
-              <span class="atc-live-chip"><i></i> Vista previa · datos simulados</span>
+              <span class="atc-live-chip"><i></i> En vivo · tiempo real</span>
             </div>
             <div class="atc-topbar-right">
               <div class="atc-segmented" id="atcViewSeg">
@@ -4429,6 +4429,8 @@
         supabaseClient.removeChannel(atcTrafficChannel);
         atcTrafficChannel = null;
       }
+      atcMapMarkers.forEach(m => m.remove());
+      atcMapMarkers.clear();
     }
 
     async function loadAtcTraffic() {
@@ -4443,7 +4445,7 @@
         supabaseClient.from('profiles').select('id, nombre, session_code').eq('role', 'estudiante'),
         supabaseClient
           .from('flight_telemetry')
-          .select('session_code, flight_id, sim_time, altitude_ft, ias_kt, heading_deg, on_ground')
+          .select('session_code, flight_id, sim_time, altitude_ft, ias_kt, heading_deg, latitude, longitude, on_ground')
           .not('flight_id', 'is', null)
           .neq('flight_id', '')
           .order('sim_time', { ascending: false })
@@ -4506,6 +4508,8 @@
           ias_kt: Number(last.ias_kt),
           heading_deg: Number(last.heading_deg),
           on_ground: !!last.on_ground,
+          lat: Number(last.latitude),
+          lng: Number(last.longitude),
           assignment: assignment ? { origen: assignment.origen, destino: assignment.destino } : null,
           last_seen_ms: session ? new Date(session.last_seen).getTime() : new Date(last.sim_time).getTime(),
         };
@@ -4519,6 +4523,7 @@
       atcRenderFlightList();
       atcRenderDetail();
       atcRenderCoords();
+      atcSyncMapMarkers(atcState.flights);
     }
 
     function atcRefreshRangeUI() {
@@ -4539,6 +4544,7 @@
       atcRenderAlerts();
       atcRenderLog();
       atcRenderCoords();
+      atcSyncMapMarkers(atcState.flights);
     }
 
     function atcRenderCoords() {
@@ -4595,13 +4601,16 @@
       atcState.selectedId = id;
       atcRenderFlightList();
       atcRenderDetail();
+      atcSyncMapMarkerSelection();
+      const f = atcState.flights.find(x => x.id === id);
+      if (f && atcMap && Number.isFinite(f.lat) && Number.isFinite(f.lng)) {
+        atcMap.easeTo({ center: [f.lng, f.lat], zoom: Math.max(atcMap.getZoom(), 8), duration: 600 });
+      }
     }
 
-    // El área central del módulo ahora muestra el mapa real (MapLibre, mismo
-    // estilo oscuro que ya usa el panel de vuelos activos), sin trazar
-    // aeronaves ni waypoints sobre él — solo el mapa base, como vista de
-    // referencia del sector.
     let atcMap = null;
+    const atcMapMarkers = new Map();
+
     function initAtcMap() {
       const container = document.getElementById('atcMap');
       if (!container || typeof maplibregl === 'undefined' || atcMap) return;
@@ -4613,6 +4622,122 @@
         attributionControl: true,
       });
       atcMap.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+      atcMap.on('load', () => {
+        atcMap.addSource('atc-vectors', {
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] },
+        });
+        atcMap.addLayer({
+          id: 'atc-vectors-layer',
+          type: 'line',
+          source: 'atc-vectors',
+          paint: {
+            'line-color': 'rgba(255,255,255,0.35)',
+            'line-width': 1,
+            'line-dasharray': [5, 4],
+          },
+        });
+        atcSyncMapMarkers(atcState.flights);
+      });
+    }
+
+    function atcPredictPoint(lat, lng, headingDeg, iasKt) {
+      if (!Number.isFinite(lat) || !Number.isFinite(lng) || !Number.isFinite(headingDeg) || !Number.isFinite(iasKt) || iasKt < 10) return null;
+      const distM = (iasKt * (3 / 60)) * 1852;
+      const headingRad = headingDeg * Math.PI / 180;
+      const latRad = lat * Math.PI / 180;
+      const dLat = (distM * Math.cos(headingRad)) / 111320;
+      const dLng = (distM * Math.sin(headingRad)) / (111320 * Math.cos(latRad));
+      return [lng + dLng, lat + dLat];
+    }
+
+    function atcVectorsGeoJSON(flights) {
+      const features = [];
+      for (const f of flights) {
+        if (!Number.isFinite(f.lat) || !Number.isFinite(f.lng) || Math.abs(f.lat) > 90 || Math.abs(f.lng) > 180) continue;
+        const end = atcPredictPoint(f.lat, f.lng, f.heading_deg, f.ias_kt);
+        if (!end) continue;
+        features.push({
+          type: 'Feature',
+          geometry: { type: 'LineString', coordinates: [[f.lng, f.lat], end] },
+        });
+      }
+      return { type: 'FeatureCollection', features };
+    }
+
+    function atcMakeBlipEl(f) {
+      const el = document.createElement('div');
+      el.className = 'atc-blip' + (f.on_ground ? ' status-warning' : '');
+      el.dataset.flightId = f.id;
+      const hdg = Number.isFinite(f.heading_deg) ? f.heading_deg : 0;
+      const hdgLabel = Number.isFinite(f.heading_deg) ? String(Math.round(f.heading_deg)).padStart(3, '0') : '---';
+      const iasLabel = Number.isFinite(f.ias_kt) ? f.ias_kt : '---';
+      const nameShort = (f.student || '?').split(' ')[0];
+      el.innerHTML = `
+        <div class="atc-blip-glow"></div>
+        <div class="atc-blip-icon" style="transform:rotate(${hdg}deg);"></div>
+        <div class="atc-datablock">
+          <div>${escSim(nameShort)}</div>
+          <div>${iasLabel}kt ${hdgLabel}°</div>
+          <div style="opacity:.65;">${f.on_ground ? 'tierra' : 'vuelo'}</div>
+        </div>`;
+      el.addEventListener('click', () => {
+        atcState.selectedId = f.id;
+        atcRenderFlightList();
+        atcRenderDetail();
+        atcSyncMapMarkerSelection();
+      });
+      return el;
+    }
+
+    function atcSyncMapMarkerSelection() {
+      atcMapMarkers.forEach((marker, id) => {
+        marker.getElement().classList.toggle('selected', id === atcState.selectedId);
+      });
+    }
+
+    function atcSyncMapMarkers(flights) {
+      if (!atcMap || !atcMap.isStyleLoaded()) return;
+
+      const seen = new Set();
+      for (const f of flights) {
+        if (!Number.isFinite(f.lat) || !Number.isFinite(f.lng) || Math.abs(f.lat) > 90 || Math.abs(f.lng) > 180) continue;
+        seen.add(f.id);
+        const hdg = Number.isFinite(f.heading_deg) ? f.heading_deg : 0;
+        const hdgLabel = Number.isFinite(f.heading_deg) ? String(Math.round(f.heading_deg)).padStart(3, '0') : '---';
+        const iasLabel = Number.isFinite(f.ias_kt) ? f.ias_kt : '---';
+        const nameShort = (f.student || '?').split(' ')[0];
+
+        const existing = atcMapMarkers.get(f.id);
+        if (existing) {
+          existing.setLngLat([f.lng, f.lat]);
+          const el = existing.getElement();
+          el.className = 'atc-blip'
+            + (f.on_ground ? ' status-warning' : '')
+            + (f.id === atcState.selectedId ? ' selected' : '');
+          const icon = el.querySelector('.atc-blip-icon');
+          if (icon) icon.style.transform = `rotate(${hdg}deg)`;
+          const db = el.querySelector('.atc-datablock');
+          if (db) db.innerHTML = `
+            <div>${escSim(nameShort)}</div>
+            <div>${iasLabel}kt ${hdgLabel}°</div>
+            <div style="opacity:.65;">${f.on_ground ? 'tierra' : 'vuelo'}</div>`;
+        } else {
+          const el = atcMakeBlipEl(f);
+          if (f.id === atcState.selectedId) el.classList.add('selected');
+          const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
+            .setLngLat([f.lng, f.lat])
+            .addTo(atcMap);
+          atcMapMarkers.set(f.id, marker);
+        }
+      }
+
+      atcMapMarkers.forEach((marker, id) => {
+        if (!seen.has(id)) { marker.remove(); atcMapMarkers.delete(id); }
+      });
+
+      const vectorSource = atcMap.getSource('atc-vectors');
+      if (vectorSource) vectorSource.setData(atcVectorsGeoJSON(flights));
     }
 
     function atcRenderDetail() {
