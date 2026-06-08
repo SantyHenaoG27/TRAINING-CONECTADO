@@ -4988,6 +4988,11 @@
       canvas.height = stage ? stage.offsetHeight : canvas.offsetHeight;
       const w = canvas.width, h = canvas.height;
       if (!w || !h) return;
+      // Si Distancias no está activo, limpiar canvas y salir
+      if (!atcState.showRingLabels) {
+        canvas.getContext('2d').clearRect(0, 0, w, h);
+        return;
+      }
       const cx = w / 2, cy = h / 2;
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, w, h);
