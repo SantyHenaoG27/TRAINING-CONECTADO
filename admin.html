@@ -1772,6 +1772,10 @@
         Polígonos aproximados basados en AIP Colombia ENR 2.1. No usar para navegación real. Verificar con publicaciones AIP vigentes.
       </div>
 
+      <div id="atcLayersActiveSel"
+        style="display:none;align-items:center;gap:8px;padding:9px 12px;border:1px solid rgba(34,211,238,0.35);background:rgba(34,211,238,0.07);font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--atc-cyan,#22d3ee);letter-spacing:0.06em;">
+      </div>
+
       <div>
         <div class="atc-layers-section-title">Presets</div>
         <div class="atc-layers-presets" id="atcLayersPresets">
@@ -4966,6 +4970,7 @@
     let atcLayersState = {
       visible: { FIR: false, UIR: false, UTA: false, TMA: true, CTA: true },
       opacity: 0.35,
+      selectedId: null,
     };
 
     let atcAirspacesData = null;
@@ -4974,12 +4979,18 @@
     function atcLayersLoadState() {
       try {
         const s = localStorage.getItem('atc_layers_config');
-        if (s) { const p = JSON.parse(s); atcLayersState = { ...atcLayersState, ...p, visible: { ...atcLayersState.visible, ...p.visible } }; }
+        if (s) {
+          const p = JSON.parse(s);
+          atcLayersState = { ...atcLayersState, ...p, visible: { ...atcLayersState.visible, ...p.visible }, selectedId: null };
+        }
       } catch (e) {}
     }
 
     function atcLayersSaveState() {
-      try { localStorage.setItem('atc_layers_config', JSON.stringify(atcLayersState)); } catch (e) {}
+      try {
+        const toSave = { visible: atcLayersState.visible, opacity: atcLayersState.opacity };
+        localStorage.setItem('atc_layers_config', JSON.stringify(toSave));
+      } catch (e) {}
     }
 
     function atcOpenLayersDrawer() {
@@ -4994,6 +5005,7 @@
     }
 
     function atcLayersGetPreset() {
+      if (atcLayersState.selectedId) return null;
       for (const [name, cfg] of Object.entries(ATC_PRESETS)) {
         if (ATC_LAYER_TYPES.every(t => !!atcLayersState.visible[t] === !!cfg[t])) return name;
       }
@@ -5013,21 +5025,96 @@
       const opLabel  = document.getElementById('atcLayersOpacityLabel');
       if (opSlider) opSlider.value = Math.round(atcLayersState.opacity * 100);
       if (opLabel)  opLabel.textContent = Math.round(atcLayersState.opacity * 100) + '%';
+
+      // Chip de selección individual
+      const chip = document.getElementById('atcLayersActiveSel');
+      if (chip) {
+        if (atcLayersState.selectedId && atcAirspacesData) {
+          const feat = atcAirspacesData.features.find(f => f.properties.id === atcLayersState.selectedId);
+          if (feat) {
+            const p = feat.properties;
+            const c = ATC_LAYER_COLORS[p.type] || '#8593ad';
+            chip.style.display = 'flex';
+            chip.innerHTML = `
+              <span style="width:8px;height:8px;border-radius:50%;background:${c};flex-shrink:0;display:inline-block;"></span>
+              <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escSim(p.name)}</span>
+              <button type="button" onclick="atcLayersClearFocus()"
+                style="background:none;border:none;color:var(--atc-text-dim,#8593ad);cursor:pointer;font-size:13px;padding:0;line-height:1;flex-shrink:0;transition:color 120ms;"
+                onmouseover="this.style.color='var(--atc-cyan,#22d3ee)'" onmouseout="this.style.color='var(--atc-text-dim,#8593ad)'">✕</button>`;
+          }
+        } else {
+          chip.style.display = 'none';
+          chip.innerHTML = '';
+        }
+      }
     }
 
     function atcLayersApply() {
       if (!atcMap || !atcMap.isStyleLoaded()) return;
-      ATC_LAYER_TYPES.forEach(type => {
-        const vis    = atcLayersState.visible[type] ? 'visible' : 'none';
-        const fillId = 'atc-as-' + type.toLowerCase() + '-fill';
-        const lineId = 'atc-as-' + type.toLowerCase() + '-line';
-        if (atcMap.getLayer(fillId)) {
-          atcMap.setLayoutProperty(fillId, 'visibility', vis);
-          atcMap.setPaintProperty(fillId, 'fill-opacity', atcLayersState.opacity);
-        }
-        if (atcMap.getLayer(lineId)) atcMap.setLayoutProperty(lineId, 'visibility', vis);
-      });
+
+      if (atcLayersState.selectedId) {
+        // Modo foco: solo muestra el espacio aéreo con ese ID exacto
+        ATC_LAYER_TYPES.forEach(type => {
+          const fillId = 'atc-as-' + type.toLowerCase() + '-fill';
+          const lineId = 'atc-as-' + type.toLowerCase() + '-line';
+          if (atcMap.getLayer(fillId)) {
+            atcMap.setFilter(fillId, ['==', ['get', 'id'], atcLayersState.selectedId]);
+            atcMap.setLayoutProperty(fillId, 'visibility', 'visible');
+            atcMap.setPaintProperty(fillId, 'fill-opacity', Math.max(atcLayersState.opacity, 0.25));
+          }
+          if (atcMap.getLayer(lineId)) {
+            atcMap.setFilter(lineId, ['==', ['get', 'id'], atcLayersState.selectedId]);
+            atcMap.setLayoutProperty(lineId, 'visibility', 'visible');
+          }
+        });
+      } else {
+        // Modo normal: visibilidad por tipo con filtro por tipo
+        ATC_LAYER_TYPES.forEach(type => {
+          const vis    = atcLayersState.visible[type] ? 'visible' : 'none';
+          const fillId = 'atc-as-' + type.toLowerCase() + '-fill';
+          const lineId = 'atc-as-' + type.toLowerCase() + '-line';
+          if (atcMap.getLayer(fillId)) {
+            atcMap.setFilter(fillId, ['==', ['get', 'type'], type]);
+            atcMap.setLayoutProperty(fillId, 'visibility', vis);
+            atcMap.setPaintProperty(fillId, 'fill-opacity', atcLayersState.opacity);
+          }
+          if (atcMap.getLayer(lineId)) {
+            atcMap.setFilter(lineId, ['==', ['get', 'type'], type]);
+            atcMap.setLayoutProperty(lineId, 'visibility', vis);
+          }
+        });
+      }
       atcLayersSaveState();
+    }
+
+    function atcLayersFocusOne(id) {
+      if (!atcAirspacesData) return;
+      const feat = atcAirspacesData.features.find(f => f.properties.id === id);
+      if (!feat) return;
+      atcLayersState.selectedId = id;
+      atcLayersApply();
+      atcLayersRenderUI();
+      // Centrar mapa
+      const coords = feat.geometry.type === 'Polygon' ? feat.geometry.coordinates[0] : [];
+      if (coords.length) {
+        const lngs = coords.map(c => c[0]);
+        const lats  = coords.map(c => c[1]);
+        atcMap.flyTo({
+          center: [(Math.min(...lngs) + Math.max(...lngs)) / 2, (Math.min(...lats) + Math.max(...lats)) / 2],
+          zoom: 7, duration: 900, essential: true,
+        });
+      }
+      // Limpiar búsqueda
+      const search  = document.getElementById('atcLayersSearch');
+      const results = document.getElementById('atcLayersSearchResults');
+      if (search)  search.value = '';
+      if (results) results.innerHTML = '';
+    }
+
+    function atcLayersClearFocus() {
+      atcLayersState.selectedId = null;
+      atcLayersApply();
+      atcLayersRenderUI();
     }
 
     function atcLayersInitMap() {
@@ -5117,7 +5204,8 @@
           </div>
           ${noteTxt}
           <div class="pop-actions">
-            <button class="pop-btn" type="button" onclick="atcCenterOnAirspace('${escAttr(props.id || '')}')">Centrar en este espacio</button>
+            <button class="pop-btn" type="button" onclick="atcLayersFocusOne('${escAttr(props.id || '')}');document.getElementById('atcAirspacePopup').style.display='none'" style="color:${color};border-color:${color}50;">Solo este</button>
+            <button class="pop-btn" type="button" onclick="atcCenterOnAirspace('${escAttr(props.id || '')}')">Centrar</button>
             <button class="pop-btn" type="button" onclick="document.getElementById('atcAirspacePopup').style.display='none'">Cerrar</button>
           </div>
         </div>`;
@@ -5154,8 +5242,11 @@
       document.querySelectorAll('.atc-preset-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const preset = btn.dataset.preset;
-          if (preset !== 'custom' && ATC_PRESETS[preset]) {
+          if (ATC_PRESETS[preset]) {
             atcLayersState.visible = { ...ATC_PRESETS[preset] };
+          } else {
+            // Personalizado: apaga todo para que el usuario elija desde cero
+            atcLayersState.visible = { FIR: false, UIR: false, UTA: false, TMA: false, CTA: false };
           }
           atcLayersApply();
           atcLayersRenderUI();
@@ -5199,15 +5290,23 @@
           results.innerHTML = matches.map(f => {
             const p = f.properties;
             const c = ATC_LAYER_COLORS[p.type] || '#8593ad';
-            return `<button type="button"
-              onclick="atcCenterOnAirspace('${escAttr(p.id)}');document.getElementById('atcLayersSearch').value='';document.getElementById('atcLayersSearchResults').innerHTML='';"
-              style="background:var(--atc-panel-soft,#101a2c);border:1px solid var(--atc-line,rgba(125,211,252,0.14));color:var(--atc-text-dim,#8593ad);text-align:left;padding:8px 11px;cursor:pointer;font-family:var(--font-mono);font-size:var(--text-2xs);display:flex;gap:9px;align-items:center;transition:border-color 120ms,color 120ms;width:100%;"
-              onmouseover="this.style.borderColor='${c}';this.style.color='${c}'"
-              onmouseout="this.style.borderColor='rgba(125,211,252,0.14)';this.style.color='var(--atc-text-dim,#8593ad)'">
-              <span style="width:8px;height:8px;border-radius:50%;background:${c};flex-shrink:0;display:inline-block;"></span>
-              <span style="opacity:.7;min-width:30px;">${escSim(p.type)}</span>
-              <span style="color:var(--atc-text,#e8eef8);">${escSim(p.name)}</span>
-            </button>`;
+            return `<div style="display:flex;gap:5px;align-items:stretch;">
+              <button type="button"
+                onclick="atcCenterOnAirspace('${escAttr(p.id)}')"
+                style="flex:1;background:var(--atc-panel-soft,#101a2c);border:1px solid var(--atc-line,rgba(125,211,252,0.14));color:var(--atc-text-dim,#8593ad);text-align:left;padding:8px 11px;cursor:pointer;font-family:var(--font-mono);font-size:var(--text-2xs);display:flex;gap:9px;align-items:center;transition:border-color 120ms,color 120ms;"
+                onmouseover="this.style.borderColor='${c}40';this.style.color='var(--atc-text,#e8eef8)'"
+                onmouseout="this.style.borderColor='rgba(125,211,252,0.14)';this.style.color='var(--atc-text-dim,#8593ad)'">
+                <span style="width:8px;height:8px;border-radius:50%;background:${c};flex-shrink:0;display:inline-block;"></span>
+                <span style="opacity:.65;min-width:28px;">${escSim(p.type)}</span>
+                <span style="color:var(--atc-text,#e8eef8);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escSim(p.name)}</span>
+              </button>
+              <button type="button"
+                onclick="atcLayersFocusOne('${escAttr(p.id)}')"
+                title="Mostrar solo este espacio aéreo"
+                style="background:rgba(${c === '#f59e0b' ? '245,158,11' : c === '#3b82f6' ? '59,130,246' : c === '#1d4ed8' ? '29,78,216' : c === '#7c3aed' ? '124,58,237' : '6,182,212'},0.1);border:1px solid ${c}50;color:${c};font-family:var(--font-mono);font-size:0.5625rem;letter-spacing:0.08em;padding:0 9px;cursor:pointer;white-space:nowrap;transition:background 120ms,border-color 120ms;flex-shrink:0;"
+                onmouseover="this.style.background='${c}25';this.style.borderColor='${c}'"
+                onmouseout="this.style.background='${c}10';this.style.borderColor='${c}50'">Solo este</button>
+            </div>`;
           }).join('');
         });
       }
