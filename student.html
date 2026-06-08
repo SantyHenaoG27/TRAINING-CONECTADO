@@ -819,7 +819,7 @@
           </div>
         </div>
 
-        <div style="border: 1px solid var(--border); overflow: hidden;">
+        <div style="border: 1px solid var(--border); flex-shrink: 0;">
           <table class="history-table">
             <thead>
               <tr>
@@ -1240,8 +1240,11 @@
       const activeId = window.currentUser.active_assignment_id;
       if (!activeId || autoCompleteAttempted.has(`stale:${activeId}`)) return false;
 
-      const active = flights.find(f => f.id === activeId &&
-        (f.estado === 'pendiente' || f.estado === 'en_progreso'));
+      // Sin filtro de estado: una asignación ya completada puede volver a
+      // seleccionarse ("Volver a volar"), y en ese caso sigue sin haber señal
+      // de telemetría que la complete de nuevo — solo la inactividad de la
+      // sesión nos dice que el estudiante dejó de volarla.
+      const active = flights.find(f => f.id === activeId);
       if (!active) return false;
 
       const code = window.currentUser.session_code;

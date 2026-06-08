@@ -21,18 +21,26 @@
       --accent-on: #040408;
       --accent-hover: #7dd3fc;
       --success: #4ade80;
-      --danger: #e63946;
+      --danger: #ef4452;
       --amber: #fb923c;
       --font-display: "Eurostile", "Arial Narrow", Arial, sans-serif;
       --font-body: "Inter", Arial, sans-serif;
       --font-mono: "SF Mono", ui-monospace, Menlo, monospace;
+      --text-2xs: 0.75rem;
+      --text-xs: 0.8125rem;
+      --text-sm: 0.875rem;
+      --text-base: 1rem;
+      --text-md: 1.125rem;
+      --text-lg: 1.375rem;
+      --text-xl: 2rem;
+      --text-2xl: 2.5rem;
       --focus-ring: 0 0 0 4px rgba(56,189,248,0.22);
       --motion-fast: 120ms;
       --ease: cubic-bezier(0.16,1,0.3,1);
       --topbar-h: 54px;
     }
     *, *::before, *::after { box-sizing: border-box; }
-    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; overflow: hidden; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: var(--text-sm); line-height: 1.5; -webkit-font-smoothing: antialiased; overflow: hidden; }
     a { color: inherit; text-decoration: none; }
     button { cursor: pointer; font: inherit; }
 
@@ -58,19 +66,19 @@
       clip-path: polygon(25% 4%, 75% 4%, 100% 50%, 75% 96%, 25% 96%, 0 50%);
       color: var(--fg-2);
       font-family: var(--font-mono);
-      font-size: 9px;
+      font-size: var(--text-2xs);
       flex-shrink: 0;
     }
     .brand-name {
       font-family: var(--font-display);
-      font-size: 13px;
+      font-size: var(--text-sm);
       font-weight: 700;
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
     .role-badge {
       font-family: var(--font-mono);
-      font-size: 9px;
+      font-size: var(--text-2xs);
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: #040408;
@@ -84,7 +92,7 @@
       border: 1px solid var(--border-soft);
       color: var(--fg-2);
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: var(--text-2xs);
       letter-spacing: 0.08em;
       text-transform: uppercase;
       padding: 6px 14px;
@@ -116,7 +124,7 @@
       border-bottom: 2px solid transparent;
       color: var(--muted);
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: var(--text-2xs);
       letter-spacing: 0.12em;
       text-transform: uppercase;
       padding: 0 20px;
@@ -134,7 +142,7 @@
       background: var(--surface-warm);
       border: 1px solid var(--border);
       font-family: var(--font-mono);
-      font-size: 9px;
+      font-size: var(--text-2xs);
       padding: 1px 6px;
       color: var(--muted);
     }
@@ -159,7 +167,7 @@
     .panel-title-wrap { display: flex; align-items: center; gap: 12px; }
     .panel-title {
       font-family: var(--font-display);
-      font-size: 18px;
+      font-size: var(--text-md);
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
@@ -167,7 +175,7 @@
     }
     .tech-label {
       font-family: var(--font-mono);
-      font-size: 9px;
+      font-size: var(--text-2xs);
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--muted);
@@ -180,7 +188,7 @@
       color: #040408;
       border: 1px solid var(--accent);
       font-family: var(--font-display);
-      font-size: 11px;
+      font-size: var(--text-xs);
       font-weight: 800;
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -193,7 +201,7 @@
       border: 1px solid var(--border-soft);
       color: var(--fg-2);
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: var(--text-2xs);
       letter-spacing: 0.08em;
       text-transform: uppercase;
       padding: 7px 14px;
@@ -205,7 +213,7 @@
       border: 1px solid var(--border-soft);
       color: var(--muted);
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: var(--text-2xs);
       letter-spacing: 0.08em;
       text-transform: uppercase;
       padding: 7px 14px;
@@ -216,7 +224,7 @@
     /* Status badges */
     .status-badge {
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: var(--text-2xs);
       letter-spacing: 0.1em;
       text-transform: uppercase;
       padding: 4px 12px;
@@ -245,14 +253,14 @@
     }
     .stat-label {
       font-family: var(--font-mono);
-      font-size: 9px;
+      font-size: var(--text-2xs);
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--muted);
     }
     .stat-value {
       font-family: var(--font-display);
-      font-size: 32px;
+      font-size: var(--text-xl);
       line-height: 1;
     }
 
@@ -265,7 +273,7 @@
     }
     .data-table th {
       font-family: var(--font-mono);
-      font-size: 9px;
+      font-size: var(--text-2xs);
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--muted);
@@ -278,15 +286,15 @@
     .data-table td {
       padding: 14px 18px;
       border-bottom: 1px solid var(--border);
-      font-size: 13px;
+      font-size: var(--text-sm);
       color: var(--fg-2);
       vertical-align: middle;
     }
     .data-table tbody tr:last-child td { border-bottom: none; }
     .data-table tbody tr { transition: background var(--motion-fast); }
     .data-table tbody tr:hover { background: var(--surface-warm); }
-    .student-name { font-size: 14px; color: var(--fg); font-weight: 500; }
-    .student-email { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+    .student-name { font-size: var(--text-sm); color: var(--fg); font-weight: 500; }
+    .student-email { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--muted); }
     .student-online-dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:middle; }
     .student-online-dot.is-online { background: var(--success); box-shadow: 0 0 6px rgba(74,222,128,0.7); }
     .student-online-dot.is-offline { background: var(--border-soft); }
@@ -306,7 +314,7 @@
       border-radius: 0;
       padding: 9px 14px;
       font-family: var(--font-body);
-      font-size: 13px;
+      font-size: var(--text-sm);
       outline: none;
       transition: border-color var(--motion-fast);
       -webkit-appearance: none;
@@ -318,7 +326,7 @@
     .est-toolbar input { flex: 1; min-width: 180px; }
     .est-toolbar input::placeholder { color: var(--muted); }
     .est-toolbar select { min-width: 170px; }
-    .est-result-count { font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em; white-space: nowrap; }
+    .est-result-count { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--muted); letter-spacing: 0.05em; white-space: nowrap; }
     .data-table th.sortable { cursor: pointer; user-select: none; }
     .data-table th.sortable:hover { color: var(--fg-2); }
     .data-table th .sort-arrow { margin-left: 4px; color: var(--accent); }
@@ -346,7 +354,7 @@
     }
     .live-route {
       font-family: var(--font-display);
-      font-size: 17px;
+      font-size: var(--text-md);
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -354,7 +362,7 @@
     .live-subroute {
       margin-top: 3px;
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: var(--text-2xs);
       color: var(--muted);
       letter-spacing: 0.06em;
       text-transform: uppercase;
@@ -362,9 +370,9 @@
     .live-route .sep { color: var(--accent); margin: 0 5px; }
     .live-card-body { padding: 14px 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .telemetry-pair { display: flex; flex-direction: column; gap: 2px; }
-    .tele-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-    .tele-value { font-family: var(--font-display); font-size: 18px; color: var(--fg); }
-    .tele-unit { font-family: var(--font-mono); font-size: 9px; color: var(--muted); }
+    .tele-label { font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .tele-value { font-family: var(--font-display); font-size: var(--text-md); color: var(--fg); }
+    .tele-unit { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--muted); }
     .live-progress {
       grid-column: 1 / -1;
       display: grid;
@@ -393,7 +401,7 @@
     .live-route-map-wrap .maplibregl-ctrl-attrib {
       background: rgba(13,13,15,0.72);
       color: var(--muted);
-      font-size: 10px;
+      font-size: var(--text-2xs);
     }
     .live-route-map-wrap .maplibregl-ctrl-attrib a { color: var(--fg-2); }
     .live-card-foot {
@@ -410,7 +418,7 @@
       align-items: center;
       gap: 6px;
       font-family: var(--font-mono);
-      font-size: 9px;
+      font-size: var(--text-2xs);
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--accent);
@@ -437,8 +445,8 @@
       text-align: center;
       color: var(--muted);
     }
-    .no-live-icon { font-size: 40px; opacity: 0.25; margin-bottom: 12px; }
-    .no-live-text { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
+    .no-live-icon { font-size: var(--text-2xl); opacity: 0.25; margin-bottom: 12px; }
+    .no-live-text { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 0.12em; text-transform: uppercase; }
 
     /* ── ASSIGN FLIGHT FORM ── */
     /* ── SIMULADORES PANEL ── */
@@ -446,7 +454,7 @@
       padding: 60px 20px;
       text-align: center;
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: var(--text-xs);
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--muted);
@@ -464,7 +472,7 @@
     .sim-card.is-live { border-color: rgba(74,222,128,0.35); }
     .sim-machine {
       font-family: var(--font-mono);
-      font-size: 14px;
+      font-size: var(--text-sm);
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -472,7 +480,7 @@
     }
     .sim-meta {
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: var(--text-2xs);
       letter-spacing: 0.06em;
       color: var(--muted);
       margin-top: 4px;
@@ -483,7 +491,7 @@
       border: 1px solid var(--border);
       color: var(--fg);
       font-family: var(--font-body);
-      font-size: 13px;
+      font-size: var(--text-sm);
       padding: 6px 10px;
       outline: none;
     }
@@ -492,7 +500,7 @@
       padding: 60px 20px;
       text-align: center;
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: var(--text-xs);
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--muted);
@@ -509,7 +517,7 @@
     .field.full { grid-column: 1 / -1; }
     .field label {
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: var(--text-2xs);
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--muted);
@@ -521,7 +529,7 @@
       border-radius: 0;
       padding: 10px 14px;
       font-family: var(--font-body);
-      font-size: 14px;
+      font-size: var(--text-sm);
       outline: none;
       transition: border-color var(--motion-fast);
       -webkit-appearance: none;
@@ -544,7 +552,7 @@
     }
     .assign-msg {
       width: 100%;
-      font-size: 13px;
+      font-size: var(--text-sm);
       font-family: var(--font-mono);
       letter-spacing: 0.03em;
       padding: 4px 0;
@@ -588,7 +596,7 @@
     .assignment-item:hover { border-color: var(--accent); }
     .assignment-item-route {
       font-family: var(--font-display);
-      font-size: 14px;
+      font-size: var(--text-sm);
       font-weight: 700;
       letter-spacing: 0.03em;
       text-transform: uppercase;
@@ -596,16 +604,16 @@
     .assignment-item-meta {
       margin-top: 3px;
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: var(--text-2xs);
       color: var(--muted);
       letter-spacing: 0.05em;
       text-transform: uppercase;
     }
-    .assignment-item-arrow { color: var(--muted); font-size: 18px; flex-shrink: 0; }
+    .assignment-item-arrow { color: var(--muted); font-size: var(--text-md); flex-shrink: 0; }
     .assignment-item:hover .assignment-item-arrow { color: var(--accent); }
     .assignment-empty {
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: var(--text-xs);
       color: var(--muted);
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -643,7 +651,7 @@
     }
     .assignment-student-name {
       font-family: var(--font-display);
-      font-size: 13px;
+      font-size: var(--text-sm);
       font-weight: 600;
     }
     .assignment-student-row > div { display: flex; align-items: center; gap: 10px; }
@@ -658,7 +666,7 @@
       background: rgba(56,189,248,0.12);
       color: var(--accent);
       font-family: var(--font-display);
-      font-size: 11px;
+      font-size: var(--text-xs);
       font-weight: 700;
       letter-spacing: 0.02em;
     }
@@ -678,7 +686,7 @@
     .route-preview.is-complete { border-style: solid; border-color: rgba(56,189,248,0.35); }
     .route-preview-leg {
       font-family: var(--font-display);
-      font-size: 22px;
+      font-size: var(--text-lg);
       font-weight: 700;
       letter-spacing: 0.12em;
       color: var(--muted);
@@ -688,14 +696,14 @@
     }
     .route-preview-leg.is-filled { color: var(--accent); }
     .route-preview-arrow {
-      font-size: 17px;
+      font-size: var(--text-md);
       color: var(--border);
       transition: color var(--motion-fast), transform var(--motion-fast);
     }
     .route-preview.is-complete .route-preview-arrow { color: var(--accent); transform: translateX(2px); }
     .route-preview-hint {
       font-family: var(--font-mono);
-      font-size: 9px;
+      font-size: var(--text-2xs);
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--muted);
@@ -717,7 +725,7 @@
     .assignment-progress-bar span { display: block; height: 100%; }
     .assignment-progress-label {
       font-family: var(--font-mono);
-      font-size: 9px;
+      font-size: var(--text-2xs);
       letter-spacing: 0.07em;
       text-transform: uppercase;
       color: var(--muted);
@@ -739,8 +747,8 @@
       flex-direction: column;
       gap: 4px;
     }
-    .sd-stat .stat-label { font-size: 8px; }
-    .sd-stat .stat-value { font-size: 22px; }
+    .sd-stat .stat-label { font-size: var(--text-2xs); }
+    .sd-stat .stat-value { font-size: var(--text-lg); }
     .sd-flight-row {
       display: flex;
       align-items: center;
@@ -751,9 +759,9 @@
       border: 1px solid var(--border);
     }
     .sd-flight-row + .sd-flight-row { margin-top: 6px; }
-    .sd-flight-route { font-family: var(--font-display); font-size: 13px; font-weight: 600; }
-    .sd-flight-meta { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .sd-flight-stats { font-family: var(--font-mono); font-size: 11px; color: var(--fg-2); text-align: right; white-space: nowrap; }
+    .sd-flight-route { font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; }
+    .sd-flight-meta { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--muted); margin-top: 2px; }
+    .sd-flight-stats { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--fg-2); text-align: right; white-space: nowrap; }
 
     /* ── MULTI-SELECT ── */
     .multi-select { position: relative; }
@@ -765,7 +773,7 @@
       padding: 10px 14px;
       text-align: left;
       font-family: var(--font-body);
-      font-size: 14px;
+      font-size: var(--text-sm);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -774,7 +782,7 @@
       border-radius: 0;
     }
     .multi-select-trigger:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(56,189,248,0.12); }
-    .trigger-arrow { color: var(--muted); font-size: 10px; transition: transform var(--motion-fast); }
+    .trigger-arrow { color: var(--muted); font-size: var(--text-2xs); transition: transform var(--motion-fast); }
     .multi-select.is-open .trigger-arrow { transform: rotate(180deg); }
     .multi-select-dropdown {
       display: none;
@@ -796,7 +804,7 @@
       gap: 10px;
       padding: 9px 14px;
       cursor: pointer;
-      font-size: 13px;
+      font-size: var(--text-sm);
       color: var(--fg-2);
       border-bottom: 1px solid var(--border);
       transition: background var(--motion-fast);
@@ -807,13 +815,13 @@
     .multi-select-option.all-option { color: var(--accent); border-bottom: 1px solid var(--border-soft); }
     .multi-select-option input[type="checkbox"] { accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; }
     .multi-select-option:has(input.student-check:checked) { background: rgba(74,222,128,0.07); color: var(--success); }
-    .multi-select-option:has(input.student-check:checked)::after { content: '›'; color: var(--success); margin-left: auto; font-size: 16px; font-weight: bold; line-height: 1; }
-    .multi-select-empty { padding: 12px 14px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .multi-select-option:has(input.student-check:checked)::after { content: '›'; color: var(--success); margin-left: auto; font-size: var(--text-base); font-weight: bold; line-height: 1; }
+    .multi-select-empty { padding: 12px 14px; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
 
     /* ── TAGS ── */
     .tag {
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: var(--text-2xs);
       letter-spacing: 0.1em;
       text-transform: uppercase;
       padding: 4px 10px;
@@ -825,14 +833,14 @@
     /* REPORTES */
     .report-session {
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: var(--text-xs);
       color: var(--fg);
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
     .report-meta {
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: var(--text-2xs);
       color: var(--muted);
       margin-top: 2px;
     }
@@ -885,7 +893,7 @@
       border-radius: 6px;
       padding: 6px 10px;
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: var(--text-xs);
       line-height: 1.3;
       color: #f8fafc;
       white-space: nowrap;
@@ -899,7 +907,7 @@
     .chart-tooltip strong {
       display: block;
       color: #38bdf8;
-      font-size: 13px;
+      font-size: var(--text-sm);
     }
     .chart-tooltip span {
       display: block;
@@ -919,8 +927,8 @@
     .route-hover-popup .maplibregl-popup-tip { display: none; }
     .route-hover-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
     .route-hover-row + .route-hover-row { margin-top: 4px; }
-    .route-hover-row span { color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em; font-size: 9px; }
-    .route-hover-row strong { color: #38bdf8; font-size: 13px; margin-left: auto; }
+    .route-hover-row span { color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em; font-size: var(--text-2xs); }
+    .route-hover-row strong { color: #38bdf8; font-size: var(--text-sm); margin-left: auto; }
     .chart-legend {
       position: absolute;
       top: 16px;
@@ -928,7 +936,7 @@
       display: flex;
       gap: 14px;
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: var(--text-xs);
       color: #cbd5e1;
       z-index: 4;
     }
@@ -971,7 +979,7 @@
       background: rgba(13,13,15,0.86);
       color: var(--muted);
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: var(--text-xs);
       letter-spacing: 0.1em;
       text-align: center;
       text-transform: uppercase;
@@ -991,12 +999,272 @@
     .flight-route-map .maplibregl-ctrl-attrib {
       background: rgba(13,13,15,0.72);
       color: var(--muted);
-      font-size: 10px;
+      font-size: var(--text-2xs);
     }
     .flight-route-map .maplibregl-ctrl-attrib a { color: var(--fg-2); }
     @media (max-width: 900px) {
       .flight-detail-grid { grid-template-columns: 1fr; }
       .flight-map-wrap { min-height: 320px; }
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       RADAR ATC — visual mockup module (sin backend / sin lógica real)
+       Paleta y estilos aislados bajo .atc-shell para no tocar tokens
+       globales del panel.
+       ════════════════════════════════════════════════════════════════ */
+    .atc-shell {
+      --atc-bg: #060911;
+      --atc-panel: #0b1120;
+      --atc-panel-soft: #101a2c;
+      --atc-line: rgba(125,211,252,0.14);
+      --atc-grid-line: rgba(34,211,238,0.07);
+      --atc-cyan: #22d3ee;
+      --atc-green: #34d399;
+      --atc-amber: #fbbf24;
+      --atc-red: #fb7185;
+      --atc-text: #e8eef8;
+      --atc-text-dim: #8593ad;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: var(--atc-bg);
+      border: 1px solid var(--atc-line);
+      padding: 18px;
+      color: var(--atc-text);
+      background-image:
+        radial-gradient(ellipse at 16% -12%, rgba(34,211,238,0.08), transparent 46%),
+        radial-gradient(ellipse at 102% 112%, rgba(52,211,153,0.05), transparent 52%);
+    }
+    .atc-shell * { box-sizing: border-box; }
+
+    /* — Topbar — */
+    .atc-topbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--atc-line); }
+    .atc-title-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .atc-title { font-family: var(--font-display); font-size: var(--text-md); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin: 0; color: var(--atc-text); }
+    .atc-live-chip { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--atc-cyan); border: 1px solid rgba(34,211,238,0.32); background: rgba(34,211,238,0.08); padding: 5px 11px; }
+    .atc-live-chip i { width: 6px; height: 6px; border-radius: 50%; background: var(--atc-cyan); display: inline-block; animation: atcPulse 1.8s ease-in-out infinite; }
+    @keyframes atcPulse { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,211,238,0.45); } 50% { opacity: 0.55; box-shadow: 0 0 0 5px rgba(34,211,238,0); } }
+    .atc-topbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .atc-segmented { display: flex; border: 1px solid var(--atc-line); }
+    .atc-seg-btn { background: transparent; border: none; border-right: 1px solid var(--atc-line); color: var(--atc-text-dim); font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: 0.1em; text-transform: uppercase; padding: 9px 16px; cursor: pointer; transition: background var(--motion-fast), color var(--motion-fast); }
+    .atc-seg-btn:last-child { border-right: none; }
+    .atc-seg-btn:hover { color: var(--atc-text); background: rgba(255,255,255,0.03); }
+    .atc-seg-btn.active { color: var(--atc-bg); background: var(--atc-cyan); }
+
+    .atc-range { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: 0.08em; color: var(--atc-text-dim); border: 1px solid var(--atc-line); padding: 7px 11px; }
+    .atc-range-btn { background: transparent; border: 1px solid var(--atc-line); color: var(--atc-text); width: 22px; height: 22px; line-height: 1; cursor: pointer; transition: border-color var(--motion-fast), color var(--motion-fast); }
+    .atc-range-btn:hover { border-color: var(--atc-cyan); color: var(--atc-cyan); }
+    .atc-range-value { min-width: 54px; text-align: center; color: var(--atc-text); }
+
+    .atc-icon-btn { display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1px solid var(--atc-line); color: var(--atc-text-dim); font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: 0.08em; text-transform: uppercase; padding: 9px 15px; cursor: pointer; transition: border-color var(--motion-fast), color var(--motion-fast), background var(--motion-fast); }
+    .atc-icon-btn:hover { border-color: var(--atc-cyan); color: var(--atc-cyan); background: rgba(34,211,238,0.06); }
+    .atc-icon-btn.small { padding: 5px 10px; }
+    .atc-icon-btn.is-active { color: var(--atc-bg); background: var(--atc-cyan); border-color: var(--atc-cyan); }
+
+    /* — Body grid — */
+    .atc-body { display: grid; grid-template-columns: 272px minmax(0,1fr) 316px; gap: 14px; align-items: stretch; }
+    .atc-panel { background: var(--atc-panel); border: 1px solid var(--atc-line); display: flex; flex-direction: column; position: relative; min-width: 0; }
+    .atc-panel::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(255,255,255,0.025), transparent 30%); }
+    .atc-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--atc-line); position: relative; z-index: 1; }
+    .atc-panel-title { font-family: var(--font-display); font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--atc-text); }
+    .atc-count-chip { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--atc-cyan); border: 1px solid rgba(34,211,238,0.3); background: rgba(34,211,238,0.08); padding: 2px 9px; }
+
+    /* — Flights panel — */
+    .atc-filters { display: flex; gap: 6px; padding: 12px 16px 0; flex-wrap: wrap; position: relative; z-index: 1; }
+    .atc-filter-chip { background: transparent; border: 1px solid var(--atc-line); color: var(--atc-text-dim); font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.07em; text-transform: uppercase; padding: 5px 10px; cursor: pointer; transition: color var(--motion-fast), border-color var(--motion-fast), background var(--motion-fast); }
+    .atc-filter-chip:hover { color: var(--atc-text); border-color: var(--atc-text-dim); }
+    .atc-filter-chip.active { color: var(--atc-cyan); border-color: rgba(34,211,238,0.4); background: rgba(34,211,238,0.08); }
+    .atc-flight-list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; min-height: 220px; position: relative; z-index: 1; }
+
+    .atc-flight-card { border: 1px solid var(--atc-line); background: var(--atc-panel-soft); padding: 11px 12px 11px 15px; cursor: pointer; transition: border-color var(--motion-fast), transform var(--motion-fast), box-shadow var(--motion-fast); position: relative; }
+    .atc-flight-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--atc-text-dim); }
+    .atc-flight-card.status-normal::before { background: var(--atc-green); }
+    .atc-flight-card.status-warning::before { background: var(--atc-amber); }
+    .atc-flight-card.status-critical::before { background: var(--atc-red); animation: atcCriticalBlink 1.1s steps(2) infinite; }
+    @keyframes atcCriticalBlink { 50% { opacity: 0.3; } }
+    .atc-flight-card:hover { border-color: var(--atc-text-dim); transform: translateX(2px); }
+    .atc-flight-card.selected { border-color: var(--atc-cyan); background: linear-gradient(90deg, rgba(34,211,238,0.1), rgba(34,211,238,0.02)); box-shadow: 0 0 0 1px rgba(34,211,238,0.25), 0 0 22px rgba(34,211,238,0.12); }
+    .atc-flight-card-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .atc-flight-callsign { font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700; letter-spacing: 0.05em; color: var(--atc-text); }
+    .atc-flight-phase { font-family: var(--font-mono); font-size: 0.625rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--atc-text-dim); }
+    .atc-flight-student { font-size: var(--text-xs); color: var(--atc-text-dim); margin-top: 2px; }
+    .atc-flight-meta { display: flex; gap: 12px; margin-top: 8px; font-family: var(--font-mono); font-size: 0.6875rem; color: var(--atc-text-dim); flex-wrap: wrap; }
+    .atc-flight-meta b { color: var(--atc-text); font-weight: 600; }
+    .atc-flight-route { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-family: var(--font-mono); font-size: 0.6875rem; color: var(--atc-cyan); letter-spacing: 0.04em; }
+
+    /* — Radar — */
+    .atc-radar-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--atc-line); position: relative; z-index: 1; }
+    .atc-layer-toggles { display: flex; gap: 6px; flex-wrap: wrap; }
+    .atc-toggle-chip { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid var(--atc-line); padding: 5px 10px; font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--atc-text-dim); transition: color var(--motion-fast), border-color var(--motion-fast), background var(--motion-fast); }
+    .atc-toggle-chip.is-on { color: var(--atc-cyan); border-color: rgba(34,211,238,0.4); background: rgba(34,211,238,0.06); }
+    .atc-toggle-chip input { accent-color: var(--atc-cyan); width: 12px; height: 12px; }
+    .atc-zoom-controls { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.6875rem; color: var(--atc-text-dim); }
+    .atc-zoom-value { min-width: 38px; text-align: center; color: var(--atc-text); }
+
+    .atc-radar-stage { position: relative; flex: 1; min-height: 460px; margin: 16px; overflow: hidden; background: radial-gradient(circle at center, rgba(34,211,238,0.05), transparent 62%), var(--atc-bg); border: 1px solid var(--atc-line); }
+    .atc-real-map { position: absolute; inset: 0; }
+    .atc-real-map .maplibregl-ctrl-attrib { background: rgba(6,9,17,0.74); color: var(--atc-text-dim); font-size: var(--text-2xs); }
+    .atc-real-map .maplibregl-ctrl-attrib a { color: var(--atc-text-dim); }
+
+    /* — Aeronaves animadas sobre el mapa real (marcadores MapLibre) — */
+    .atc-blip { cursor: pointer; }
+    .atc-blip-trail { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--atc-text-dim); transform: translate(-50%,-50%); pointer-events: none; }
+    .atc-blip-glow { position: absolute; inset: -11px; border-radius: 50%; background: radial-gradient(circle, rgba(52,211,153,0.28), transparent 70%); opacity: 0; transition: opacity var(--motion-fast); pointer-events: none; }
+    .atc-blip.selected .atc-blip-glow { opacity: 1; animation: atcBlipPulse 1.6s ease-in-out infinite; background: radial-gradient(circle, rgba(34,211,238,0.34), transparent 70%); }
+    @keyframes atcBlipPulse { 0%, 100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.35); opacity: 1; } }
+    .atc-blip-icon { position: relative; width: 11px; height: 11px; clip-path: polygon(50% 0%, 100% 100%, 50% 78%, 0% 100%); background: var(--atc-green); box-shadow: 0 0 10px rgba(52,211,153,0.55); transition: background var(--motion-fast); }
+    .atc-blip.status-warning .atc-blip-icon { background: var(--atc-amber); box-shadow: 0 0 10px rgba(251,191,36,0.55); }
+    .atc-blip.status-critical .atc-blip-icon { background: var(--atc-red); box-shadow: 0 0 12px rgba(251,113,133,0.6); animation: atcCriticalBlink 1s steps(2) infinite; }
+    .atc-blip.selected .atc-blip-icon { background: var(--atc-cyan) !important; box-shadow: 0 0 16px rgba(34,211,238,0.75); animation: none; }
+    .atc-vector-line { position: absolute; left: 50%; top: 50%; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.5), transparent); transform-origin: left center; pointer-events: none; }
+    .atc-datablock { position: absolute; left: 12px; top: -7px; font-family: var(--font-mono); font-size: 9px; line-height: 1.4; letter-spacing: 0.04em; color: var(--atc-text); white-space: nowrap; text-shadow: 0 1px 6px rgba(0,0,0,0.85); pointer-events: none; }
+    .atc-datablock .cs { color: var(--atc-cyan); font-weight: 700; }
+    .atc-datablock .sub { color: var(--atc-text-dim); }
+
+    .atc-radar-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 16px; border-top: 1px solid var(--atc-line); flex-wrap: wrap; position: relative; z-index: 1; }
+    .atc-legend { display: flex; gap: 14px; font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.06em; color: var(--atc-text-dim); text-transform: uppercase; }
+    .atc-legend .atc-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+    .atc-dot.normal { background: var(--atc-green); }
+    .atc-dot.warning { background: var(--atc-amber); }
+    .atc-dot.critical { background: var(--atc-red); }
+    .atc-dot.selected { background: var(--atc-cyan); box-shadow: 0 0 8px rgba(34,211,238,0.7); }
+    .atc-coords { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--atc-text-dim); letter-spacing: 0.05em; }
+
+    /* — Detail panel — */
+    .atc-detail-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 40px 24px; text-align: center; color: var(--atc-text-dim); position: relative; z-index: 1; }
+    .atc-detail-empty .icon { font-size: 32px; opacity: 0.32; }
+    .atc-detail-empty .ttl { font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--atc-text-dim); }
+    .atc-detail-empty .hint { font-size: var(--text-xs); max-width: 220px; line-height: 1.55; }
+    .atc-detail-head { padding: 16px; border-bottom: 1px solid var(--atc-line); display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; position: relative; z-index: 1; }
+    .atc-detail-callsign { font-family: var(--font-display); font-size: var(--text-md); font-weight: 700; letter-spacing: 0.05em; color: var(--atc-text); }
+    .atc-detail-sub { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--atc-text-dim); letter-spacing: 0.06em; margin-top: 3px; }
+    .atc-status-pill { font-family: var(--font-mono); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border: 1px solid; white-space: nowrap; }
+    .atc-status-pill.normal { color: var(--atc-green); border-color: rgba(52,211,153,0.4); background: rgba(52,211,153,0.08); }
+    .atc-status-pill.warning { color: var(--atc-amber); border-color: rgba(251,191,36,0.4); background: rgba(251,191,36,0.08); }
+    .atc-status-pill.critical { color: var(--atc-red); border-color: rgba(251,113,133,0.4); background: rgba(251,113,133,0.08); }
+    .atc-detail-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 18px; position: relative; z-index: 1; }
+    .atc-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+    .atc-detail-item .k { font-family: var(--font-mono); font-size: 0.625rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--atc-text-dim); margin-bottom: 3px; }
+    .atc-detail-item .v { font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700; color: var(--atc-text); }
+    .atc-detail-item .v.accent { color: var(--atc-cyan); }
+    .atc-detail-item .v.warn { color: var(--atc-amber); }
+    .atc-detail-item .v.crit { color: var(--atc-red); }
+    .atc-detail-item .v.ok { color: var(--atc-green); }
+    .atc-detail-section-title { font-family: var(--font-mono); font-size: 0.625rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--atc-text-dim); padding-bottom: 8px; border-bottom: 1px solid var(--atc-line); }
+    .atc-route-line { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--atc-text); line-height: 1.65; }
+    .atc-route-line span { color: var(--atc-cyan); }
+    .atc-alert-row { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--atc-line); }
+    .atc-alert-row:last-child { border-bottom: none; }
+    .atc-alert-chip { flex-shrink: 0; font-family: var(--font-mono); font-size: 0.5625rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 7px; border: 1px solid; }
+    .atc-alert-chip.warning { color: var(--atc-amber); border-color: rgba(251,191,36,0.4); }
+    .atc-alert-chip.critical { color: var(--atc-red); border-color: rgba(251,113,133,0.4); }
+    .atc-alert-text { font-size: var(--text-xs); color: var(--atc-text-dim); line-height: 1.5; }
+    .atc-detail-actions { display: flex; gap: 8px; padding: 14px 16px; border-top: 1px solid var(--atc-line); position: relative; z-index: 1; flex-wrap: wrap; }
+
+    /* — Bottom panel — */
+    .atc-bottom { min-height: 300px; }
+    .atc-bottom-tabs { display: flex; border-bottom: 1px solid var(--atc-line); overflow-x: auto; position: relative; z-index: 1; }
+    .atc-bottom-tab { background: transparent; border: none; color: var(--atc-text-dim); cursor: pointer; font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: 0.1em; text-transform: uppercase; padding: 13px 18px; display: flex; align-items: center; gap: 8px; position: relative; white-space: nowrap; transition: color var(--motion-fast); }
+    .atc-bottom-tab:hover { color: var(--atc-text); }
+    .atc-bottom-tab.active { color: var(--atc-cyan); }
+    .atc-bottom-tab.active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--atc-cyan); box-shadow: 0 0 8px rgba(34,211,238,0.6); }
+    .atc-badge-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+    .atc-badge-dot.critical { background: var(--atc-red); box-shadow: 0 0 8px rgba(251,113,133,0.7); animation: atcCriticalBlink 1.2s steps(2) infinite; }
+    .atc-bottom-body { position: relative; min-height: 250px; z-index: 1; }
+    .atc-bottom-pane { display: none; padding: 16px; }
+    .atc-bottom-pane.active { display: block; animation: atcFadeIn 220ms var(--ease); }
+    @keyframes atcFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+    /* — Flight strips — */
+    .atc-strips { display: flex; flex-direction: column; gap: 8px; }
+    .atc-strip { display: grid; grid-template-columns: 92px 1fr 72px 72px 132px 116px 96px 30px; gap: 12px; align-items: center; background: var(--atc-panel-soft); border: 1px solid var(--atc-line); border-left: 3px solid var(--atc-text-dim); padding: 11px 14px; font-family: var(--font-mono); font-size: var(--text-2xs); transition: border-color var(--motion-fast), transform var(--motion-fast); }
+    .atc-strip:hover { transform: translateX(2px); border-left-color: var(--atc-cyan); }
+    .atc-strip.priority-high { border-left-color: var(--atc-red); }
+    .atc-strip.priority-medium { border-left-color: var(--atc-amber); }
+    .atc-strip.priority-normal { border-left-color: var(--atc-green); }
+    .atc-strip .cs { font-family: var(--font-display); font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.06em; color: var(--atc-text); }
+    .atc-strip .route { color: var(--atc-text-dim); }
+    .atc-strip .route span { color: var(--atc-cyan); }
+    .atc-strip .lbl { display: block; font-size: 0.5625rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--atc-text-dim); margin-bottom: 2px; }
+    .atc-strip .val { color: var(--atc-text); }
+    .atc-strip .pin { color: var(--atc-text-dim); cursor: pointer; transition: color var(--motion-fast); text-align: right; background: none; border: none; font-family: inherit; font-size: inherit; }
+    .atc-strip .pin:hover { color: var(--atc-cyan); }
+    @media (max-width: 1280px) { .atc-strip { grid-template-columns: repeat(3, 1fr); row-gap: 8px; } }
+
+    /* — Alerts / log / replay — */
+    .atc-alert-table-row { display: grid; grid-template-columns: 78px 96px 92px 1fr; gap: 14px; align-items: flex-start; padding: 11px 0; border-bottom: 1px solid var(--atc-line); font-size: var(--text-xs); }
+    .atc-alert-table-row:last-child { border-bottom: none; }
+    .atc-alert-table-row .sev { font-family: var(--font-mono); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border: 1px solid; display: inline-block; }
+    .atc-alert-table-row .sev.normal { color: var(--atc-green); border-color: rgba(52,211,153,0.4); }
+    .atc-alert-table-row .sev.warning { color: var(--atc-amber); border-color: rgba(251,191,36,0.4); }
+    .atc-alert-table-row .sev.critical { color: var(--atc-red); border-color: rgba(251,113,133,0.4); }
+    .atc-alert-table-row .fl { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--atc-cyan); }
+    .atc-alert-table-row .tm { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--atc-text-dim); white-space: nowrap; }
+    .atc-alert-table-row .desc b { color: var(--atc-text); display: block; margin-bottom: 2px; font-weight: 700; }
+    .atc-alert-table-row .desc span { color: var(--atc-text-dim); line-height: 1.5; }
+    @media (max-width: 1100px) { .atc-alert-table-row { grid-template-columns: 1fr; gap: 6px; } }
+
+    .atc-event-row { display: flex; gap: 14px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--atc-line); font-size: var(--text-xs); }
+    .atc-event-row:last-child { border-bottom: none; }
+    .atc-event-time { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--atc-text-dim); white-space: nowrap; min-width: 60px; }
+    .atc-event-actor { color: var(--atc-cyan); font-weight: 700; }
+    .atc-event-text { color: var(--atc-text-dim); line-height: 1.5; }
+
+    .atc-replay-mock { display: flex; flex-direction: column; gap: 16px; align-items: center; justify-content: center; padding: 34px 16px; color: var(--atc-text-dim); text-align: center; }
+    .atc-replay-mock .ttl { font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--atc-text-dim); }
+    .atc-replay-bar { width: 100%; max-width: 640px; height: 4px; background: var(--atc-line); position: relative; }
+    .atc-replay-progress { position: absolute; left: 0; top: 0; bottom: 0; width: 38%; background: var(--atc-cyan); box-shadow: 0 0 10px rgba(34,211,238,0.5); }
+    .atc-replay-controls { display: flex; gap: 10px; }
+
+    /* — PTT — */
+    .atc-ptt { display: grid; grid-template-columns: 220px 1fr 270px; gap: 28px; align-items: center; }
+    .atc-ptt-button-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .atc-ptt-btn { width: 124px; height: 124px; border-radius: 50%; border: 2px solid var(--atc-line); background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.05), transparent 60%), var(--atc-panel-soft); color: var(--atc-text-dim); font-family: var(--font-display); font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: border-color 180ms var(--ease), color 180ms var(--ease), box-shadow 180ms var(--ease), background 180ms var(--ease); user-select: none; position: relative; }
+    .atc-ptt-btn .ic { font-size: 22px; line-height: 1; }
+    .atc-ptt-btn:hover { border-color: var(--atc-cyan); color: var(--atc-cyan); }
+    .atc-ptt-btn.armed { border-color: var(--atc-amber); color: var(--atc-amber); box-shadow: 0 0 0 6px rgba(251,191,36,0.08); }
+    .atc-ptt-btn.transmitting { border-color: var(--atc-red); color: var(--atc-red); background: rgba(251,113,133,0.08); animation: atcPttGlow 1s ease-in-out infinite; }
+    @keyframes atcPttGlow { 0%, 100% { box-shadow: 0 0 0 8px rgba(251,113,133,0.12), 0 0 28px rgba(251,113,133,0.3); } 50% { box-shadow: 0 0 0 13px rgba(251,113,133,0.06), 0 0 42px rgba(251,113,133,0.5); } }
+    .atc-ptt-state { font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--atc-text-dim); }
+    .atc-ptt-state.armed { color: var(--atc-amber); }
+    .atc-ptt-state.transmitting { color: var(--atc-red); }
+    .atc-ptt-hint { font-size: var(--text-xs); color: var(--atc-text-dim); text-align: center; max-width: 210px; line-height: 1.55; }
+    .atc-ptt-key { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; padding: 4px 9px; border: 1px solid var(--atc-line); font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--atc-cyan); background: var(--atc-panel-soft); }
+    .atc-ptt-meter-wrap { display: flex; flex-direction: column; gap: 16px; align-items: center; }
+    .atc-ptt-meter-label { font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--atc-text-dim); }
+    .atc-ptt-meter { display: flex; align-items: flex-end; gap: 4px; height: 64px; }
+    .atc-ptt-meter i { width: 6px; background: var(--atc-line); border-radius: 1px; height: 14%; transition: background 120ms ease; }
+    .atc-ptt-meter.live i { background: var(--atc-red); animation: atcMeterBar 0.9s ease-in-out infinite; }
+    .atc-ptt-meter.live i:nth-child(odd) { animation-delay: -0.3s; }
+    .atc-ptt-meter.live i:nth-child(3n) { animation-delay: -0.6s; }
+    @keyframes atcMeterBar { 0%, 100% { height: 14%; } 50% { height: 100%; } }
+    .atc-ptt-target { display: flex; flex-direction: column; gap: 8px; }
+    .atc-ptt-target-opt { display: flex; align-items: center; gap: 10px; cursor: pointer; border: 1px solid var(--atc-line); padding: 9px 12px; font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: 0.06em; text-transform: uppercase; color: var(--atc-text-dim); transition: color var(--motion-fast), border-color var(--motion-fast), background var(--motion-fast); }
+    .atc-ptt-target-opt:hover { color: var(--atc-text); }
+    .atc-ptt-target-opt.selected { color: var(--atc-cyan); border-color: rgba(34,211,238,0.4); background: rgba(34,211,238,0.06); }
+    .atc-ptt-target-opt input { accent-color: var(--atc-cyan); }
+    @media (max-width: 1180px) { .atc-ptt { grid-template-columns: 1fr; justify-items: center; } }
+
+    /* — Empty states (full module) — */
+    .atc-empty-block { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 50px 24px; text-align: center; color: var(--atc-text-dim); }
+    .atc-empty-block .icon { font-size: 38px; opacity: 0.3; }
+    .atc-empty-block .ttl { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--atc-text); }
+    .atc-empty-block .hint { font-size: var(--text-xs); max-width: 320px; line-height: 1.6; }
+
+    /* — Settings modal extras (reuses .flight-modal) — */
+    .atc-settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; }
+    .atc-settings-field { display: flex; flex-direction: column; gap: 6px; }
+    .atc-settings-field .lbl { font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .atc-settings-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid var(--border); padding: 11px 14px; }
+    .atc-swatch-row { display: flex; gap: 8px; }
+    .atc-swatch { width: 22px; height: 22px; border: 1px solid var(--border-soft); cursor: pointer; transition: transform var(--motion-fast), border-color var(--motion-fast); }
+    .atc-swatch:hover { transform: scale(1.12); }
+    .atc-swatch.selected { border-color: var(--fg); box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--accent); }
+
+    @media (max-width: 1180px) {
+      .atc-body { grid-template-columns: 1fr; }
+      .atc-radar-stage { min-height: 380px; }
     }
   </style>
 </head>
@@ -1031,6 +1299,9 @@
       </button>
       <button class="page-tab" onclick="switchTab('simuladores', this)">
         Simuladores <span class="tab-count" id="simActiveCount">0</span>
+      </button>
+      <button class="page-tab" onclick="switchTab('radar-atc', this)">
+        Radar ATC <span class="tag tag-info" style="margin-left:6px;">Vista previa</span>
       </button>
       <button class="page-tab" onclick="switchTab('reportes', this)">
         Reportes
@@ -1113,7 +1384,7 @@
         <div class="no-live" id="activeFlightsEmpty">
           <div class="no-live-icon">✈</div>
           <div class="no-live-text">Sin vuelos activos en este momento</div>
-          <div style="font-family:var(--font-mono);font-size:10px;color:var(--border-soft);margin-top:8px;letter-spacing:0.1em;text-transform:uppercase;">
+          <div style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--muted);margin-top:8px;letter-spacing:0.1em;text-transform:uppercase;">
             Los datos aparecerán aquí cuando el plugin esté conectado
           </div>
         </div>
@@ -1189,8 +1460,8 @@
 
           <div class="assigned-list-card">
             <div class="assigned-list-head">
-              <h2 class="panel-title" style="font-size:16px;">Vuelos asignados previamente</h2>
-              <button class="btn-outline" style="font-size:10px;padding:6px 12px;" onclick="loadAssignedFlights()">↺</button>
+              <h2 class="panel-title" style="font-size:var(--text-base);">Vuelos asignados previamente</h2>
+              <button class="btn-outline" style="font-size:var(--text-2xs);padding:6px 12px;" onclick="loadAssignedFlights()">↺</button>
             </div>
             <div id="assignedFlightsList">
               <div class="flights-loading">Cargando asignaciones...</div>
@@ -1231,7 +1502,7 @@
           </div>
           <div class="stat-card">
             <div class="stat-label">Total horas registradas</div>
-            <div class="stat-value" style="color:var(--accent);"><span id="repTotalHours">—</span> <span style="font-family:var(--font-mono);font-size:14px;color:var(--muted);">H</span></div>
+            <div class="stat-value" style="color:var(--accent);"><span id="repTotalHours">—</span> <span style="font-family:var(--font-mono);font-size:var(--text-sm);color:var(--muted);">H</span></div>
           </div>
           <div class="stat-card">
             <div class="stat-label">Estudiantes con vuelos</div>
@@ -1261,6 +1532,255 @@
         </div>
       </div>
 
+      <!-- ════ RADAR ATC (vista previa visual / mock — sin datos reales) ════ -->
+      <div class="tab-panel" id="panel-radar-atc">
+        <div class="atc-shell" id="atcShell">
+
+          <!-- Topbar del módulo -->
+          <div class="atc-topbar">
+            <div class="atc-title-row">
+              <div>
+                <div class="tech-label" style="color: var(--atc-cyan);">Instructor · Supervisión en tiempo real</div>
+                <h1 class="atc-title">Radar ATC</h1>
+              </div>
+              <span class="atc-live-chip"><i></i> Vista previa · datos simulados</span>
+            </div>
+            <div class="atc-topbar-right">
+              <div class="atc-segmented" id="atcViewSeg">
+                <button class="atc-seg-btn active" data-atc-view="radar">Radar</button>
+                <button class="atc-seg-btn" data-atc-view="map">Mapa</button>
+                <button class="atc-seg-btn" data-atc-view="hybrid">Híbrido</button>
+              </div>
+              <div class="atc-range">
+                <span>Rango</span>
+                <button class="atc-range-btn" id="atcRangeMinus" type="button">−</button>
+                <span class="atc-range-value" id="atcRangeValue">40 NM</span>
+                <button class="atc-range-btn" id="atcRangePlus" type="button">+</button>
+              </div>
+              <button class="atc-icon-btn" id="atcEmptyToggleBtn" type="button" title="Alternar vista de estado vacío (solo demostración)">
+                <span>◌</span> Demo: sin tráfico
+              </button>
+              <button class="atc-icon-btn" id="atcSettingsBtn" type="button">
+                <span>⚙</span> Configurar panel
+              </button>
+            </div>
+          </div>
+
+          <!-- Cuerpo principal: tráfico / radar / detalle -->
+          <div class="atc-body">
+
+            <!-- Panel izquierdo: tráfico activo -->
+            <aside class="atc-panel atc-flights-panel">
+              <div class="atc-panel-head">
+                <span class="atc-panel-title">Tráfico activo</span>
+                <span class="atc-count-chip" id="atcFlightCount">0</span>
+              </div>
+              <div class="atc-filters" id="atcFilters">
+                <button class="atc-filter-chip active" data-atc-filter="all">Todos</button>
+                <button class="atc-filter-chip" data-atc-filter="air">En vuelo</button>
+                <button class="atc-filter-chip" data-atc-filter="ground">En tierra</button>
+              </div>
+              <div class="atc-flight-list" id="atcFlightList"></div>
+            </aside>
+
+            <!-- Centro: radar -->
+            <section class="atc-panel atc-radar-panel">
+              <div class="atc-radar-toolbar">
+                <div class="atc-layer-toggles" id="atcLayerToggles">
+                  <label class="atc-toggle-chip is-on" data-layer="trails"><input type="checkbox" checked><span>Trails</span></label>
+                  <label class="atc-toggle-chip is-on" data-layer="labels"><input type="checkbox" checked><span>Etiquetas</span></label>
+                  <label class="atc-toggle-chip is-on" data-layer="waypoints"><input type="checkbox" checked><span>Waypoints</span></label>
+                  <label class="atc-toggle-chip is-on" data-layer="sectors"><input type="checkbox" checked><span>Sectores</span></label>
+                  <label class="atc-toggle-chip" data-layer="weather"><input type="checkbox"><span>Clima</span></label>
+                  <label class="atc-toggle-chip" data-layer="terrain"><input type="checkbox"><span>Terreno</span></label>
+                </div>
+                <div class="atc-zoom-controls">
+                  <button class="atc-icon-btn small" id="atcZoomOut" type="button">−</button>
+                  <span class="atc-zoom-value" id="atcZoomValue">1.0×</span>
+                  <button class="atc-icon-btn small" id="atcZoomIn" type="button">+</button>
+                  <button class="atc-icon-btn small" id="atcRecenter" type="button">⌖ Centrar</button>
+                </div>
+              </div>
+
+              <div class="atc-radar-stage" id="atcRadarStage">
+                <div id="atcMap" class="atc-real-map" aria-label="Mapa de referencia del sector"></div>
+              </div>
+
+              <div class="atc-radar-footer">
+                <div class="atc-legend">
+                  <span><i class="atc-dot normal"></i>Normal</span>
+                  <span><i class="atc-dot warning"></i>Atención</span>
+                  <span><i class="atc-dot critical"></i>Crítico</span>
+                  <span><i class="atc-dot selected"></i>Seleccionada</span>
+                </div>
+                <div class="atc-coords" id="atcCoords">4°42'N 74°09'W · Sector BOG-3 · Rango 40 NM · 5 escuadras visibles</div>
+              </div>
+            </section>
+
+            <!-- Derecha: detalle de aeronave seleccionada -->
+            <aside class="atc-panel atc-detail-panel" id="atcDetailPanel"></aside>
+          </div>
+
+          <!-- Inferior: tiras de progreso / alertas / bitácora / replay / PTT -->
+          <div class="atc-panel atc-bottom">
+            <div class="atc-bottom-tabs" id="atcBottomTabs">
+              <button class="atc-bottom-tab active" data-atc-bottom="strips">Flight Strips</button>
+              <button class="atc-bottom-tab" data-atc-bottom="alerts">Centro de alertas <span class="atc-badge-dot critical" id="atcAlertDot"></span></button>
+              <button class="atc-bottom-tab" data-atc-bottom="log">Bitácora de eventos</button>
+              <button class="atc-bottom-tab" data-atc-bottom="replay">Timeline / Replay</button>
+              <button class="atc-bottom-tab" data-atc-bottom="ptt">PTT — Comunicación</button>
+            </div>
+            <div class="atc-bottom-body">
+              <div class="atc-bottom-pane active" id="atcPaneStrips">
+                <div class="atc-strips" id="atcStripsList"></div>
+              </div>
+              <div class="atc-bottom-pane" id="atcPaneAlerts">
+                <div id="atcAlertsList"></div>
+              </div>
+              <div class="atc-bottom-pane" id="atcPaneLog">
+                <div id="atcLogList"></div>
+              </div>
+              <div class="atc-bottom-pane" id="atcPaneReplay">
+                <div class="atc-replay-mock">
+                  <div class="icon" style="font-size:30px; opacity:.35;">⏵</div>
+                  <div class="ttl">Reproducción de sesión — vista previa</div>
+                  <p style="max-width:440px; line-height:1.6; font-size:var(--text-xs);">
+                    Aquí se podrá reproducir la trayectoria histórica de cada vuelo, instrucciones enviadas y eventos
+                    marcados durante la sesión. Esta sección es un mockup visual: aún no reproduce datos reales.
+                  </p>
+                  <div class="atc-replay-bar"><div class="atc-replay-progress"></div></div>
+                  <div class="atc-replay-controls">
+                    <button class="atc-icon-btn small" type="button">⏮</button>
+                    <button class="atc-icon-btn small is-active" type="button">⏸ Reproduciendo</button>
+                    <button class="atc-icon-btn small" type="button">⏭</button>
+                    <button class="atc-icon-btn small" type="button">1×</button>
+                  </div>
+                  <div class="tech-label">14:38:02 — IFR204 inició ascenso inicial · 00:14:26 transcurridos</div>
+                </div>
+              </div>
+              <div class="atc-bottom-pane" id="atcPanePtt">
+                <div class="atc-ptt">
+                  <div class="atc-ptt-button-wrap">
+                    <button class="atc-ptt-btn" id="atcPttBtn" type="button">
+                      <span class="ic">🎙</span>
+                      <span id="atcPttBtnLabel">Mantener para hablar</span>
+                    </button>
+                    <span class="atc-ptt-state" id="atcPttState">En espera</span>
+                    <p class="atc-ptt-hint">
+                      Mantén presionado el botón o la tecla asignada <span class="atc-ptt-key" id="atcPttKey">␣ Espacio</span>
+                      para simular una transmisión hacia el estudiante seleccionado.
+                    </p>
+                  </div>
+                  <div class="atc-ptt-meter-wrap">
+                    <span class="atc-ptt-meter-label">Nivel de transmisión simulado</span>
+                    <div class="atc-ptt-meter" id="atcPttMeter">
+                      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                    </div>
+                    <span class="tech-label" id="atcPttTransmitInfo">Sin transmisión activa</span>
+                  </div>
+                  <div class="atc-ptt-target">
+                    <span class="atc-settings-field lbl" style="margin-bottom:2px;">Destinatario de la transmisión</span>
+                    <label class="atc-ptt-target-opt selected" data-target="selected">
+                      <input type="radio" name="atcPttTarget" checked> Estudiante seleccionado — IFR204
+                    </label>
+                    <label class="atc-ptt-target-opt" data-target="group">
+                      <input type="radio" name="atcPttTarget"> Grupo activo (5 estudiantes)
+                    </label>
+                    <label class="atc-ptt-target-opt" data-target="all">
+                      <input type="radio" name="atcPttTarget"> Frecuencia general (todos)
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════ MODAL: CONFIGURACIÓN RADAR ATC (visual, sin lógica real) ════ -->
+  <div id="atcSettingsModal" class="flight-modal-overlay hidden-panel" onclick="if(event.target===this) closeAtcSettings()">
+    <div class="flight-modal" style="width: min(720px, 100%);">
+      <div class="flight-modal-head">
+        <div>
+          <div class="tech-label" style="color: var(--atc-cyan);">Radar ATC</div>
+          <h2 class="panel-title" style="margin:0;">Configuración del panel</h2>
+        </div>
+        <button class="btn-outline" type="button" onclick="closeAtcSettings()">Cerrar</button>
+      </div>
+      <p style="color: var(--muted); font-size: var(--text-xs); margin-top:14px; line-height:1.6;">
+        Estas opciones son una vista previa visual: permiten explorar cómo se vería la configuración del módulo,
+        pero no modifican datos ni comportamiento real todavía.
+      </p>
+      <div class="atc-settings-grid">
+        <div class="atc-settings-field">
+          <span class="lbl">Tecla asignada para PTT</span>
+          <div class="atc-settings-row">
+            <span>Mantener para transmitir</span>
+            <span class="atc-ptt-key">␣ Espacio</span>
+          </div>
+        </div>
+        <div class="atc-settings-field">
+          <span class="lbl">Modo de transmisión</span>
+          <div class="atc-settings-row">
+            <span id="atcCfgModeLabel">Mantener para hablar (push-to-talk)</span>
+            <button class="btn-outline" type="button" id="atcCfgModeToggle">Cambiar</button>
+          </div>
+        </div>
+        <div class="atc-settings-field">
+          <span class="lbl">Rango del radar</span>
+          <div class="atc-settings-row">
+            <span id="atcCfgRangeLabel">40 NM</span>
+            <span class="tech-label" style="margin:0;">Sincronizado con la barra superior</span>
+          </div>
+        </div>
+        <div class="atc-settings-field">
+          <span class="lbl">Tipo de mapa base</span>
+          <div class="atc-settings-row">
+            <span id="atcCfgMapLabel">Radar técnico (oscuro)</span>
+            <button class="btn-outline" type="button" id="atcCfgMapToggle">Cambiar</button>
+          </div>
+        </div>
+        <div class="atc-settings-field">
+          <span class="lbl">Tamaño de etiquetas de datos</span>
+          <div class="atc-settings-row">
+            <span id="atcCfgLabelSizeLabel">Estándar</span>
+            <button class="btn-outline" type="button" id="atcCfgLabelSizeToggle">Cambiar</button>
+          </div>
+        </div>
+        <div class="atc-settings-field">
+          <span class="lbl">Visibilidad de trayectorias (trails)</span>
+          <div class="atc-settings-row">
+            <span id="atcCfgTrailLabel">Visibles</span>
+            <button class="btn-outline" type="button" id="atcCfgTrailToggle">Cambiar</button>
+          </div>
+        </div>
+        <div class="atc-settings-field">
+          <span class="lbl">Modo de densidad del panel</span>
+          <div class="atc-settings-row">
+            <span id="atcCfgDensityLabel">Expandido</span>
+            <button class="btn-outline" type="button" id="atcCfgDensityToggle">Cambiar</button>
+          </div>
+        </div>
+        <div class="atc-settings-field">
+          <span class="lbl">Acento de color del radar</span>
+          <div class="atc-settings-row">
+            <div class="atc-swatch-row">
+              <span class="atc-swatch selected" style="background:#22d3ee;" data-accent="#22d3ee" title="Cian (predeterminado)"></span>
+              <span class="atc-swatch" style="background:#34d399;" data-accent="#34d399" title="Verde radar"></span>
+              <span class="atc-swatch" style="background:#fbbf24;" data-accent="#fbbf24" title="Ámbar"></span>
+              <span class="atc-swatch" style="background:#a78bfa;" data-accent="#a78bfa" title="Violeta"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:22px;">
+        <button class="btn-outline" type="button" onclick="closeAtcSettings()">Descartar</button>
+        <button class="btn-primary" type="button" onclick="closeAtcSettings()">Aplicar (vista previa)</button>
+      </div>
     </div>
   </div>
 
@@ -1270,7 +1790,7 @@
       <div class="flight-modal-head">
         <div>
           <div class="tech-label">Detalle del vuelo</div>
-          <h2 class="panel-title" id="fdTitle" style="font-size:20px;">—</h2>
+          <h2 class="panel-title" id="fdTitle" style="font-size:var(--text-lg);">—</h2>
         </div>
         <button class="btn-outline" onclick="closeFlightDetail()">✕ Cerrar</button>
       </div>
@@ -1278,19 +1798,19 @@
       <div class="stats-row" style="grid-template-columns:repeat(4,1fr);margin-top:12px;">
         <div class="stat-card">
           <div class="stat-label">Altitud máxima</div>
-          <div class="stat-value" id="fdMaxAlt" style="color:var(--accent);font-size:22px;">—</div>
+          <div class="stat-value" id="fdMaxAlt" style="color:var(--accent);font-size:var(--text-lg);">—</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">IAS máxima</div>
-          <div class="stat-value" id="fdMaxIas" style="color:var(--accent);font-size:22px;">—</div>
+          <div class="stat-value" id="fdMaxIas" style="color:var(--accent);font-size:var(--text-lg);">—</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Duración total</div>
-          <div class="stat-value" id="fdDuration" style="color:var(--success);font-size:22px;">—</div>
+          <div class="stat-value" id="fdDuration" style="color:var(--success);font-size:var(--text-lg);">—</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Puntos grabados</div>
-          <div class="stat-value" id="fdPoints" style="color:var(--amber);font-size:22px;">—</div>
+          <div class="stat-value" id="fdPoints" style="color:var(--amber);font-size:var(--text-lg);">—</div>
         </div>
       </div>
 
@@ -1322,7 +1842,7 @@
       <div class="flight-modal-head">
         <div>
           <div class="tech-label">Detalle de la asignación</div>
-          <h2 class="panel-title" id="adTitle" style="font-size:20px;">—</h2>
+          <h2 class="panel-title" id="adTitle" style="font-size:var(--text-lg);">—</h2>
         </div>
         <button class="btn-outline" onclick="closeAssignmentDetail()">✕ Cerrar</button>
       </div>
@@ -1366,7 +1886,7 @@
 
       <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--border);">
         <div class="tech-label" style="margin-bottom:10px;color:var(--danger);">Zona de peligro</div>
-        <p style="font-size:12px;color:var(--muted);margin:0 0 12px;max-width:520px;line-height:1.6;">
+        <p style="font-size:var(--text-xs);color:var(--muted);margin:0 0 12px;max-width:520px;line-height:1.6;">
           Esto elimina la asignación completa (todas las copias por estudiante) de la lista.
           Los vuelos ya volados seguirán apareciendo en Reportes y en el historial del estudiante:
           esta acción solo borra la asignación, no la telemetría registrada.
@@ -1384,7 +1904,7 @@
       <div class="flight-modal-head">
         <div>
           <div class="tech-label">Detalle del estudiante</div>
-          <h2 class="panel-title" id="sdTitle" style="font-size:20px;">—</h2>
+          <h2 class="panel-title" id="sdTitle" style="font-size:var(--text-lg);">—</h2>
           <div class="student-email" id="sdSubtitle" style="margin-top:4px;">—</div>
         </div>
         <button class="btn-outline" onclick="closeStudentDetail()">✕ Cerrar</button>
@@ -1405,14 +1925,14 @@
         </div>
         <div class="sd-stat">
           <div class="stat-label">Último vuelo</div>
-          <div class="stat-value" id="sdStatLast" style="font-size:15px;color:var(--fg-2);">—</div>
+          <div class="stat-value" id="sdStatLast" style="font-size:var(--text-base);color:var(--fg-2);">—</div>
         </div>
       </div>
 
       <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
         <div>
           <div class="tech-label" style="margin-bottom:4px;">Acciones</div>
-          <div style="font-size:12px;color:var(--muted);">Suspender bloquea el acceso del estudiante a la plataforma.</div>
+          <div style="font-size:var(--text-xs);color:var(--muted);">Suspender bloquea el acceso del estudiante a la plataforma.</div>
         </div>
         <div style="display:flex;gap:10px;">
           <button class="btn-outline" id="sd-btn-assign">Asignar vuelo</button>
@@ -1446,6 +1966,8 @@
       if (name === 'estudiantes') startEstudiantesLive();
       else stopEstudiantesLive();
       if (name === 'reportes') loadReportes();
+      if (name === 'radar-atc') { initRadarAtc(); startAtcTrafficLive(); }
+      else stopAtcTrafficLive();
     }
 
     let simuladoresTimer = null;
@@ -2560,7 +3082,7 @@
           </div>
           <div class="live-card-foot">
             <div class="live-indicator"><div class="live-dot"></div> <span data-field="live-label">${escSim(liveLabel)}</span></div>
-            <span style="font-family:var(--font-mono);font-size:10px;color:var(--muted);">${escSim(f.session_code)}</span>
+            <span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--muted);">${escSim(f.session_code)}</span>
           </div>
         </article>`;
     }
@@ -3018,7 +3540,7 @@
               <div class="report-meta">${escSim(f.flight_id)}</div>
             </td>
             <td>${assignmentLabel}</td>
-            <td><span style="font-family:var(--font-mono);font-size:11px;">${startedAt}</span></td>
+            <td><span style="font-family:var(--font-mono);font-size:var(--text-xs);">${startedAt}</span></td>
             <td>${duration}</td>
             <td>${maxAlt}</td>
             <td>${maxIas}</td>
@@ -3698,6 +4220,628 @@
       if (!total) return '';
       const seg = (n, color) => n > 0 ? `<span style="width:${(n / total * 100).toFixed(2)}%;background:${color}"></span>` : '';
       return seg(completed, 'var(--success)') + seg(inProgress, 'var(--accent)') + seg(pending, 'var(--amber)');
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // RADAR ATC — módulo de vista previa visual (mock / hardcoded)
+    //
+    // Todo lo que sigue es maqueta de interfaz: ningún dato proviene de
+    // Supabase ni de simuladores reales, no hay WebSockets, no hay audio
+    // real y no se altera ninguna estructura ni lógica existente del panel.
+    // Sirve únicamente para mostrar cómo luciría un módulo ATC/radar.
+    // ════════════════════════════════════════════════════════════════════
+    const ATC_ALERTS = [
+      { time: '14:52:08', severity: 'critical', flight: 'IFR332', kind: 'Pérdida de altitud', detail: 'Descenso no autorizado de 1.450 ft/min detectado en proximidad a TOLUM.' },
+      { time: '14:51:40', severity: 'critical', flight: 'IFR332', kind: 'Comunicación inactiva', detail: 'Sin respuesta de radio por más de 30 segundos en frecuencia asignada.' },
+      { time: '14:48:55', severity: 'warning', flight: 'IFR118', kind: 'Desviación de glideslope', detail: 'Aproximación ILS RWY 23 con desviación de −1.2° respecto a la senda de planeo.' },
+      { time: '14:44:12', severity: 'warning', flight: 'IFR077', kind: 'Régimen de ascenso elevado', detail: 'Velocidad vertical por encima del perfil esperado para la salida PALMA-2.' },
+      { time: '14:39:03', severity: 'normal', flight: 'IFR204', kind: 'Tramo completado', detail: 'IFR204 completó el tramo SKBO → TOLUM dentro del perfil de vuelo asignado.' },
+      { time: '14:33:47', severity: 'normal', flight: 'IFR455', kind: 'Sesión iniciada', detail: 'IFR455 estableció conexión con el simulador y entró en plataforma SKBO.' },
+    ];
+
+    const ATC_LOG = [
+      { time: '14:52:10', actor: 'Sistema', text: 'Alerta crítica generada automáticamente para IFR332 — pérdida de altitud no autorizada.' },
+      { time: '14:50:02', actor: 'Instructor A. Henao', text: 'Instrucción simulada enviada a IFR118: “Reduce velocidad y mantén rumbo 190.”' },
+      { time: '14:47:30', actor: 'Sistema', text: 'IFR455 inició rodaje desde plataforma hacia punto de espera RWY 13L.' },
+      { time: '14:45:18', actor: 'Instructor A. Henao', text: 'Observación marcada sobre IFR077: “Buena coordinación durante el ascenso inicial.”' },
+      { time: '14:41:55', actor: 'Sistema', text: 'IFR204 cambió de fase de vuelo: ascenso → crucero.' },
+      { time: '14:36:09', actor: 'Sistema', text: 'IFR332 estableció contacto inicial en frecuencia de área BOG-2.' },
+    ];
+
+    const ATC_STRIPS = [
+      { cs: 'IFR204', from: 'SKBO', to: 'SKRG', alt: 'F085 → F090', spd: '124 kt', proc: 'SID BOG-1 / ILS 01', status: 'En ruta', runway: '13L', priority: 'normal', instructor: 'A. Henao' },
+      { cs: 'IFR118', from: 'SKBQ', to: 'SKCG', alt: 'F042 → F040', spd: '138 kt', proc: 'ILS RWY 23', status: 'Aproximación', runway: '23', priority: 'medium', instructor: 'A. Henao' },
+      { cs: 'IFR077', from: 'SKRG', to: 'SKBO', alt: 'F052 → F090', spd: '90 kt', proc: 'SID PALMA-2', status: 'Ascenso', runway: '01', priority: 'normal', instructor: 'C. Vargas' },
+      { cs: 'IFR332', from: 'SKCL', to: 'SKBO', alt: 'F112 → F110', spd: '171 kt', proc: 'Crucero FL110', status: 'Atención requerida', runway: '—', priority: 'high', instructor: 'A. Henao' },
+      { cs: 'IFR455', from: 'SKBO', to: 'SKBO', alt: 'GND', spd: '4 kt', proc: 'Patrón de tráfico', status: 'Rodaje', runway: '13L', priority: 'normal', instructor: 'C. Vargas' },
+    ];
+
+    const atcState = {
+      flights: [],
+      selectedId: null,
+      filter: 'all',
+      view: 'radar',
+      range: 40,
+      zoom: 1,
+      emptyDemo: false,
+      pttState: 'idle', // idle | armed | transmitting
+      pttTarget: 'selected',
+      pttHotkey: '␣ Espacio',
+      bottomTab: 'strips',
+      initialized: false,
+    };
+
+    // Mini-notificación propia del módulo (no depende de utilidades globales
+    // del panel): comunica que una acción es solo una vista previa visual.
+    let atcToastTimer = null;
+    function showToast(message) {
+      let el = document.getElementById('atcToast');
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'atcToast';
+        el.style.cssText = `
+          position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(12px);
+          background: rgba(11,17,32,0.94); border: 1px solid rgba(34,211,238,0.32);
+          color: #e8eef8; font-family: var(--font-body); font-size: 0.8125rem;
+          padding: 12px 20px; max-width: min(420px, calc(100vw - 48px));
+          box-shadow: 0 18px 48px rgba(0,0,0,0.45); z-index: 999;
+          opacity: 0; transition: opacity 200ms ease, transform 200ms ease; text-align: center; line-height: 1.5;
+        `;
+        document.body.appendChild(el);
+      }
+      el.textContent = message;
+      clearTimeout(atcToastTimer);
+      requestAnimationFrame(() => { el.style.opacity = '1'; el.style.transform = 'translateX(-50%) translateY(0)'; });
+      atcToastTimer = setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateX(-50%) translateY(12px)';
+      }, 3200);
+    }
+
+    function atcFilteredFlights() {
+      if (atcState.emptyDemo) return [];
+      switch (atcState.filter) {
+        case 'air': return atcState.flights.filter(f => !f.on_ground);
+        case 'ground': return atcState.flights.filter(f => f.on_ground);
+        default: return atcState.flights;
+      }
+    }
+
+    function initRadarAtc() {
+      if (atcState.initialized) return;
+      atcState.initialized = true;
+
+      // Vista (radar / mapa / híbrido) — solo cambia el segmento activo, visual.
+      document.getElementById('atcViewSeg').addEventListener('click', (e) => {
+        const btn = e.target.closest('.atc-seg-btn');
+        if (!btn) return;
+        document.querySelectorAll('#atcViewSeg .atc-seg-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        atcState.view = btn.dataset.atcView;
+      });
+
+      // Rango del radar (mock): solo ajusta la etiqueta y el texto de coordenadas.
+      const ranges = [10, 20, 40, 80, 160];
+      document.getElementById('atcRangeMinus').addEventListener('click', () => {
+        const idx = Math.max(0, ranges.indexOf(atcState.range) - 1);
+        atcState.range = ranges[idx];
+        atcRefreshRangeUI();
+      });
+      document.getElementById('atcRangePlus').addEventListener('click', () => {
+        const idx = Math.min(ranges.length - 1, ranges.indexOf(atcState.range) + 1);
+        atcState.range = ranges[idx];
+        atcRefreshRangeUI();
+      });
+
+      // Zoom del radar (mock visual): escala el contenedor de blips.
+      document.getElementById('atcZoomIn').addEventListener('click', () => atcSetZoom(atcState.zoom + 0.2));
+      document.getElementById('atcZoomOut').addEventListener('click', () => atcSetZoom(atcState.zoom - 0.2));
+      document.getElementById('atcRecenter').addEventListener('click', () => atcSetZoom(1));
+
+      // Filtros de tráfico
+      document.getElementById('atcFilters').addEventListener('click', (e) => {
+        const btn = e.target.closest('.atc-filter-chip');
+        if (!btn) return;
+        document.querySelectorAll('#atcFilters .atc-filter-chip').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        atcState.filter = btn.dataset.atcFilter;
+        atcRenderFlightList();
+      });
+
+      // Capas (chips visuales): el área central ahora es el mapa real, así que
+      // estos controles quedan como referencia visual de cómo lucirían los
+      // selectores de capas de un panel ATC, sin acción sobre el mapa.
+      document.getElementById('atcLayerToggles').addEventListener('change', (e) => {
+        const input = e.target.closest('input[type="checkbox"]');
+        if (!input) return;
+        input.closest('.atc-toggle-chip').classList.toggle('is-on', input.checked);
+      });
+
+      // Demo de estado vacío (alterna entre tráfico simulado y panel sin vuelos)
+      document.getElementById('atcEmptyToggleBtn').addEventListener('click', () => {
+        atcState.emptyDemo = !atcState.emptyDemo;
+        const btn = document.getElementById('atcEmptyToggleBtn');
+        btn.classList.toggle('is-active', atcState.emptyDemo);
+        btn.innerHTML = atcState.emptyDemo
+          ? '<span>◉</span> Demo: con tráfico'
+          : '<span>◌</span> Demo: sin tráfico';
+        if (atcState.emptyDemo) atcState.selectedId = null;
+        else atcState.selectedId = atcState.flights[0]?.id || null;
+        atcRenderAll();
+      });
+
+      // Configuración (modal visual)
+      document.getElementById('atcSettingsBtn').addEventListener('click', openAtcSettings);
+      bindAtcSettingsModalControls();
+
+      // Pestañas del panel inferior
+      document.getElementById('atcBottomTabs').addEventListener('click', (e) => {
+        const btn = e.target.closest('.atc-bottom-tab');
+        if (!btn) return;
+        atcState.bottomTab = btn.dataset.atcBottom;
+        document.querySelectorAll('#atcBottomTabs .atc-bottom-tab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.atc-bottom-pane').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('atcPane' + ({
+          strips: 'Strips', alerts: 'Alerts', log: 'Log', replay: 'Replay', ptt: 'Ptt',
+        }[atcState.bottomTab])).classList.add('active');
+      });
+
+      // Selector de destinatario PTT
+      document.querySelectorAll('.atc-ptt-target-opt').forEach(opt => {
+        opt.addEventListener('click', () => {
+          document.querySelectorAll('.atc-ptt-target-opt').forEach(o => o.classList.remove('selected'));
+          opt.classList.add('selected');
+          opt.querySelector('input').checked = true;
+          atcState.pttTarget = opt.dataset.target;
+        });
+      });
+
+      bindAtcPtt();
+      atcRenderAll();
+      initAtcMap();
+    }
+
+    // ── Tráfico activo (datos reales): mismo origen de datos que "Vuelos
+    // activos" (sesiones + telemetría más reciente por estudiante), reducido
+    // a los campos que tienen sentido en una vista de control de tráfico:
+    // identificador de vuelo, estudiante, altitud, IAS, rumbo y si el
+    // estudiante tiene un vuelo asignado activo (origen → destino) o está libre.
+    let atcTrafficTimer = null;
+    let atcTrafficChannel = null;
+    let atcTrafficLoading = false;
+
+    function startAtcTrafficLive() {
+      loadAtcTraffic();
+      if (!atcTrafficTimer) atcTrafficTimer = setInterval(loadAtcTraffic, 3000);
+      if (!atcTrafficChannel && supabaseClient?.channel) {
+        atcTrafficChannel = supabaseClient
+          .channel('admin-atc-traffic')
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'flight_telemetry' }, () => loadAtcTraffic())
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'flight_sessions' }, () => loadAtcTraffic())
+          .subscribe();
+      }
+    }
+
+    function stopAtcTrafficLive() {
+      if (atcTrafficTimer) { clearInterval(atcTrafficTimer); atcTrafficTimer = null; }
+      if (atcTrafficChannel && supabaseClient?.removeChannel) {
+        supabaseClient.removeChannel(atcTrafficChannel);
+        atcTrafficChannel = null;
+      }
+    }
+
+    async function loadAtcTraffic() {
+      if (atcTrafficLoading) return;
+      atcTrafficLoading = true;
+
+      const now = Date.now();
+      const activeWindowMs = 15000;
+
+      const [sessionsRes, studentsRes, telemetryRes, assignRes] = await Promise.all([
+        supabaseClient.from('flight_sessions').select('*').order('last_seen', { ascending: false }),
+        supabaseClient.from('profiles').select('id, nombre, session_code').eq('role', 'estudiante'),
+        supabaseClient
+          .from('flight_telemetry')
+          .select('session_code, flight_id, sim_time, altitude_ft, ias_kt, heading_deg, on_ground')
+          .not('flight_id', 'is', null)
+          .neq('flight_id', '')
+          .order('sim_time', { ascending: false })
+          .limit(2000),
+        supabaseClient
+          .from('flight_assignments')
+          .select('student_id, origen, destino, estado, created_at')
+          .neq('estado', 'completado')
+          .order('created_at', { ascending: false }),
+      ]);
+
+      atcTrafficLoading = false;
+      if (sessionsRes.error || telemetryRes.error) return;
+      if (!document.getElementById('panel-radar-atc').classList.contains('active')) return;
+
+      const studentsByCode = {};
+      (studentsRes.data || []).forEach(s => { if (s.session_code) studentsByCode[s.session_code] = s; });
+
+      const assignmentByStudent = {};
+      (assignRes.data || []).forEach(a => {
+        if (!assignmentByStudent[a.student_id]) assignmentByStudent[a.student_id] = a;
+      });
+
+      const sessionsByCode = {};
+      (sessionsRes.data || []).forEach(s => { sessionsByCode[s.session_code] = s; });
+
+      const activeSessions = (sessionsRes.data || [])
+        .filter(s => now - new Date(s.last_seen).getTime() < activeWindowMs);
+      const activeCodes = new Set(activeSessions.map(s => s.session_code));
+
+      const activePoints = (telemetryRes.data || []).filter(p => activeCodes.has(p.session_code));
+
+      const latestFlightBySession = new Map();
+      activePoints.forEach(p => {
+        const prev = latestFlightBySession.get(p.session_code);
+        if (!prev || new Date(p.sim_time) > new Date(prev.sim_time)) {
+          latestFlightBySession.set(p.session_code, { flightId: p.flight_id, sim_time: p.sim_time });
+        }
+      });
+      const currentFlightPoints = activePoints.filter(p =>
+        latestFlightBySession.get(p.session_code)?.flightId === p.flight_id
+      );
+
+      const byFlightId = new Map();
+      currentFlightPoints.forEach(p => {
+        if (!byFlightId.has(p.flight_id)) byFlightId.set(p.flight_id, []);
+        byFlightId.get(p.flight_id).push(p);
+      });
+
+      const flights = [...byFlightId.entries()].map(([flightId, group]) => {
+        const sorted = [...group].sort((a, b) => new Date(a.sim_time) - new Date(b.sim_time));
+        const last = sorted[sorted.length - 1];
+        const session = sessionsByCode[last.session_code];
+        const student = studentsByCode[last.session_code] || null;
+        const assignment = student ? (assignmentByStudent[student.id] || null) : null;
+        return {
+          id: flightId,
+          student: student?.nombre || 'Sin estudiante asignado',
+          altitude_ft: Number(last.altitude_ft),
+          ias_kt: Number(last.ias_kt),
+          heading_deg: Number(last.heading_deg),
+          on_ground: !!last.on_ground,
+          assignment: assignment ? { origen: assignment.origen, destino: assignment.destino } : null,
+          last_seen_ms: session ? new Date(session.last_seen).getTime() : new Date(last.sim_time).getTime(),
+        };
+      }).sort((a, b) => b.last_seen_ms - a.last_seen_ms);
+
+      atcState.flights = flights;
+      if (!flights.find(x => x.id === atcState.selectedId)) {
+        atcState.selectedId = atcState.emptyDemo ? null : (flights[0]?.id || null);
+      }
+
+      atcRenderFlightList();
+      atcRenderDetail();
+      atcRenderCoords();
+    }
+
+    function atcRefreshRangeUI() {
+      document.getElementById('atcRangeValue').textContent = atcState.range + ' NM';
+      atcRenderCoords();
+    }
+
+    function atcSetZoom(value) {
+      atcState.zoom = Math.min(2, Math.max(0.6, Math.round(value * 10) / 10));
+      document.getElementById('atcZoomValue').textContent = atcState.zoom.toFixed(1) + '×';
+      if (atcMap) atcMap.easeTo({ zoom: 5 + atcState.zoom * 1.5, duration: 220 });
+    }
+
+    function atcRenderAll() {
+      atcRenderFlightList();
+      atcRenderDetail();
+      atcRenderStrips();
+      atcRenderAlerts();
+      atcRenderLog();
+      atcRenderCoords();
+    }
+
+    function atcRenderCoords() {
+      const visible = atcFilteredFlights().length;
+      document.getElementById('atcCoords').textContent =
+        `4°42'N 74°09'W · Sector BOG-3 · Rango ${atcState.range} NM · ${visible} escuadra${visible === 1 ? '' : 's'} visible${visible === 1 ? '' : 's'}`;
+    }
+
+    function atcRenderFlightList() {
+      const list = document.getElementById('atcFlightList');
+      const flights = atcFilteredFlights();
+      document.getElementById('atcFlightCount').textContent = String(flights.length);
+
+      if (!flights.length) {
+        const noTraffic = !atcState.emptyDemo && !atcState.flights.length;
+        list.innerHTML = `
+          <div class="atc-empty-block" style="padding:32px 12px;">
+            <div class="icon">🛰️</div>
+            <div class="ttl">${atcState.emptyDemo || noTraffic ? 'Sin estudiantes conectados' : 'Sin coincidencias'}</div>
+            <div class="hint">${atcState.emptyDemo || noTraffic
+              ? 'No hay sesiones activas en este momento. En cuanto un estudiante inicie un vuelo IFR, aparecerá aquí con su información en tiempo real.'
+              : 'Ningún vuelo activo coincide con el filtro seleccionado. Prueba con “Todos” para ver el tráfico completo.'}</div>
+          </div>`;
+        return;
+      }
+
+      list.innerHTML = flights.map(f => {
+        const assignmentLabel = f.assignment
+          ? `${escSim(f.assignment.origen)} → ${escSim(f.assignment.destino)}`
+          : 'Libre — sin vuelo asignado activo';
+        return `
+        <div class="atc-flight-card ${f.on_ground ? '' : 'status-normal'} ${f.id === atcState.selectedId ? 'selected' : ''}" data-flight-id="${escAttr(f.id)}">
+          <div class="atc-flight-card-top">
+            <span class="atc-flight-callsign">${escSim(f.id)}</span>
+            <span class="atc-flight-phase">${f.on_ground ? 'En tierra' : 'En vuelo'}</span>
+          </div>
+          <div class="atc-flight-student">${escSim(f.student)}</div>
+          <div class="atc-flight-meta">
+            <span>ALT <b>${Number.isFinite(f.altitude_ft) ? f.altitude_ft.toLocaleString('es-CO') : '—'} ft</b></span>
+            <span>IAS <b>${Number.isFinite(f.ias_kt) ? f.ias_kt : '—'} kt</b></span>
+            <span>HDG <b>${Number.isFinite(f.heading_deg) ? String(Math.round(f.heading_deg)).padStart(3, '0') + '°' : '—'}</b></span>
+          </div>
+          <div class="atc-flight-route">⟶ ${assignmentLabel}</div>
+        </div>
+      `;
+      }).join('');
+
+      list.querySelectorAll('.atc-flight-card').forEach(card => {
+        card.addEventListener('click', () => atcSelectFlight(card.dataset.flightId));
+      });
+    }
+
+    function atcSelectFlight(id) {
+      atcState.selectedId = id;
+      atcRenderFlightList();
+      atcRenderDetail();
+    }
+
+    // El área central del módulo ahora muestra el mapa real (MapLibre, mismo
+    // estilo oscuro que ya usa el panel de vuelos activos), sin trazar
+    // aeronaves ni waypoints sobre él — solo el mapa base, como vista de
+    // referencia del sector.
+    let atcMap = null;
+    function initAtcMap() {
+      const container = document.getElementById('atcMap');
+      if (!container || typeof maplibregl === 'undefined' || atcMap) return;
+      atcMap = new maplibregl.Map({
+        container,
+        style: FLIGHT_ROUTE_STYLE_URL,
+        center: [-74.2973, 4.5709],
+        zoom: 6,
+        attributionControl: true,
+      });
+      atcMap.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+    }
+
+    function atcRenderDetail() {
+      const panel = document.getElementById('atcDetailPanel');
+      const f = atcState.flights.find(x => x.id === atcState.selectedId);
+
+      if (!f) {
+        panel.innerHTML = `
+          <div class="atc-detail-empty">
+            <div class="icon">🎯</div>
+            <div class="ttl">Ninguna aeronave seleccionada</div>
+            <div class="hint">Selecciona una aeronave en la lista de tráfico activo para ver aquí su información: estudiante, altitud, velocidad, rumbo y vuelo asignado.</div>
+          </div>`;
+        return;
+      }
+
+      const assignmentLine = f.assignment
+        ? `${escSim(f.assignment.origen)} → ${escSim(f.assignment.destino)}`
+        : 'Libre — sin vuelo asignado activo';
+
+      panel.innerHTML = `
+        <div class="atc-detail-head">
+          <div>
+            <div class="atc-detail-callsign">${escSim(f.id)}</div>
+            <div class="atc-detail-sub">${escSim(f.student)}</div>
+          </div>
+          <span class="atc-status-pill ${f.on_ground ? 'warning' : 'normal'}">${f.on_ground ? 'En tierra' : 'En vuelo'}</span>
+        </div>
+        <div class="atc-detail-body">
+          <div class="atc-detail-grid">
+            <div class="atc-detail-item"><div class="k">Altitud</div><div class="v">${Number.isFinite(f.altitude_ft) ? f.altitude_ft.toLocaleString('es-CO') : '—'} ft</div></div>
+            <div class="atc-detail-item"><div class="k">Velocidad indicada (IAS)</div><div class="v">${Number.isFinite(f.ias_kt) ? f.ias_kt : '—'} kt</div></div>
+            <div class="atc-detail-item"><div class="k">Rumbo</div><div class="v">${Number.isFinite(f.heading_deg) ? String(Math.round(f.heading_deg)).padStart(3, '0') + '°' : '—'}</div></div>
+          </div>
+
+          <div>
+            <div class="atc-detail-section-title" style="margin-bottom:10px;">Vuelo asignado</div>
+            <div class="atc-route-line"><span>Origen → Destino:</span> ${assignmentLine}</div>
+          </div>
+
+          <div class="hint">El plan de ruta, procedimiento y alertas se conectarán aquí cuando exista la planeación IFR del estudiante.</div>
+        </div>
+      `;
+    }
+
+    function atcRenderStrips() {
+      const wrap = document.getElementById('atcStripsList');
+      if (atcState.emptyDemo) {
+        wrap.innerHTML = `
+          <div class="atc-empty-block">
+            <div class="icon">🗂️</div>
+            <div class="ttl">No hay tiras de progreso activas</div>
+            <div class="hint">Cuando existan vuelos en curso, cada uno generará aquí una tira con su ruta, procedimiento, prioridad e instructor asignado.</div>
+          </div>`;
+        return;
+      }
+      wrap.innerHTML = ATC_STRIPS.map(s => `
+        <div class="atc-strip priority-${s.priority}">
+          <span class="cs">${s.cs}</span>
+          <span class="route"><span>${s.from}</span> → <span>${s.to}</span> · ${s.proc}</span>
+          <span><span class="lbl">Altitud</span><span class="val">${s.alt}</span></span>
+          <span><span class="lbl">Veloc.</span><span class="val">${s.spd}</span></span>
+          <span><span class="lbl">Estado</span><span class="val">${s.status}</span></span>
+          <span><span class="lbl">Pista</span><span class="val">${s.runway}</span></span>
+          <span><span class="lbl">Instructor</span><span class="val">${s.instructor}</span></span>
+          <button class="pin" type="button" title="Fijar tira (vista previa)" onclick="showToast('Vista previa: la tira de ${s.cs} se fijaría en la parte superior.', 'info')">📌</button>
+        </div>
+      `).join('');
+    }
+
+    function atcRenderAlerts() {
+      const wrap = document.getElementById('atcAlertsList');
+      const dot = document.getElementById('atcAlertDot');
+      const hasCritical = ATC_ALERTS.some(a => a.severity === 'critical') && !atcState.emptyDemo;
+      dot.style.display = hasCritical ? '' : 'none';
+
+      if (atcState.emptyDemo) {
+        wrap.innerHTML = `
+          <div class="atc-empty-block">
+            <div class="icon">🛎️</div>
+            <div class="ttl">Centro de alertas despejado</div>
+            <div class="hint">No se han generado eventos ni alertas operacionales recientes. Aquí aparecerán notificaciones de pérdida de altitud, desviaciones de ruta, conflictos estimados y más.</div>
+          </div>`;
+        return;
+      }
+
+      wrap.innerHTML = ATC_ALERTS.map(a => `
+        <div class="atc-alert-table-row">
+          <span class="sev ${a.severity}">${a.severity === 'critical' ? 'Crítico' : a.severity === 'warning' ? 'Atención' : 'Info'}</span>
+          <span class="fl">${a.flight}</span>
+          <span class="tm">${a.time}</span>
+          <span class="desc"><b>${a.kind}</b><span>${a.detail}</span></span>
+        </div>
+      `).join('');
+    }
+
+    function atcRenderLog() {
+      const wrap = document.getElementById('atcLogList');
+      if (atcState.emptyDemo) {
+        wrap.innerHTML = `
+          <div class="atc-empty-block">
+            <div class="icon">📜</div>
+            <div class="ttl">La bitácora está vacía</div>
+            <div class="hint">Las instrucciones enviadas, observaciones marcadas y eventos del sistema aparecerán aquí en orden cronológico durante la sesión.</div>
+          </div>`;
+        return;
+      }
+      wrap.innerHTML = ATC_LOG.map(l => `
+        <div class="atc-event-row">
+          <span class="atc-event-time">${l.time}</span>
+          <span class="atc-event-text"><span class="atc-event-actor">${l.actor}:</span> ${l.text}</span>
+        </div>
+      `).join('');
+    }
+
+    // ── PTT (Push To Talk) — interacción simulada, sin audio ni captura real ──
+    function bindAtcPtt() {
+      const btn = document.getElementById('atcPttBtn');
+      const press = (e) => { e.preventDefault(); atcPttArm(); };
+      const release = (e) => { e.preventDefault(); atcPttRelease(); };
+
+      btn.addEventListener('mousedown', press);
+      btn.addEventListener('touchstart', press, { passive: false });
+      window.addEventListener('mouseup', release);
+      window.addEventListener('touchend', release);
+      btn.addEventListener('mouseleave', () => { if (atcState.pttState !== 'idle') atcPttRelease(); });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.code !== 'Space') return;
+        const tag = (e.target && e.target.tagName || '').toLowerCase();
+        if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+        if (!document.getElementById('panel-radar-atc').classList.contains('active')) return;
+        if (atcState.pttState === 'idle') { e.preventDefault(); atcPttArm(); }
+      });
+      window.addEventListener('keyup', (e) => {
+        if (e.code !== 'Space') return;
+        if (atcState.pttState !== 'idle') { e.preventDefault(); atcPttRelease(); }
+      });
+    }
+
+    let atcPttTimer = null;
+
+    function atcPttArm() {
+      if (atcState.pttState !== 'idle') return;
+      atcState.pttState = 'armed';
+      atcUpdatePttUI();
+      clearTimeout(atcPttTimer);
+      atcPttTimer = setTimeout(() => {
+        if (atcState.pttState === 'armed') {
+          atcState.pttState = 'transmitting';
+          atcUpdatePttUI();
+        }
+      }, 180);
+    }
+
+    function atcPttRelease() {
+      if (atcState.pttState === 'idle') return;
+      clearTimeout(atcPttTimer);
+      const wasTransmitting = atcState.pttState === 'transmitting';
+      atcState.pttState = 'idle';
+      atcUpdatePttUI();
+      if (wasTransmitting) {
+        const targetLabel = { selected: 'el estudiante seleccionado', group: 'el grupo activo', all: 'la frecuencia general' }[atcState.pttTarget];
+        showToast(`Vista previa: se transmitiría un mensaje simulado hacia ${targetLabel}. (Sin audio real)`, 'info');
+      }
+    }
+
+    function atcUpdatePttUI() {
+      const btn = document.getElementById('atcPttBtn');
+      const label = document.getElementById('atcPttBtnLabel');
+      const state = document.getElementById('atcPttState');
+      const meter = document.getElementById('atcPttMeter');
+      const info = document.getElementById('atcPttTransmitInfo');
+
+      btn.classList.remove('armed', 'transmitting');
+      meter.classList.remove('live');
+
+      if (atcState.pttState === 'armed') {
+        btn.classList.add('armed');
+        label.textContent = 'Activando…';
+        state.textContent = 'Armado';
+        state.className = 'atc-ptt-state armed';
+        info.textContent = 'Preparando transmisión simulada…';
+      } else if (atcState.pttState === 'transmitting') {
+        btn.classList.add('transmitting');
+        label.textContent = 'Transmitiendo…';
+        state.textContent = 'Transmitiendo';
+        state.className = 'atc-ptt-state transmitting';
+        meter.classList.add('live');
+        info.textContent = 'Transmisión simulada en curso — sin audio real';
+      } else {
+        label.textContent = 'Mantener para hablar';
+        state.textContent = 'En espera';
+        state.className = 'atc-ptt-state';
+        info.textContent = 'Sin transmisión activa';
+      }
+    }
+
+    // ── Modal de configuración (vista previa, sin persistencia real) ──
+    function openAtcSettings() {
+      document.getElementById('atcSettingsModal').classList.remove('hidden-panel');
+    }
+    function closeAtcSettings() {
+      document.getElementById('atcSettingsModal').classList.add('hidden-panel');
+    }
+
+    function bindAtcSettingsModalControls() {
+      const cycle = (btnId, labelId, options) => {
+        let i = 0;
+        document.getElementById(btnId).addEventListener('click', () => {
+          i = (i + 1) % options.length;
+          document.getElementById(labelId).textContent = options[i];
+        });
+      };
+      cycle('atcCfgModeToggle', 'atcCfgModeLabel', ['Mantener para hablar (push-to-talk)', 'Activación por voz (VOX simulado)', 'Conmutación manual (clic para abrir/cerrar)']);
+      cycle('atcCfgMapToggle', 'atcCfgMapLabel', ['Radar técnico (oscuro)', 'Mapa satelital (mock)', 'Carta aeronáutica (mock)']);
+      cycle('atcCfgLabelSizeToggle', 'atcCfgLabelSizeLabel', ['Estándar', 'Grande', 'Compacta']);
+      cycle('atcCfgTrailToggle', 'atcCfgTrailLabel', ['Visibles', 'Ocultas', 'Solo aeronave seleccionada']);
+      cycle('atcCfgDensityToggle', 'atcCfgDensityLabel', ['Expandido', 'Compacto']);
+
+      document.querySelectorAll('.atc-swatch').forEach(sw => {
+        sw.addEventListener('click', () => {
+          document.querySelectorAll('.atc-swatch').forEach(s => s.classList.remove('selected'));
+          sw.classList.add('selected');
+          document.getElementById('atcShell').style.setProperty('--atc-cyan', sw.dataset.accent);
+        });
+      });
+
+      document.getElementById('atcCfgRangeLabel').textContent = atcState.range + ' NM';
     }
   </script>
 </body>
