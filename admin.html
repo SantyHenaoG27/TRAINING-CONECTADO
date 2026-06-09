@@ -1664,9 +1664,6 @@
                 <span class="atc-range-value" id="atcRangeValue">40 NM</span>
                 <button class="atc-range-btn" id="atcRangePlus" type="button">+</button>
               </div>
-              <button class="atc-icon-btn" id="atcEmptyToggleBtn" type="button" title="Alternar vista de estado vacío (solo demostración)">
-                <span>◌</span> Demo: sin tráfico
-              </button>
               <button class="atc-icon-btn" id="atcSettingsBtn" type="button">
                 <span>⚙</span> Configurar panel
               </button>
@@ -4682,19 +4679,6 @@
         btn.classList.add('active');
         atcState.filter = btn.dataset.atcFilter;
         atcRenderFlightList();
-      });
-
-      // Demo de estado vacío (alterna entre tráfico simulado y panel sin vuelos)
-      document.getElementById('atcEmptyToggleBtn').addEventListener('click', () => {
-        atcState.emptyDemo = !atcState.emptyDemo;
-        const btn = document.getElementById('atcEmptyToggleBtn');
-        btn.classList.toggle('is-active', atcState.emptyDemo);
-        btn.innerHTML = atcState.emptyDemo
-          ? '<span>◉</span> Demo: con tráfico'
-          : '<span>◌</span> Demo: sin tráfico';
-        if (atcState.emptyDemo) atcState.selectedId = null;
-        else atcState.selectedId = atcState.flights[0]?.id || null;
-        atcRenderAll();
       });
 
       // Configuración (modal visual)
