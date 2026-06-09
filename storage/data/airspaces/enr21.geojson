@@ -4,1287 +4,5912 @@
     "source": "AIP Colombia ENR 2.1",
     "title": "FIR, UIR, TMA y CTA - Colombia",
     "note": "Datos para entrenamiento IFR. No usar para navegación real.",
-    "generated": "2026-06-08",
-    "version": "AIRAC AMDT 64/22"
+    "generated": "2026-06-09",
+    "version": "AIRAC AMDT 68/25 (12 JUN 2025)"
   },
   "features": [
-
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "FIR_BARRANQUILLA",
-        "name": "FIR Barranquilla",
-        "type": "FIR",
-        "source": "AIP Colombia ENR 2.1",
-        "atsUnit": "FIR BARRANQUILLA",
-        "callsign": "Barranquilla Informacion",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "127.50 MHz",
-        "alternateFrequency": null,
-        "lateralLimitsRaw": "Desde 150000N/0772500W; 150000N/0735947W; 141950N/0735947W; 122950N/0712447W; 115950N/0705947W; 115150N/0711947W siguiendo el límite Frontera con Venezuela hasta 090830N/0724930W; 083750N/0723917W; 073750N/0745148W; 083450N/0772500W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "G", "lower": "1500 FT", "upper": "17500 FT" }
-        ],
-        "status": "needs_review",
-        "notes": "Sección inferior. Incluye arco de 65NM desde DVOR BUQ. Límite Venezuela simplificado."
-      },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[
-          [-77.41667, 15.00000],
-          [-73.99639, 15.00000],
-          [-73.99639, 14.33056],
-          [-71.41306, 12.49722],
-          [-70.99639, 11.99722],
-          [-71.32972, 11.86389],
-          [-72.82500,  9.14167],
-          [-72.65472,  8.63056],
-          [-74.86333,  7.63056],
-          [-77.41667,  8.58056],
-          [-77.41667, 15.00000]
-        ]]
-      }
-    },
-
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "FIR_BARRANQUILLA_A",
-        "name": "FIR Barranquilla (FL195-18000 FT)",
-        "type": "FIR",
-        "source": "AIP Colombia ENR 2.1",
-        "atsUnit": "Barranquilla ACC",
-        "callsign": "Barranquilla Informacion",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "119.10 MHz",
-        "alternateFrequency": "128.40 MHz",
-        "lateralLimitsRaw": "Desde 101543N/0725859W por un arco de sentido horario de 65NM de radio centrado en 111353N/0722935W; 114557N/0713125W siguiendo el límite Frontera con Venezuela hasta 102230N/0725800W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "18000 FT", "upper": "FL195" }
-        ],
-        "status": "needs_review",
-        "notes": "Arco 65NM centrado en DVOR BUQ pendiente de cálculo preciso."
-      },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[
-          [-72.98306,  10.25972],
-          [-71.94167,  11.44583],
-          [-72.65472,  10.22778],
-          [-72.85833,  10.44889],
-          [-72.98306,  10.25972]
-        ]]
-      }
-    },
-
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "FIR_BOGOTA",
-        "name": "FIR Bogotá",
-        "type": "FIR",
-        "source": "AIP Colombia ENR 2.1",
-        "atsUnit": "FIR BOGOTA",
-        "callsign": "Bogota Informacion",
-        "languages": ["ES", "EN"],
-        "oprHr": "1100-2300",
-        "frequency": "126.90 MHz",
-        "alternateFrequency": null,
-        "lateralLimitsRaw": "Desde 083450N/0772500W siguiendo límites con Panamá, Ecuador, Perú, Brasil y Venezuela. Ver AIP ENR 2.1.",
-        "verticalLimits": [
-          { "class": "G", "lower": "GND", "upper": "FL195" }
-        ],
-        "status": "needs_review",
-        "notes": "Polígono simplificado. Límites internacionales siguen fronteras oficiales no representadas aquí."
-      },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[
-          [-77.41667,  8.58056],
-          [-74.86333,  7.63056],
-          [-74.31833,  7.87889],
-          [-72.65472,  8.63056],
-          [-67.30000,  3.40000],
-          [-66.84556,  1.22417],
-          [-69.94167, -4.23333],
-          [-74.03750, -1.00000],
-          [-78.83333,  1.41667],
-          [-79.28000,  1.41389],
-          [-82.91639,  1.41389],
-          [-82.91639,  4.53056],
-          [-79.99667,  4.49722],
-          [-79.04667,  6.26389],
-          [-78.78000,  6.46389],
-          [-78.29667,  6.73056],
-          [-77.88000,  7.24722],
-          [-77.41667,  8.58056]
-        ]]
-      }
-    },
-
     {
       "type": "Feature",
       "properties": {
         "id": "UTA_BARRANQUILLA_N",
-        "name": "UTA Barranquilla - Sector Norte",
+        "name": "UTA Barranquilla Sector Norte",
         "type": "UTA",
-        "source": "AIP Colombia ENR 2.1",
         "atsUnit": "ACC BARRANQUILLA NORTE",
         "callsign": "Barranquilla Control Norte",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "128.10 MHz",
-        "alternateFrequency": "128.40 MHz",
-        "lateralLimitsRaw": "Desde 150000N/0772500W; 150000N/0735947W; 141950N/0735947W; 122950N/0712447W; 115950N/0705947W; 115150N/0711947W siguiendo el límite Frontera con Venezuela hasta 102656N/0725130W; 104748N/0745137W; 101233N/0753024W; 090724N/0772500W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "FL195", "upper": "UNL" }
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Límite Venezuela simplificado."
+        "oprHr": "H24",
+        "frequency": "128.40 / 129.10 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "FL 195",
+            "upper": "UNL"
+          }
+        ],
+        "notes": "Límite Venezuela simplificado"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-77.41667, 15.00000],
-          [-73.99639, 15.00000],
-          [-73.99639, 14.33056],
-          [-71.41306, 12.49722],
-          [-70.99639, 11.99722],
-          [-71.32972, 11.86389],
-          [-72.85833, 10.44889],
-          [-74.85972, 10.79667],
-          [-75.50667, 10.20917],
-          [-77.41667,  9.12333],
-          [-77.41667, 15.00000]
-        ]]
+        "coordinates": [
+          [
+            [
+              -77.41667,
+              15
+            ],
+            [
+              -73.99639,
+              15
+            ],
+            [
+              -73.99639,
+              14.33056
+            ],
+            [
+              -71.41306,
+              12.49722
+            ],
+            [
+              -70.99639,
+              11.99722
+            ],
+            [
+              -71.32972,
+              11.86389
+            ],
+            [
+              -72.85833,
+              10.44889
+            ],
+            [
+              -74.86028,
+              10.79667
+            ],
+            [
+              -75.50667,
+              10.20917
+            ],
+            [
+              -77.41667,
+              9.12333
+            ],
+            [
+              -77.41667,
+              15
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
         "id": "UTA_BARRANQUILLA_S",
-        "name": "UTA Barranquilla - Sector Sur",
+        "name": "UTA Barranquilla Sector Sur",
         "type": "UTA",
-        "source": "AIP Colombia ENR 2.1",
         "atsUnit": "ACC BARRANQUILLA SUR",
         "callsign": "Barranquilla Control Sur",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "124.20 MHz",
-        "alternateFrequency": "124.85 MHz",
-        "lateralLimitsRaw": "Desde 090724N/0772500W; 101233N/0753024W; 104748N/0745137W; 102656N/0725130W siguiendo el límite Frontera con Venezuela hasta 083750N/0723917W; 073750N/0745148W; 083450N/0772500W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "FL195", "upper": "UNL" }
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Límite Venezuela simplificado."
+        "oprHr": "H24",
+        "frequency": "124.20 / 124.85 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "FL 195",
+            "upper": "UNL"
+          }
+        ],
+        "notes": "Límite Venezuela simplificado"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-77.41667,  9.12333],
-          [-75.50667, 10.20917],
-          [-74.85972, 10.79667],
-          [-72.85833, 10.44889],
-          [-72.65472,  8.63056],
-          [-74.86333,  7.63056],
-          [-77.41667,  8.58056],
-          [-77.41667,  9.12333]
-        ]]
+        "coordinates": [
+          [
+            [
+              -77.41667,
+              9.12333
+            ],
+            [
+              -75.50667,
+              10.20917
+            ],
+            [
+              -74.86028,
+              10.79667
+            ],
+            [
+              -72.85833,
+              10.44889
+            ],
+            [
+              -72.65472,
+              8.63056
+            ],
+            [
+              -74.86333,
+              7.63056
+            ],
+            [
+              -77.41667,
+              8.58056
+            ],
+            [
+              -77.41667,
+              9.12333
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
         "id": "UTA_BOGOTA_NE",
-        "name": "UTA Bogotá - Sector NE",
+        "name": "UTA Bogota Sector NE",
         "type": "UTA",
-        "source": "AIP Colombia ENR 2.1",
         "atsUnit": "ACC/NE BOGOTA",
-        "callsign": "Bogotá Control NE",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "128.00 MHz",
-        "alternateFrequency": "128.60 MHz",
-        "lateralLimitsRaw": "Desde 075244N/0741906W; 083750N/0723917W siguiendo el límite Frontera con Venezuela hasta 032400N/0671900W; 040140N/0730053W; 044034N/0740609W; 044212N/0741831W; 044702N/0744603W; 052455N/0741921W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "FL245", "upper": "UNL" }
+        "callsign": "Bogotá control NE",
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Límite Venezuela simplificado."
+        "oprHr": "H24",
+        "frequency": "128.00 / 128.60 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "FL 245",
+            "upper": "UNL"
+          }
+        ],
+        "notes": "Límite Venezuela simplificado"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-74.31833,  7.87889],
-          [-72.65472,  8.63056],
-          [-67.31667,  3.40000],
-          [-73.01472,  4.02778],
-          [-74.10250,  4.67611],
-          [-74.30861,  4.70333],
-          [-74.76750,  4.78389],
-          [-74.32250,  5.41528],
-          [-74.31833,  7.87889]
-        ]]
+        "coordinates": [
+          [
+            [
+              -74.31833,
+              7.87889
+            ],
+            [
+              -72.65472,
+              8.63056
+            ],
+            [
+              -67.31667,
+              3.4
+            ],
+            [
+              -73.01472,
+              4.02778
+            ],
+            [
+              -74.1025,
+              4.67611
+            ],
+            [
+              -74.30861,
+              4.70333
+            ],
+            [
+              -74.7675,
+              4.78389
+            ],
+            [
+              -74.3225,
+              5.41528
+            ],
+            [
+              -74.31833,
+              7.87889
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
         "id": "UTA_BOGOTA_NW",
-        "name": "UTA Bogotá - Sector NW",
+        "name": "UTA Bogota Sector NW",
         "type": "UTA",
-        "source": "AIP Colombia ENR 2.1",
         "atsUnit": "ACC/NW BOGOTA",
-        "callsign": "Bogotá Control NW",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "123.70 MHz",
-        "alternateFrequency": "123.85 MHz",
-        "lateralLimitsRaw": "Desde 083450N/0772500W; 073750N/0745148W; 075244N/0741906W; 052455N/0741921W; 044702N/0744603W; 040524N/0761325W; 060722N/0770015W; 071450N/0775248W siguiendo el límite Frontera con Panama hasta para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "FL245", "upper": "UNL" }
+        "callsign": "Bogotá control NW",
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Límite Panamá simplificado."
+        "oprHr": "H24",
+        "frequency": "123.70 / 123.85 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "FL 245",
+            "upper": "UNL"
+          }
+        ],
+        "notes": "Límite Panamá simplificado"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-77.41667,  8.58056],
-          [-74.86333,  7.63056],
-          [-74.31833,  7.87889],
-          [-74.32250,  5.41528],
-          [-74.76750,  4.78389],
-          [-76.22361,  4.09000],
-          [-77.00417,  6.12278],
-          [-77.88000,  7.24722],
-          [-77.41667,  8.58056]
-        ]]
+        "coordinates": [
+          [
+            [
+              -77.41667,
+              8.58056
+            ],
+            [
+              -74.86333,
+              7.63056
+            ],
+            [
+              -74.31833,
+              7.87889
+            ],
+            [
+              -74.3225,
+              5.41528
+            ],
+            [
+              -74.7675,
+              4.78389
+            ],
+            [
+              -76.22361,
+              4.09
+            ],
+            [
+              -77.00417,
+              6.12278
+            ],
+            [
+              -77.88,
+              7.24722
+            ],
+            [
+              -77.41667,
+              8.58056
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
         "id": "UTA_BOGOTA_SE",
-        "name": "UTA Bogotá - Sector SE",
+        "name": "UTA Bogota Sector SE",
         "type": "UTA",
-        "source": "AIP Colombia ENR 2.1",
         "atsUnit": "ACC/SE BOGOTA",
-        "callsign": "Bogotá Control SE",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "128.80 MHz",
-        "alternateFrequency": "128.95 MHz",
-        "lateralLimitsRaw": "Desde 044034N/0740609W; 040140N/0730053W; 032400N/0671900W siguiendo el límite Frontera con Brasil hasta 041142S/0695626W siguiendo el límite Frontera con Peru hasta 014630S/0731300W; 004245N/0740636W; 044212N/0741831W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "FL245", "upper": "UNL" }
+        "callsign": "Bogotá control SE",
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Límites Brasil/Perú simplificados."
+        "oprHr": "H24",
+        "frequency": "128.80 / 128.95 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "FL 245",
+            "upper": "UNL"
+          }
+        ],
+        "notes": "Límites Venezuela, Brasil, Perú simplificados"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-74.10250,  4.67611],
-          [-73.01472,  4.02778],
-          [-67.31667,  3.40000],
-          [-69.94056, -4.19500],
-          [-73.21667, -1.77500],
-          [-74.11000,  0.71250],
-          [-74.30861,  4.70333],
-          [-74.10250,  4.67611]
-        ]]
+        "coordinates": [
+          [
+            [
+              -74.1025,
+              4.67611
+            ],
+            [
+              -73.01472,
+              4.02778
+            ],
+            [
+              -67.31667,
+              3.4
+            ],
+            [
+              -69.94056,
+              -4.195
+            ],
+            [
+              -73.21667,
+              -1.775
+            ],
+            [
+              -74.11,
+              0.7125
+            ],
+            [
+              -74.30861,
+              4.70333
+            ],
+            [
+              -74.1025,
+              4.67611
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
         "id": "UTA_BOGOTA_SW",
-        "name": "UTA Bogotá - Sector SW",
+        "name": "UTA Bogota Sector SW",
         "type": "UTA",
-        "source": "AIP Colombia ENR 2.1",
         "atsUnit": "ACC/SW BOGOTA",
-        "callsign": "Bogotá Control SW",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "125.10 MHz",
-        "alternateFrequency": "125.95 MHz",
-        "lateralLimitsRaw": "Desde 071450N/0775248W siguiendo Frontera Panamá/Ecuador/Perú. Ver AIP ENR 2.1.",
-        "verticalLimits": [
-          { "class": "A", "lower": "FL245", "upper": "UNL" }
+        "callsign": "Bogotá control SW",
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Múltiples fronteras internacionales simplificadas."
+        "oprHr": "H24",
+        "frequency": "125.10 / 125.95 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "FL 245",
+            "upper": "UNL"
+          }
+        ],
+        "notes": "Límites Perú, Ecuador simplificados"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-77.88000,  7.24722],
-          [-77.00417,  6.12278],
-          [-76.22361,  4.09000],
-          [-74.76750,  4.78389],
-          [-74.30861,  4.70333],
-          [-74.11000,  0.71250],
-          [-73.21667, -1.77500],
-          [-78.83333,  1.41667],
-          [-79.28000,  1.41389],
-          [-82.91639,  1.41389],
-          [-82.91639,  4.53056],
-          [-79.99667,  4.49722],
-          [-79.04667,  6.26389],
-          [-78.78000,  6.46389],
-          [-78.29667,  6.73056],
-          [-77.88000,  7.24722]
-        ]]
+        "coordinates": [
+          [
+            [
+              -77.88,
+              7.24722
+            ],
+            [
+              -77.00417,
+              6.12278
+            ],
+            [
+              -76.22361,
+              4.09
+            ],
+            [
+              -74.7675,
+              4.78389
+            ],
+            [
+              -74.30861,
+              4.70333
+            ],
+            [
+              -74.11,
+              0.7125
+            ],
+            [
+              -73.21667,
+              -1.775
+            ],
+            [
+              -74.025,
+              -1
+            ],
+            [
+              -78.83333,
+              1.41667
+            ],
+            [
+              -82.91361,
+              1.41389
+            ],
+            [
+              -82.91361,
+              4.53056
+            ],
+            [
+              -79.99667,
+              4.49722
+            ],
+            [
+              -79.04667,
+              6.26389
+            ],
+            [
+              -78.78,
+              6.46389
+            ],
+            [
+              -78.29667,
+              6.73056
+            ],
+            [
+              -77.88,
+              7.24722
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
-        "id": "TMA_PEREIRA",
-        "name": "TMA Pereira",
-        "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.11",
-        "atsUnit": "APP PEREIRA",
-        "callsign": "Pereira Aproximacion",
-        "languages": ["ES", "EN"],
-        "oprHr": "1000-0400",
-        "frequency": "120.00 MHz",
-        "alternateFrequency": "120.70 MHz",
-        "lateralLimitsRaw": "Desde 050828N/0761331W; 050828N/0752948W; 041557N/0752948W; 041557N/0761331W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL195" },
-          { "class": "D", "lower": "6500 FT",  "upper": "17500 FT" },
-          { "class": "G", "lower": "GND",       "upper": "6500 FT" }
+        "id": "FIR_BARRANQUILLA_UPPER",
+        "name": "FIR Barranquilla (FL195 / 18000 FT)",
+        "type": "FIR",
+        "atsUnit": "Barranquilla ACC",
+        "callsign": "Barranquilla Informacion",
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "generated_from_pdf"
+        "oprHr": "H24 (2300-1100)",
+        "frequency": "119.10 / 128.40 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "18000 FT",
+            "upper": "FL 195"
+          }
+        ],
+        "notes": "Arco 65NM horario centrado en DVOR BUQ"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-76.22528,  5.14111],
-          [-75.49667,  5.14111],
-          [-75.49667,  4.26583],
-          [-76.22528,  4.26583],
-          [-76.22528,  5.14111]
-        ]]
+        "coordinates": [
+          [
+            [
+              -72.98306,
+              10.26194
+            ],
+            [
+              -72.98343,
+              10.2612
+            ],
+            [
+              -73.19851,
+              10.39878
+            ],
+            [
+              -73.37559,
+              10.58147
+            ],
+            [
+              -73.50508,
+              10.79943
+            ],
+            [
+              -73.57986,
+              11.04089
+            ],
+            [
+              -73.59578,
+              11.29279
+            ],
+            [
+              -73.5518,
+              11.54146
+            ],
+            [
+              -73.45016,
+              11.77338
+            ],
+            [
+              -73.29628,
+              11.97592
+            ],
+            [
+              -73.09845,
+              12.13798
+            ],
+            [
+              -72.86743,
+              12.25071
+            ],
+            [
+              -72.61586,
+              12.30792
+            ],
+            [
+              -72.35755,
+              12.30646
+            ],
+            [
+              -72.10668,
+              12.24641
+            ],
+            [
+              -71.87702,
+              12.13107
+            ],
+            [
+              -71.68112,
+              11.96678
+            ],
+            [
+              -71.52965,
+              11.76252
+            ],
+            [
+              -72.96667,
+              10.375
+            ],
+            [
+              -72.98306,
+              10.26194
+            ]
+          ]
+        ]
       }
     },
-
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "FIR_BARRANQUILLA_LOWER",
+        "name": "FIR Barranquilla (17500 FT / 1500 FT)",
+        "type": "FIR",
+        "atsUnit": "FIR BARRANQUILLA",
+        "callsign": "Barranquilla Informacion",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "H24",
+        "frequency": "127.50 MHZ",
+        "verticalLimits": [
+          {
+            "class": "G",
+            "lower": "1500 FT",
+            "upper": "17500 FT"
+          }
+        ],
+        "notes": "Límite Venezuela simplificado"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -77.41667,
+              15
+            ],
+            [
+              -73.99639,
+              15
+            ],
+            [
+              -73.99639,
+              14.33056
+            ],
+            [
+              -71.41306,
+              12.49722
+            ],
+            [
+              -70.99639,
+              11.99722
+            ],
+            [
+              -71.32972,
+              11.86389
+            ],
+            [
+              -72.825,
+              9.14167
+            ],
+            [
+              -72.65472,
+              8.63056
+            ],
+            [
+              -74.86333,
+              7.63056
+            ],
+            [
+              -77.41667,
+              8.58056
+            ],
+            [
+              -77.41667,
+              15
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "FIR_BOGOTA",
+        "name": "FIR Bogota (FL195 / GND)",
+        "type": "FIR",
+        "atsUnit": "FIR BOGOTA",
+        "callsign": "Bogota Informacion",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "1100-2300",
+        "frequency": "126.75 / 126.90 MHZ",
+        "verticalLimits": [
+          {
+            "class": "G",
+            "lower": "GND",
+            "upper": "FL 195"
+          }
+        ],
+        "notes": "Límites Venezuela, Brasil, Perú, Ecuador, Panamá simplificados"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -77.41667,
+              8.58056
+            ],
+            [
+              -74.86333,
+              7.63056
+            ],
+            [
+              -74.31833,
+              7.87889
+            ],
+            [
+              -72.65472,
+              8.63056
+            ],
+            [
+              -67.3,
+              3.4
+            ],
+            [
+              -66.84556,
+              1.22417
+            ],
+            [
+              -69.94167,
+              -4.23333
+            ],
+            [
+              -74.0375,
+              -1
+            ],
+            [
+              -78.83333,
+              1.41667
+            ],
+            [
+              -79.28,
+              1.41389
+            ],
+            [
+              -82.91639,
+              1.41389
+            ],
+            [
+              -82.91639,
+              4.53056
+            ],
+            [
+              -79.99667,
+              4.49722
+            ],
+            [
+              -79.04667,
+              6.26389
+            ],
+            [
+              -78.78,
+              6.46389
+            ],
+            [
+              -78.29667,
+              6.73056
+            ],
+            [
+              -77.88,
+              7.24722
+            ],
+            [
+              -77.41667,
+              8.58056
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_ANDES_A",
+        "name": "TMA Andes (FL245 / 17500 FT)",
+        "type": "TMA",
+        "atsUnit": "APP ANDES",
+        "callsign": "Andes Aproximacion",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "1100-2300",
+        "frequency": "126.70 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 245"
+          }
+        ],
+        "notes": "Arcos 30NM y 20NM horarios centrados en DME IPI"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -78.16889,
+              0.92611
+            ],
+            [
+              -78.16897,
+              0.92612
+            ],
+            [
+              -78.13579,
+              1.05168
+            ],
+            [
+              -78.07138,
+              1.16445
+            ],
+            [
+              -77.98008,
+              1.25683
+            ],
+            [
+              -77.86807,
+              1.32258
+            ],
+            [
+              -77.74288,
+              1.35727
+            ],
+            [
+              -77.61299,
+              1.35855
+            ],
+            [
+              -77.48715,
+              1.32633
+            ],
+            [
+              -77.37386,
+              1.26279
+            ],
+            [
+              -77.28076,
+              1.17222
+            ],
+            [
+              -77.21415,
+              1.06074
+            ],
+            [
+              -77.1785,
+              0.93586
+            ],
+            [
+              -77.17623,
+              0.80601
+            ],
+            [
+              -77.20747,
+              0.67996
+            ],
+            [
+              -77.27013,
+              0.56621
+            ],
+            [
+              -77.35997,
+              0.47243
+            ],
+            [
+              -77.47093,
+              0.40495
+            ],
+            [
+              -77.50972,
+              0.57139
+            ],
+            [
+              -77.50984,
+              0.57161
+            ],
+            [
+              -77.5492,
+              0.55278
+            ],
+            [
+              -77.59069,
+              0.53926
+            ],
+            [
+              -77.63358,
+              0.53127
+            ],
+            [
+              -77.67715,
+              0.52895
+            ],
+            [
+              -77.72065,
+              0.53233
+            ],
+            [
+              -77.76333,
+              0.54138
+            ],
+            [
+              -77.80447,
+              0.55591
+            ],
+            [
+              -77.84335,
+              0.5757
+            ],
+            [
+              -77.87932,
+              0.6004
+            ],
+            [
+              -77.91176,
+              0.62958
+            ],
+            [
+              -77.9401,
+              0.66275
+            ],
+            [
+              -77.96387,
+              0.69933
+            ],
+            [
+              -77.98266,
+              0.73871
+            ],
+            [
+              -77.99614,
+              0.7802
+            ],
+            [
+              -78.00409,
+              0.8231
+            ],
+            [
+              -78.00637,
+              0.86667
+            ],
+            [
+              -78.16889,
+              0.92611
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_ANDES_D",
+        "name": "TMA Andes (17500 FT / 1500 FT)",
+        "type": "TMA",
+        "atsUnit": "APP ANDES",
+        "callsign": "Andes Aproximacion",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "1100-2300",
+        "frequency": "126.70 MHZ",
+        "verticalLimits": [
+          {
+            "class": "D",
+            "lower": "1500 FT",
+            "upper": "17500 FT"
+          }
+        ],
+        "notes": "Arcos 30NM y 20NM horarios centrados en DME IPI"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -78.16889,
+              0.92611
+            ],
+            [
+              -78.16897,
+              0.92612
+            ],
+            [
+              -78.13579,
+              1.05168
+            ],
+            [
+              -78.07138,
+              1.16445
+            ],
+            [
+              -77.98008,
+              1.25683
+            ],
+            [
+              -77.86807,
+              1.32258
+            ],
+            [
+              -77.74288,
+              1.35727
+            ],
+            [
+              -77.61299,
+              1.35855
+            ],
+            [
+              -77.48715,
+              1.32633
+            ],
+            [
+              -77.37386,
+              1.26279
+            ],
+            [
+              -77.28076,
+              1.17222
+            ],
+            [
+              -77.21415,
+              1.06074
+            ],
+            [
+              -77.1785,
+              0.93586
+            ],
+            [
+              -77.17623,
+              0.80601
+            ],
+            [
+              -77.20747,
+              0.67996
+            ],
+            [
+              -77.27013,
+              0.56621
+            ],
+            [
+              -77.35997,
+              0.47243
+            ],
+            [
+              -77.47093,
+              0.40495
+            ],
+            [
+              -77.50972,
+              0.57139
+            ],
+            [
+              -77.50984,
+              0.57161
+            ],
+            [
+              -77.5492,
+              0.55278
+            ],
+            [
+              -77.59069,
+              0.53926
+            ],
+            [
+              -77.63358,
+              0.53127
+            ],
+            [
+              -77.67715,
+              0.52895
+            ],
+            [
+              -77.72065,
+              0.53233
+            ],
+            [
+              -77.76333,
+              0.54138
+            ],
+            [
+              -77.80447,
+              0.55591
+            ],
+            [
+              -77.84335,
+              0.5757
+            ],
+            [
+              -77.87932,
+              0.6004
+            ],
+            [
+              -77.91176,
+              0.62958
+            ],
+            [
+              -77.9401,
+              0.66275
+            ],
+            [
+              -77.96387,
+              0.69933
+            ],
+            [
+              -77.98266,
+              0.73871
+            ],
+            [
+              -77.99614,
+              0.7802
+            ],
+            [
+              -78.00409,
+              0.8231
+            ],
+            [
+              -78.00637,
+              0.86667
+            ],
+            [
+              -78.16889,
+              0.92611
+            ]
+          ]
+        ]
+      }
+    },
     {
       "type": "Feature",
       "properties": {
         "id": "TMA_BARRANQUILLA_N",
-        "name": "TMA Barranquilla - Sector Norte",
+        "name": "TMA Barranquilla Sector Norte",
         "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.3-1 SKR23",
         "atsUnit": "APP BARRANQUILLA NORTE",
-        "callsign": "Barranquilla Aproximacion Norte",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "119.10 MHz",
-        "alternateFrequency": "120.10 MHz",
-        "lateralLimitsRaw": "Desde 114104N/0752427W; 113350N/0740348W; 100550N/0740048W; 092949N/0743755W; 093012N/0762236W; 104430N/0762158W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL245" },
-          { "class": "C", "lower": "9500 FT",  "upper": "17500 FT" },
-          { "class": "D", "lower": "1500 FT",  "upper": "9500 FT" }
+        "callsign": "Barranquilla aproximacion Norte",
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "generated_from_pdf"
+        "oprHr": "H24",
+        "frequency": "119.10 / 120.10 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 245"
+          },
+          {
+            "class": "C",
+            "lower": "9500 FT",
+            "upper": "17500 FT"
+          },
+          {
+            "class": "D",
+            "lower": "1500 FT",
+            "upper": "9500 FT"
+          }
+        ],
+        "notes": null
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-75.40750, 11.68444],
-          [-74.06333, 11.56389],
-          [-74.01333, 10.09722],
-          [-74.63194,  9.49694],
-          [-76.37667,  9.50333],
-          [-76.36611, 10.74167],
-          [-75.40750, 11.68444]
-        ]]
+        "coordinates": [
+          [
+            [
+              -75.4075,
+              11.68444
+            ],
+            [
+              -74.06333,
+              11.56389
+            ],
+            [
+              -74.01333,
+              10.09722
+            ],
+            [
+              -74.63194,
+              9.49694
+            ],
+            [
+              -76.37667,
+              9.50333
+            ],
+            [
+              -76.36611,
+              10.74167
+            ],
+            [
+              -75.4075,
+              11.68444
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
         "id": "TMA_BARRANQUILLA_S",
-        "name": "TMA Barranquilla - Sector Sur",
+        "name": "TMA Barranquilla Sector Sur",
         "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.3-1 SKR24",
         "atsUnit": "APP BARRANQUILLA SUR",
-        "callsign": "Barranquilla Aproximacion Sur",
-        "languages": ["ES", "EN"],
+        "callsign": "Barranquilla aproximacion Sur",
+        "languages": [
+          "ES",
+          "EN"
+        ],
         "oprHr": "H24",
-        "frequency": "119.75 MHz",
-        "alternateFrequency": "120.75 MHz",
-        "lateralLimitsRaw": "Desde 093012N/0762236W; 092949N/0743755W; 075244N/0741906W; 073754N/0745140W; 081151N/0762243W; para el punto de origen",
+        "frequency": "119.75 / 120.75 MHZ",
         "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL245" },
-          { "class": "C", "lower": "9500 FT",  "upper": "17500 FT" },
-          { "class": "D", "lower": "1500 FT",  "upper": "9500 FT" }
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 245"
+          },
+          {
+            "class": "C",
+            "lower": "9500 FT",
+            "upper": "17500 FT"
+          },
+          {
+            "class": "D",
+            "lower": "1500 FT",
+            "upper": "9500 FT"
+          }
         ],
-        "status": "generated_from_pdf"
+        "notes": null
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-76.37667,  9.50333],
-          [-74.63194,  9.49694],
-          [-74.31833,  7.87889],
-          [-74.86111,  7.63167],
-          [-76.37861,  8.19750],
-          [-76.37667,  9.50333]
-        ]]
+        "coordinates": [
+          [
+            [
+              -76.37667,
+              9.50333
+            ],
+            [
+              -74.63194,
+              9.49694
+            ],
+            [
+              -74.31833,
+              7.87889
+            ],
+            [
+              -74.86111,
+              7.63167
+            ],
+            [
+              -76.37861,
+              8.1975
+            ],
+            [
+              -76.37667,
+              9.50333
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
-        "id": "TMA_PALANQUERO",
-        "name": "TMA Palanquero",
+        "id": "TMA_BOGOTA_LLEGADAS_A",
+        "name": "Bogota Llegadas A",
         "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "atsUnit": "PALANQUERO CONTROL",
-        "callsign": "Control Palanquero",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "127.90 MHz",
-        "alternateFrequency": null,
-        "lateralLimitsRaw": "Desde 062938N/0743442W; 065338N/0735600W; 052750N/0741148W; 051514N/0744424W; 052326N/0745230W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "D", "lower": "GND",      "upper": "UNL" },
-          { "class": "A", "lower": "FL245",     "upper": "UNL" },
-          { "class": "D", "lower": "5000 FT",   "upper": "FL245" },
-          { "class": "G", "lower": "GND",       "upper": "5000 FT" }
-        ],
-        "status": "generated_from_pdf"
-      },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[
-          [-74.57833,  6.49389],
-          [-73.93333,  6.89389],
-          [-74.19667,  5.46389],
-          [-74.74000,  5.25389],
-          [-74.87500,  5.39056],
-          [-74.57833,  6.49389]
-        ]]
-      }
-    },
-
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "TMA_AMAZONICA_1",
-        "name": "TMA Amazónica - Polígono 1",
-        "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.1.1",
-        "atsUnit": "AMAZONAS APP",
-        "callsign": "Leticia Aproximación",
-        "languages": ["ES", "EN"],
-        "oprHr": "1100-0300",
-        "frequency": "119.10 MHz",
-        "alternateFrequency": "120.10 MHz",
-        "lateralLimitsRaw": "Desde 041142S/0695626W; 041017S/0704629W por un arco de sentido horario de 50NM de radio centrado en 041142S/0695626W (DVOR LET); 032224S/0694646W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL195" },
-          { "class": "D", "lower": "1500 FT",  "upper": "17500 FT" }
-        ],
-        "status": "needs_review",
-        "notes": "Arco 50NM DVOR LET pendiente de cálculo preciso."
-      },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[
-          [-69.94056, -4.19500],
-          [-70.77472, -4.17139],
-          [-70.53000, -3.60000],
-          [-69.94056, -3.36000],
-          [-69.77944, -3.37333],
-          [-69.94056, -4.19500]
-        ]]
-      }
-    },
-
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "TMA_AMAZONICA_2",
-        "name": "TMA Amazónica - Polígono 2",
-        "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.1.1",
-        "atsUnit": "AMAZONAS APP",
-        "callsign": "Leticia Aproximación",
-        "languages": ["ES", "EN"],
-        "oprHr": "1100-0300",
-        "frequency": "119.10 MHz",
-        "alternateFrequency": "120.10 MHz",
-        "lateralLimitsRaw": "Desde 041142S/0695626W; 034627S/0695028W por un arco de sentido horario de 26NM de radio centrado en 041142S/0695626W (DVOR LET); 040912S/0702210W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "D", "lower": "3500 FT",  "upper": "14500 FT" }
-        ],
-        "status": "needs_review",
-        "notes": "Arco 26NM DVOR LET pendiente de cálculo preciso."
-      },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[
-          [-69.94056, -4.19500],
-          [-69.95028, -3.47722],
-          [-70.36833, -4.15333],
-          [-69.94056, -4.19500]
-        ]]
-      }
-    },
-
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "TMA_ANDES",
-        "name": "TMA Andes",
-        "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.2.1",
-        "atsUnit": "APP ANDES",
-        "callsign": "Andes Aproximacion",
-        "languages": ["ES", "EN"],
-        "oprHr": "1100-2300",
-        "frequency": "120.10 MHz",
-        "alternateFrequency": null,
-        "lateralLimitsRaw": "Desde 005534N/0781008W por arco horario 30NM centrado en 005144N/0774023W (DME IPI); 002417N/0772815W; 003417N/0773035W por arco horario 20NM centrado en 005144N/0774023W (DME IPI); 005200N/0780023W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL245" },
-          { "class": "D", "lower": "1500 FT",  "upper": "17500 FT" }
-        ],
-        "status": "needs_review",
-        "notes": "Arcos 30NM y 20NM DME IPI pendientes de cálculo preciso."
-      },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[
-          [-78.10083,  0.09278],
-          [-77.26917,  0.04056],
-          [-77.45917,  0.55917],
-          [-78.00389,  0.86667],
-          [-78.10083,  0.09278]
-        ]]
-      }
-    },
-
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "TMA_BOGOTA",
-        "name": "TMA Bogotá (aproximación general)",
-        "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.4-1",
         "atsUnit": "APP CENTRAL",
-        "callsign": "Bogotá Radar Llegadas Bogotá",
-        "languages": ["ES", "EN"],
-        "oprHr": "0501-1059 / H24",
-        "frequency": "119.50 MHz",
-        "alternateFrequency": "120.30 MHz",
-        "lateralLimitsRaw": "TMA Bogotá se divide en cuatro sectores con múltiples sub-áreas. Ver AIP ENR 6.4-1.",
-        "verticalLimits": [
-          { "class": "A", "lower": "11500 FT", "upper": "FL245" }
+        "callsign": "Bogota Radar Llegadas Bogota",
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Polígono envolvente aproximado. Múltiples sub-sectores con arcos."
+        "oprHr": "0501-1059",
+        "frequency": "119.50 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "11500 FT",
+            "upper": "18000 FT"
+          }
+        ],
+        "notes": null
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-76.22528,  5.35556],
-          [-74.23333,  5.35556],
-          [-74.16028,  4.71194],
-          [-74.23333,  4.71194],
-          [-74.75833,  4.71194],
-          [-74.87500,  4.89667],
-          [-75.23556,  5.07500],
-          [-76.22528,  5.07500],
-          [-76.22528,  5.35556]
-        ]]
+        "coordinates": [
+          [
+            [
+              -74.47722,
+              5.35556
+            ],
+            [
+              -74.4,
+              5.13333
+            ],
+            [
+              -74.23333,
+              5.075
+            ],
+            [
+              -74.16028,
+              4.71194
+            ],
+            [
+              -74.51028,
+              4.75194
+            ],
+            [
+              -74.69056,
+              4.81167
+            ],
+            [
+              -74.7,
+              4.85
+            ],
+            [
+              -74.9,
+              4.95333
+            ],
+            [
+              -74.82333,
+              5.14639
+            ],
+            [
+              -74.75833,
+              5.21583
+            ],
+            [
+              -74.74,
+              5.25389
+            ],
+            [
+              -74.47722,
+              5.35556
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
-        "id": "TMA_BUCARAMANGA_1",
-        "name": "TMA Bucaramanga - Polígono 1",
+        "id": "TMA_BOGOTA_LLEGADAS_B",
+        "name": "Bogota Llegadas B",
         "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.5.1",
-        "atsUnit": "APP BUCARAMANGA",
-        "callsign": "Bucaramanga Aproximacion",
-        "languages": ["ES", "EN"],
-        "oprHr": "1100-0500",
-        "frequency": "119.00 MHz",
-        "alternateFrequency": null,
-        "lateralLimitsRaw": "Desde 082204N/0731430W; 073018N/0724844W; 061254N/0724404W; 060742N/0724501W; 054609N/0732506W por arco anti-horario 30NM DVOR BUV; 055804N/0740614W; 065338N/0735600W; 062938N/0743442W; 070115N/0742611W; 070812N/0742558W; 075244N/0741906W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL245" },
-          { "class": "D", "lower": "1500 FT",  "upper": "17500 FT" }
+        "atsUnit": "APP CENTRAL",
+        "callsign": "Bogota Radar Llegadas Bogota",
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Arco 30NM DVOR BUV pendiente de cálculo preciso."
+        "oprHr": "0501-1059",
+        "frequency": "119.50 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "11500 FT",
+            "upper": "17000 FT"
+          }
+        ],
+        "notes": null
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-73.24167,  8.36778],
-          [-72.81222,  7.50500],
-          [-72.73444,  6.21500],
-          [-72.74194,  6.11944],
-          [-73.41833,  5.76917],
-          [-74.10389,  5.96778],
-          [-73.93333,  6.89389],
-          [-74.57833,  6.49389],
-          [-74.43639,  7.01944],
-          [-74.43278,  7.02111],
-          [-74.31833,  7.87889],
-          [-73.24167,  8.36778]
-        ]]
+        "coordinates": [
+          [
+            [
+              -74.47722,
+              5.35556
+            ],
+            [
+              -74.36139,
+              5.40028
+            ],
+            [
+              -74.26667,
+              5.23667
+            ],
+            [
+              -74.23333,
+              5.075
+            ],
+            [
+              -74.4,
+              5.13333
+            ],
+            [
+              -74.47722,
+              5.35556
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
-        "id": "TMA_BUCARAMANGA_2",
-        "name": "TMA Bucaramanga - Polígono 2",
+        "id": "TMA_BOGOTA_LLEGADAS_C",
+        "name": "Bogota Llegadas C",
         "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.5.1",
-        "atsUnit": "APP BUCARAMANGA",
-        "callsign": "Bucaramanga Aproximacion",
-        "languages": ["ES", "EN"],
-        "oprHr": "1100-0500",
-        "frequency": "119.00 MHz",
-        "alternateFrequency": null,
-        "lateralLimitsRaw": "Desde 060742N/0724501W; 053521N/0725055W; 051901N/0732327W por arco anti-horario 40NM DVOR ZIP; 053259N/0733504W; 054609N/0732506W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL245" },
-          { "class": "D", "lower": "14500 FT", "upper": "17500 FT" },
-          { "class": "G", "lower": "1500 FT",  "upper": "14500 FT" }
+        "atsUnit": "APP CENTRAL",
+        "callsign": "Bogota Radar Llegadas Bogota",
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Arco 40NM DVOR ZIP pendiente de cálculo preciso."
+        "oprHr": "0501-1059",
+        "frequency": "119.50 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "11500 FT",
+            "upper": "16000 FT"
+          }
+        ],
+        "notes": null
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-72.74194,  6.11944],
-          [-72.84861,  5.58917],
-          [-73.39083,  5.31694],
-          [-73.58444,  5.54972],
-          [-73.41833,  5.76917],
-          [-72.74194,  6.11944]
-        ]]
+        "coordinates": [
+          [
+            [
+              -74.9,
+              4.95333
+            ],
+            [
+              -74.7,
+              4.85
+            ],
+            [
+              -74.69056,
+              4.81167
+            ],
+            [
+              -74.875,
+              4.89667
+            ],
+            [
+              -74.9,
+              4.95333
+            ]
+          ]
+        ]
       }
     },
-
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_BOGOTA_TN_A",
+        "name": "Bogota Terminal Norte A",
+        "type": "TMA",
+        "atsUnit": "Terminal Norte Bogota",
+        "callsign": "CTR ZONA 4 - BOGOTA TERMINAL NORTE",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "0000-0500 1100-2300",
+        "frequency": "120.30 / 121.30 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "11500 FT",
+            "upper": "FL 245"
+          }
+        ],
+        "notes": "Arcos 30NM (BUV) y 40/25NM (ZIP)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -74.10389,
+              5.96778
+            ],
+            [
+              -74.10422,
+              5.96837
+            ],
+            [
+              -74.05965,
+              5.99041
+            ],
+            [
+              -74.01309,
+              6.00796
+            ],
+            [
+              -73.96502,
+              6.02083
+            ],
+            [
+              -73.9159,
+              6.02891
+            ],
+            [
+              -73.86622,
+              6.03211
+            ],
+            [
+              -73.81647,
+              6.03041
+            ],
+            [
+              -73.76712,
+              6.02381
+            ],
+            [
+              -73.71868,
+              6.01239
+            ],
+            [
+              -73.67161,
+              5.99626
+            ],
+            [
+              -73.62639,
+              5.97557
+            ],
+            [
+              -73.58344,
+              5.95054
+            ],
+            [
+              -73.5432,
+              5.92139
+            ],
+            [
+              -73.50606,
+              5.88843
+            ],
+            [
+              -73.47238,
+              5.85198
+            ],
+            [
+              -73.4425,
+              5.81238
+            ],
+            [
+              -73.4167,
+              5.77004
+            ],
+            [
+              -73.58444,
+              5.54972
+            ],
+            [
+              -73.58383,
+              5.55053
+            ],
+            [
+              -73.55364,
+              5.52645
+            ],
+            [
+              -73.52489,
+              5.50068
+            ],
+            [
+              -73.49769,
+              5.4733
+            ],
+            [
+              -73.47213,
+              5.44439
+            ],
+            [
+              -73.44829,
+              5.41407
+            ],
+            [
+              -73.42625,
+              5.38243
+            ],
+            [
+              -73.40609,
+              5.34957
+            ],
+            [
+              -73.38786,
+              5.31561
+            ],
+            [
+              -73.37164,
+              5.28065
+            ],
+            [
+              -73.35748,
+              5.24482
+            ],
+            [
+              -73.34541,
+              5.20824
+            ],
+            [
+              -73.33549,
+              5.17102
+            ],
+            [
+              -73.32774,
+              5.13329
+            ],
+            [
+              -73.3222,
+              5.09518
+            ],
+            [
+              -73.31887,
+              5.05682
+            ],
+            [
+              -73.31778,
+              5.01833
+            ],
+            [
+              -73.56861,
+              5.01833
+            ],
+            [
+              -73.56871,
+              5.01833
+            ],
+            [
+              -73.56989,
+              4.98717
+            ],
+            [
+              -73.57341,
+              4.95619
+            ],
+            [
+              -73.57924,
+              4.92555
+            ],
+            [
+              -73.58736,
+              4.89544
+            ],
+            [
+              -73.59771,
+              4.86601
+            ],
+            [
+              -73.61024,
+              4.83744
+            ],
+            [
+              -73.62488,
+              4.80988
+            ],
+            [
+              -73.64154,
+              4.78349
+            ],
+            [
+              -73.66014,
+              4.75842
+            ],
+            [
+              -73.68057,
+              4.7348
+            ],
+            [
+              -73.70271,
+              4.71277
+            ],
+            [
+              -73.72644,
+              4.69245
+            ],
+            [
+              -73.75162,
+              4.67395
+            ],
+            [
+              -73.77813,
+              4.65738
+            ],
+            [
+              -73.8058,
+              4.64284
+            ],
+            [
+              -73.83448,
+              4.63039
+            ],
+            [
+              -73.71139,
+              4.495
+            ],
+            [
+              -74.10556,
+              4.67111
+            ],
+            [
+              -74.16028,
+              4.71194
+            ],
+            [
+              -74.26667,
+              5.23667
+            ],
+            [
+              -74.36139,
+              5.40028
+            ],
+            [
+              -74.19667,
+              5.46389
+            ],
+            [
+              -74.10389,
+              5.96778
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_BOGOTA_TN_B",
+        "name": "Bogota Terminal Norte B",
+        "type": "TMA",
+        "atsUnit": "Terminal Norte Bogota",
+        "callsign": "CTR ZONA 4 - BOGOTA TERMINAL NORTE",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "H24",
+        "frequency": "120.30 / 121.30 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 245"
+          }
+        ],
+        "notes": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -74.47722,
+              5.35556
+            ],
+            [
+              -74.36139,
+              5.40028
+            ],
+            [
+              -74.26667,
+              5.23667
+            ],
+            [
+              -74.23333,
+              5.075
+            ],
+            [
+              -74.4,
+              5.13333
+            ],
+            [
+              -74.47722,
+              5.35556
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_BOGOTA_TN_D",
+        "name": "Bogota Terminal Norte D",
+        "type": "TMA",
+        "atsUnit": "Terminal Norte Bogota",
+        "callsign": "CTR ZONA 4 - BOGOTA TERMINAL NORTE",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "H24",
+        "frequency": "120.30 / 121.30 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "18500 FT",
+            "upper": "FL 245"
+          }
+        ],
+        "notes": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -74.47722,
+              5.35556
+            ],
+            [
+              -74.4,
+              5.13333
+            ],
+            [
+              -74.23333,
+              5.075
+            ],
+            [
+              -74.19333,
+              4.87611
+            ],
+            [
+              -74.16028,
+              4.71194
+            ],
+            [
+              -74.51028,
+              4.75194
+            ],
+            [
+              -74.74,
+              5.25389
+            ],
+            [
+              -74.47722,
+              5.35556
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_BOGOTA_TO_A",
+        "name": "Bogota Terminal Oeste A",
+        "type": "TMA",
+        "atsUnit": "Terminal Oeste Bogota",
+        "callsign": "Radar Bogota Terminal Oeste",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "H24",
+        "frequency": "119.95 / 120.95 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "11500 FT",
+            "upper": "FL 245"
+          }
+        ],
+        "notes": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -74.97778,
+              6.00056
+            ],
+            [
+              -74.71111,
+              6.00056
+            ],
+            [
+              -74.875,
+              5.39056
+            ],
+            [
+              -74.74,
+              5.25389
+            ],
+            [
+              -74.75833,
+              5.21583
+            ],
+            [
+              -74.82333,
+              5.14639
+            ],
+            [
+              -74.9,
+              4.95333
+            ],
+            [
+              -74.875,
+              4.89667
+            ],
+            [
+              -74.69056,
+              4.81167
+            ],
+            [
+              -74.51028,
+              4.75194
+            ],
+            [
+              -74.65139,
+              4.58639
+            ],
+            [
+              -75.1,
+              4.5
+            ],
+            [
+              -75.49667,
+              4.5475
+            ],
+            [
+              -75.49667,
+              5.14111
+            ],
+            [
+              -75.1875,
+              5.15556
+            ],
+            [
+              -75.18722,
+              5.28194
+            ],
+            [
+              -75.1725,
+              5.59611
+            ],
+            [
+              -74.97778,
+              6.00056
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_BOGOTA_TO_B",
+        "name": "Bogota Terminal Oeste B",
+        "type": "TMA",
+        "atsUnit": "Terminal Oeste Bogota",
+        "callsign": "Radar Bogota Terminal Oeste",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "H24",
+        "frequency": "119.95 / 120.95 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "18500 FT",
+            "upper": "FL 245"
+          }
+        ],
+        "notes": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -75.1,
+              4.5
+            ],
+            [
+              -75.49667,
+              4.29667
+            ],
+            [
+              -75.49667,
+              4.5475
+            ],
+            [
+              -75.1,
+              4.5
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_BOGOTA_TO_C",
+        "name": "Bogota Terminal Oeste C",
+        "type": "TMA",
+        "atsUnit": "Terminal Norte Bogota",
+        "callsign": "CTR ZONA 4 - BOGOTA TERMINAL NORTE",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "H24",
+        "frequency": "120.30 / 121.30 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "16500 FT",
+            "upper": "FL 245"
+          }
+        ],
+        "notes": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -74.9,
+              4.95333
+            ],
+            [
+              -74.7,
+              4.85
+            ],
+            [
+              -74.69056,
+              4.81167
+            ],
+            [
+              -74.875,
+              4.89667
+            ],
+            [
+              -74.9,
+              4.95333
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_BOGOTA_TO_D",
+        "name": "Bogota Terminal Oeste D",
+        "type": "TMA",
+        "atsUnit": "Terminal Oeste Bogota",
+        "callsign": "Radar Bogota Terminal Oeste",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "H24",
+        "frequency": "119.95 / 120.95 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 245"
+          }
+        ],
+        "notes": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -74.65139,
+              4.58639
+            ],
+            [
+              -74.76667,
+              4.44333
+            ],
+            [
+              -74.86667,
+              4.43333
+            ],
+            [
+              -75.1,
+              4.5
+            ],
+            [
+              -74.65139,
+              4.58639
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_BOGOTA_TO_E",
+        "name": "Bogota Terminal Oeste E",
+        "type": "TMA",
+        "atsUnit": "Terminal Oeste Bogota",
+        "callsign": "Radar Bogota Terminal Oeste",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "H24",
+        "frequency": "119.95 / 120.95 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "18500 FT",
+            "upper": "FL 245"
+          }
+        ],
+        "notes": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -74.74,
+              5.25389
+            ],
+            [
+              -74.75833,
+              5.21583
+            ],
+            [
+              -74.82333,
+              5.14639
+            ],
+            [
+              -74.9,
+              4.95333
+            ],
+            [
+              -74.7,
+              4.85
+            ],
+            [
+              -74.69056,
+              4.81167
+            ],
+            [
+              -74.51028,
+              4.75194
+            ],
+            [
+              -74.74,
+              5.25389
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_BOGOTA_TS_A",
+        "name": "Bogota Terminal Sur A",
+        "type": "TMA",
+        "atsUnit": "Terminal Sur Bogota",
+        "callsign": "CTR ZONA 3 - BOGOTA TERMINAL SUR",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "H24",
+        "frequency": "119.65 / 120.65 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "11500 FT",
+            "upper": "FL 245"
+          }
+        ],
+        "notes": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -74.51028,
+              4.75194
+            ],
+            [
+              -74.16028,
+              4.71194
+            ],
+            [
+              -74.10556,
+              4.67111
+            ],
+            [
+              -73.94806,
+              4.60139
+            ],
+            [
+              -73.94806,
+              3.86861
+            ],
+            [
+              -75.49667,
+              3.86861
+            ],
+            [
+              -75.49667,
+              4.29667
+            ],
+            [
+              -75.1,
+              4.5
+            ],
+            [
+              -74.86667,
+              4.43333
+            ],
+            [
+              -74.76667,
+              4.44333
+            ],
+            [
+              -74.66667,
+              4.58333
+            ],
+            [
+              -74.51028,
+              4.75194
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_BOGOTA_TS_B",
+        "name": "Bogota Terminal Sur B",
+        "type": "TMA",
+        "atsUnit": "Terminal Sur Bogota",
+        "callsign": "CTR ZONA 3 - BOGOTA TERMINAL SUR",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "H24",
+        "frequency": "119.65 / 120.65 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "11500 FT",
+            "upper": "18000 FT"
+          }
+        ],
+        "notes": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -75.1,
+              4.5
+            ],
+            [
+              -75.49667,
+              4.29667
+            ],
+            [
+              -75.49667,
+              4.5475
+            ],
+            [
+              -75.1,
+              4.5
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_BOGOTA_TS_C",
+        "name": "Bogota Terminal Sur C",
+        "type": "TMA",
+        "atsUnit": "Terminal Sur Bogota",
+        "callsign": "CTR ZONA 3 - BOGOTA TERMINAL SUR",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "H24",
+        "frequency": "119.65 / 120.65 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "14500 FT",
+            "upper": "FL 245"
+          }
+        ],
+        "notes": "Arco 25NM horario centrado en DVOR ZIP"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -73.94806,
+              4.03278
+            ],
+            [
+              -73.66833,
+              4.23944
+            ],
+            [
+              -73.66861,
+              4.44972
+            ],
+            [
+              -73.83389,
+              4.62889
+            ],
+            [
+              -73.83435,
+              4.63007
+            ],
+            [
+              -73.8412,
+              4.62746
+            ],
+            [
+              -73.8481,
+              4.62498
+            ],
+            [
+              -73.85504,
+              4.62262
+            ],
+            [
+              -73.86202,
+              4.62038
+            ],
+            [
+              -73.86904,
+              4.61826
+            ],
+            [
+              -73.8761,
+              4.61627
+            ],
+            [
+              -73.88319,
+              4.6144
+            ],
+            [
+              -73.89031,
+              4.61265
+            ],
+            [
+              -73.89746,
+              4.61103
+            ],
+            [
+              -73.90463,
+              4.60953
+            ],
+            [
+              -73.91184,
+              4.60816
+            ],
+            [
+              -73.91906,
+              4.60692
+            ],
+            [
+              -73.92631,
+              4.6058
+            ],
+            [
+              -73.93357,
+              4.60481
+            ],
+            [
+              -73.94086,
+              4.60394
+            ],
+            [
+              -73.94815,
+              4.60321
+            ],
+            [
+              -73.94806,
+              4.03278
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_BOGOTA_TS_D",
+        "name": "Bogota Terminal Sur D",
+        "type": "TMA",
+        "atsUnit": "Terminal Sur Bogota",
+        "callsign": "CTR ZONA 3 - BOGOTA TERMINAL SUR",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "H24",
+        "frequency": "119.65 / 120.65 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "11500 FT",
+            "upper": "17000 FT"
+          }
+        ],
+        "notes": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -74.65139,
+              4.58639
+            ],
+            [
+              -74.76667,
+              4.44333
+            ],
+            [
+              -74.86667,
+              4.43333
+            ],
+            [
+              -75.1,
+              4.5
+            ],
+            [
+              -74.65139,
+              4.58639
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_BUCARAMANGA_P1",
+        "name": "TMA Bucaramanga Polígono 1",
+        "type": "TMA",
+        "atsUnit": "APP BUCARAMANGA",
+        "callsign": "Bucaramanga Aproximacion",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "1100-0500",
+        "frequency": "119.00 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 245"
+          },
+          {
+            "class": "D",
+            "lower": "1500 FT",
+            "upper": "17500 FT"
+          }
+        ],
+        "notes": "Arco 30NM anti-horario centrado en DVOR BUV (053156N/0735131W)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -73.24167,
+              8.36778
+            ],
+            [
+              -72.81222,
+              7.505
+            ],
+            [
+              -72.64778,
+              7.505
+            ],
+            [
+              -72.73444,
+              6.215
+            ],
+            [
+              -72.75028,
+              6.12833
+            ],
+            [
+              -73.41833,
+              5.76917
+            ],
+            [
+              -73.4167,
+              5.77004
+            ],
+            [
+              -73.4425,
+              5.81238
+            ],
+            [
+              -73.47238,
+              5.85198
+            ],
+            [
+              -73.50606,
+              5.88843
+            ],
+            [
+              -73.5432,
+              5.92139
+            ],
+            [
+              -73.58344,
+              5.95054
+            ],
+            [
+              -73.62639,
+              5.97557
+            ],
+            [
+              -73.67161,
+              5.99626
+            ],
+            [
+              -73.71868,
+              6.01239
+            ],
+            [
+              -73.76712,
+              6.02381
+            ],
+            [
+              -73.81647,
+              6.03041
+            ],
+            [
+              -73.86622,
+              6.03211
+            ],
+            [
+              -73.9159,
+              6.02891
+            ],
+            [
+              -73.96502,
+              6.02083
+            ],
+            [
+              -74.01309,
+              6.00796
+            ],
+            [
+              -74.05965,
+              5.99041
+            ],
+            [
+              -74.10422,
+              5.96837
+            ],
+            [
+              -73.93333,
+              6.89389
+            ],
+            [
+              -74.57833,
+              6.49389
+            ],
+            [
+              -74.43639,
+              7.02083
+            ],
+            [
+              -74.31833,
+              7.87889
+            ],
+            [
+              -73.24167,
+              8.36778
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_BUCARAMANGA_P2",
+        "name": "TMA Bucaramanga Polígono 2",
+        "type": "TMA",
+        "atsUnit": "APP BUCARAMANGA",
+        "callsign": "Bucaramanga Aproximacion",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "1100-0500",
+        "frequency": "119.00 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 245"
+          },
+          {
+            "class": "D",
+            "lower": "14500 FT",
+            "upper": "17500 FT"
+          },
+          {
+            "class": "G",
+            "lower": "1500 FT",
+            "upper": "14500 FT"
+          }
+        ],
+        "notes": "Arco 40NM anti-horario centrado en DVOR ZIP (050106N/0735913W)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -72.75028,
+              6.12833
+            ],
+            [
+              -72.84861,
+              5.58917
+            ],
+            [
+              -73.39083,
+              5.31694
+            ],
+            [
+              -73.389,
+              5.31786
+            ],
+            [
+              -73.39785,
+              5.3348
+            ],
+            [
+              -73.40719,
+              5.35148
+            ],
+            [
+              -73.41701,
+              5.36789
+            ],
+            [
+              -73.42729,
+              5.38401
+            ],
+            [
+              -73.43804,
+              5.39983
+            ],
+            [
+              -73.44923,
+              5.41534
+            ],
+            [
+              -73.46087,
+              5.43052
+            ],
+            [
+              -73.47294,
+              5.44536
+            ],
+            [
+              -73.48544,
+              5.45986
+            ],
+            [
+              -73.49834,
+              5.47399
+            ],
+            [
+              -73.51165,
+              5.48774
+            ],
+            [
+              -73.52535,
+              5.50111
+            ],
+            [
+              -73.53943,
+              5.51409
+            ],
+            [
+              -73.55388,
+              5.52665
+            ],
+            [
+              -73.56868,
+              5.5388
+            ],
+            [
+              -73.58383,
+              5.55053
+            ],
+            [
+              -73.41833,
+              5.76917
+            ],
+            [
+              -72.75028,
+              6.12833
+            ]
+          ]
+        ]
+      }
+    },
     {
       "type": "Feature",
       "properties": {
         "id": "TMA_CALI",
         "name": "TMA Cali",
         "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.6",
         "atsUnit": "APP CALI",
         "callsign": "Cali Aproximacion",
-        "languages": ["ES", "EN"],
-        "oprHr": "2300-1100",
-        "frequency": "119.10 MHz",
-        "alternateFrequency": "120.40 MHz",
-        "lateralLimitsRaw": "Desde 041409N/0770257W ... 023527N/0754404W por arco horario 63NM DME CLO; para el punto de origen. Ver ENR 6.6.",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL245" },
-          { "class": "D", "lower": "1500 FT",  "upper": "17500 FT" }
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Arco 63NM DME CLO pendiente de cálculo preciso."
+        "oprHr": "H24",
+        "frequency": "119.10 / 120.40 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 245"
+          },
+          {
+            "class": "D",
+            "lower": "1500 FT",
+            "upper": "17500 FT"
+          }
+        ],
+        "notes": "Arco 63NM horario centrado en DME CLO (032403N/0762423W)"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-77.04889,  4.23583],
-          [-76.13361,  4.23583],
-          [-75.49667,  4.23583],
-          [-75.49667,  3.55333],
-          [-75.89889,  2.39194],
-          [-76.23333,  2.39194],
-          [-77.04889,  4.23583]
-        ]]
+        "coordinates": [
+          [
+            [
+              -77.04917,
+              4.23583
+            ],
+            [
+              -76.22528,
+              4.26583
+            ],
+            [
+              -75.49667,
+              4.26583
+            ],
+            [
+              -75.49667,
+              3.86861
+            ],
+            [
+              -75.1175,
+              3.86889
+            ],
+            [
+              -75.73361,
+              3.20333
+            ],
+            [
+              -75.73444,
+              2.59083
+            ],
+            [
+              -75.73569,
+              2.59233
+            ],
+            [
+              -75.90864,
+              2.47607
+            ],
+            [
+              -76.10113,
+              2.39618
+            ],
+            [
+              -76.3056,
+              2.35577
+            ],
+            [
+              -76.51403,
+              2.35646
+            ],
+            [
+              -76.71824,
+              2.3982
+            ],
+            [
+              -76.9102,
+              2.47935
+            ],
+            [
+              -77.08239,
+              2.59674
+            ],
+            [
+              -77.22803,
+              2.74575
+            ],
+            [
+              -77.3414,
+              2.92053
+            ],
+            [
+              -77.41804,
+              3.11422
+            ],
+            [
+              -77.45491,
+              3.31919
+            ],
+            [
+              -77.45053,
+              3.5274
+            ],
+            [
+              -77.40506,
+              3.73065
+            ],
+            [
+              -77.32026,
+              3.92095
+            ],
+            [
+              -77.19944,
+              4.09078
+            ],
+            [
+              -77.04735,
+              4.23346
+            ],
+            [
+              -77.04917,
+              4.23583
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
         "id": "TMA_CUCUTA_N",
-        "name": "TMA Cúcuta - Sector Norte",
+        "name": "TMA Cucuta Sector Norte",
         "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.6",
         "atsUnit": "SECTOR NORTE CUCUTA",
         "callsign": "Cucuta Aproximacion Norte",
-        "languages": ["ES", "EN"],
-        "oprHr": "1000-0500",
-        "frequency": "119.90 MHz",
-        "alternateFrequency": "120.90 MHz",
-        "lateralLimitsRaw": "Desde 082204N/0731430W; 083750N/0723917W siguiendo el límite Frontera con Venezuela hasta 073018N/0722617W; 073018N/0723852W; 073018N/0724844W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL245" },
-          { "class": "D", "lower": "1500 FT",  "upper": "17500 FT" }
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Límite Venezuela simplificado."
+        "oprHr": "100-0500",
+        "frequency": "119.90 / 120.90 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 245"
+          },
+          {
+            "class": "D",
+            "lower": "1500 FT",
+            "upper": "17500 FT"
+          }
+        ],
+        "notes": "Límite Venezuela simplificado"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-73.24167,  8.36778],
-          [-72.65472,  8.63056],
-          [-72.43806,  7.50500],
-          [-72.64778,  7.50500],
-          [-72.81222,  7.50500],
-          [-73.24167,  8.36778]
-        ]]
+        "coordinates": [
+          [
+            [
+              -73.24167,
+              8.36778
+            ],
+            [
+              -72.65472,
+              8.63056
+            ],
+            [
+              -72.43806,
+              7.505
+            ],
+            [
+              -72.64778,
+              7.505
+            ],
+            [
+              -72.81222,
+              7.505
+            ],
+            [
+              -73.24167,
+              8.36778
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
         "id": "TMA_CUCUTA_S",
-        "name": "TMA Cúcuta - Sector Sur",
+        "name": "TMA Cucuta Sector Sur",
         "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.6",
         "atsUnit": "SECTOR SUR CUCUTA",
         "callsign": "Cucuta Aproximacion Sur",
-        "languages": ["ES", "EN"],
-        "oprHr": "1000-0500",
-        "frequency": "119.60 MHz",
-        "alternateFrequency": "120.60 MHz",
-        "lateralLimitsRaw": "Desde 073018N/0722617W siguiendo el límite Frontera con Venezuela hasta 065154N/0695906W; 061427N/0700842W; 060206N/0714237W; 061254N/0714341W; 061254N/0724404W; 073018N/0723852W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL245" },
-          { "class": "D", "lower": "1500 FT",  "upper": "17500 FT" }
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Límite Venezuela simplificado."
+        "oprHr": "1000-0500",
+        "frequency": "119.60 / 120.60 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 245"
+          },
+          {
+            "class": "D",
+            "lower": "1500 FT",
+            "upper": "17500 FT"
+          }
+        ],
+        "notes": "Límite Venezuela simplificado"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-72.43806,  7.50500],
-          [-69.98500,  6.86500],
-          [-70.14500,  6.24083],
-          [-71.71028,  6.03500],
-          [-71.72806,  6.21500],
-          [-72.73444,  6.21500],
-          [-72.64778,  7.50500],
-          [-72.43806,  7.50500]
-        ]]
+        "coordinates": [
+          [
+            [
+              -72.43806,
+              7.505
+            ],
+            [
+              -69.985,
+              6.865
+            ],
+            [
+              -70.145,
+              6.24083
+            ],
+            [
+              -71.71028,
+              6.035
+            ],
+            [
+              -71.72806,
+              6.215
+            ],
+            [
+              -72.73444,
+              6.215
+            ],
+            [
+              -72.64778,
+              7.505
+            ],
+            [
+              -72.43806,
+              7.505
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
         "id": "TMA_EL_YOPAL",
         "name": "TMA El Yopal",
         "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.8",
         "atsUnit": "APP EL YOPAL",
         "callsign": "El Yopal Aproximacion",
-        "languages": ["ES", "EN"],
-        "oprHr": "1100-2359 y 0000-0200",
-        "frequency": "125.20 MHz",
-        "alternateFrequency": "126.80 MHz",
-        "lateralLimitsRaw": "Desde 061254N/0724404W; ... 050106N/0731912W por arco anti-horario 40NM DVOR ZIP; 051901N/0732327W; 053521N/0725055W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL245" },
-          { "class": "D", "lower": "2000 FT",  "upper": "17500 FT" }
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Arco 40NM DVOR ZIP pendiente de cálculo preciso."
+        "oprHr": "1100-2359 0000-0200",
+        "frequency": "125.20 / 126.80 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 245"
+          },
+          {
+            "class": "D",
+            "lower": "2000 FT",
+            "upper": "17500 FT"
+          }
+        ],
+        "notes": "Arco 40NM anti-horario centrado en DVOR ZIP (050106N/0735913W)"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-72.73444,  6.21500],
-          [-71.72806,  6.21500],
-          [-71.71028,  6.03500],
-          [-71.23972,  5.01667],
-          [-71.21278,  5.07056],
-          [-71.48417,  5.01833],
-          [-72.97722,  5.01833],
-          [-72.84861,  5.58917],
-          [-72.73444,  6.21500]
-        ]]
+        "coordinates": [
+          [
+            [
+              -72.73444,
+              6.215
+            ],
+            [
+              -71.72806,
+              6.215
+            ],
+            [
+              -71.71028,
+              6.035
+            ],
+            [
+              -71.65083,
+              5.43333
+            ],
+            [
+              -71.65083,
+              5.07222
+            ],
+            [
+              -72.02444,
+              4.85472
+            ],
+            [
+              -72.97722,
+              5.01833
+            ],
+            [
+              -73.32,
+              5.01833
+            ],
+            [
+              -73.31778,
+              5.01833
+            ],
+            [
+              -73.31805,
+              5.03774
+            ],
+            [
+              -73.31889,
+              5.05713
+            ],
+            [
+              -73.3203,
+              5.0765
+            ],
+            [
+              -73.32227,
+              5.09581
+            ],
+            [
+              -73.32481,
+              5.11506
+            ],
+            [
+              -73.32791,
+              5.13422
+            ],
+            [
+              -73.33157,
+              5.15329
+            ],
+            [
+              -73.33578,
+              5.17224
+            ],
+            [
+              -73.34055,
+              5.19107
+            ],
+            [
+              -73.34586,
+              5.20974
+            ],
+            [
+              -73.35172,
+              5.22826
+            ],
+            [
+              -73.35812,
+              5.2466
+            ],
+            [
+              -73.36505,
+              5.26474
+            ],
+            [
+              -73.37252,
+              5.28268
+            ],
+            [
+              -73.3805,
+              5.30039
+            ],
+            [
+              -73.389,
+              5.31786
+            ],
+            [
+              -72.84861,
+              5.58917
+            ],
+            [
+              -72.73444,
+              6.215
+            ]
+          ]
+        ]
       }
     },
-
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_EL_YOPAL_POL",
+        "name": "TMA El Yopal Polígono",
+        "type": "TMA",
+        "atsUnit": "APP EL YOPAL",
+        "callsign": "El Yopal Aproximacion",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "1100-2359 0000-0200",
+        "frequency": "125.20 / 126.80 MHZ",
+        "verticalLimits": [
+          {
+            "class": "D",
+            "lower": "2000 FT",
+            "upper": "17500 FT"
+          }
+        ],
+        "notes": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -72.02444,
+              4.85472
+            ],
+            [
+              -72.97722,
+              4.29722
+            ],
+            [
+              -72.97722,
+              5.01833
+            ],
+            [
+              -72.02444,
+              4.85472
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_LETICIA_P1",
+        "name": "TMA Leticia Polígono 1",
+        "type": "TMA",
+        "atsUnit": "AMAZONAS APP",
+        "callsign": "Leticia Aproximación",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "1100-0300",
+        "frequency": "119.10 / 120.10 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 195"
+          },
+          {
+            "class": "D",
+            "lower": "1500 FT",
+            "upper": "17500 FT"
+          }
+        ],
+        "notes": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -69.94,
+              -4.195
+            ],
+            [
+              -70.36944,
+              -4.15333
+            ],
+            [
+              -70.77472,
+              -4.17139
+            ],
+            [
+              -70.76889,
+              -4.09833
+            ],
+            [
+              -70.73778,
+              -3.92861
+            ],
+            [
+              -70.58444,
+              -3.66278
+            ],
+            [
+              -70.305,
+              -3.17833
+            ],
+            [
+              -70.02139,
+              -2.71194
+            ],
+            [
+              -69.66222,
+              -2.71194
+            ],
+            [
+              -69.86056,
+              -3.77083
+            ],
+            [
+              -69.94,
+              -4.195
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_LETICIA_P2",
+        "name": "TMA Leticia Polígono 2",
+        "type": "TMA",
+        "atsUnit": "AMAZONAS APP",
+        "callsign": "Leticia Aproximación",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "1100-0300",
+        "frequency": "119.10 / 120.10 MHZ",
+        "verticalLimits": [
+          {
+            "class": "D",
+            "lower": "3500 FT",
+            "upper": "14500 FT"
+          }
+        ],
+        "notes": "Arco 26NM horario centrado en 041142S/0695624W"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -69.94,
+              -4.195
+            ],
+            [
+              -69.86056,
+              -3.77083
+            ],
+            [
+              -69.86023,
+              -3.76908
+            ],
+            [
+              -69.74188,
+              -3.80941
+            ],
+            [
+              -69.63993,
+              -3.88172
+            ],
+            [
+              -69.56286,
+              -3.98
+            ],
+            [
+              -69.51704,
+              -4.09612
+            ],
+            [
+              -69.50629,
+              -4.22046
+            ],
+            [
+              -69.53152,
+              -4.34269
+            ],
+            [
+              -69.59066,
+              -4.45267
+            ],
+            [
+              -69.6788,
+              -4.54128
+            ],
+            [
+              -69.78864,
+              -4.60116
+            ],
+            [
+              -69.91106,
+              -4.62733
+            ],
+            [
+              -70.03588,
+              -4.61761
+            ],
+            [
+              -70.15273,
+              -4.57282
+            ],
+            [
+              -70.25191,
+              -4.49667
+            ],
+            [
+              -70.32519,
+              -4.3955
+            ],
+            [
+              -70.36649,
+              -4.2777
+            ],
+            [
+              -70.3724,
+              -4.15304
+            ],
+            [
+              -69.94,
+              -4.195
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_MARANDUA",
+        "name": "TMA Marandua",
+        "type": "TMA",
+        "atsUnit": "SKUA APP",
+        "callsign": "Marandúa APP",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "H24",
+        "frequency": "124.10 MHZ",
+        "verticalLimits": [
+          {
+            "class": "D",
+            "lower": "GND",
+            "upper": "12500 FT"
+          }
+        ],
+        "notes": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -69.51,
+              4.58333
+            ],
+            [
+              -69.51,
+              5.66667
+            ],
+            [
+              -68,
+              5.91667
+            ],
+            [
+              -68,
+              4.85
+            ],
+            [
+              -69.51,
+              4.58333
+            ]
+          ]
+        ]
+      }
+    },
     {
       "type": "Feature",
       "properties": {
         "id": "TMA_MEDELLIN_N",
-        "name": "TMA Medellín - Sector Norte",
+        "name": "TMA Medellín Sector Norte",
         "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.9",
         "atsUnit": "SECTOR NORTE MEDELLIN",
         "callsign": "Medellin Aproximacion Norte",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "126.10 MHz",
-        "alternateFrequency": "126.50 MHz",
-        "lateralLimitsRaw": "Desde 075244N/0741906W; 070115N/0742611W; 060002N/0744240W; 060002N/0745840W por arco anti-horario 25NM DVOR RNG; 061523N/0754243W; 065020N/0761526W; 071319N/0761751W; 075915N/0754859W; 073754N/0745140W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "C", "lower": "13500 FT", "upper": "17500 FT" },
-          { "class": "D", "lower": "9500 FT",  "upper": "13500 FT" },
-          { "class": "G", "lower": "GND",       "upper": "9500 FT" }
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Arco 25NM DVOR RNG pendiente de cálculo preciso."
+        "oprHr": "H24",
+        "frequency": "126.10 / 126.50 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "14500 FT",
+            "upper": "24500 FT"
+          },
+          {
+            "class": "D",
+            "lower": "11500 FT",
+            "upper": "14500 FT"
+          },
+          {
+            "class": "G",
+            "lower": "1500 FT",
+            "upper": "11500 FT"
+          }
+        ],
+        "notes": "Arco 25NM anti-horario centrado en DVOR RNG (055850N/0752506W)"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-74.31833,  7.87889],
-          [-74.43639,  7.01944],
-          [-74.40667,  6.00056],
-          [-74.97333,  6.00056],
-          [-75.71472,  6.25639],
-          [-76.27500,  6.52194],
-          [-76.29861,  7.13306],
-          [-75.81639,  7.59750],
-          [-74.86111,  7.63167],
-          [-74.31833,  7.87889]
-        ]]
+        "coordinates": [
+          [
+            [
+              -74.31833,
+              7.87889
+            ],
+            [
+              -74.43639,
+              7.02083
+            ],
+            [
+              -74.71111,
+              6.00056
+            ],
+            [
+              -74.97778,
+              6.00056
+            ],
+            [
+              -74.99986,
+              5.99957
+            ],
+            [
+              -75.00708,
+              6.05997
+            ],
+            [
+              -75.02307,
+              6.11869
+            ],
+            [
+              -75.04749,
+              6.17446
+            ],
+            [
+              -75.07983,
+              6.2261
+            ],
+            [
+              -75.1194,
+              6.27251
+            ],
+            [
+              -75.16535,
+              6.31269
+            ],
+            [
+              -75.2167,
+              6.34579
+            ],
+            [
+              -75.27236,
+              6.37109
+            ],
+            [
+              -75.33114,
+              6.38807
+            ],
+            [
+              -75.39178,
+              6.39635
+            ],
+            [
+              -75.45299,
+              6.39576
+            ],
+            [
+              -75.51346,
+              6.38631
+            ],
+            [
+              -75.5719,
+              6.3682
+            ],
+            [
+              -75.62705,
+              6.34182
+            ],
+            [
+              -75.67775,
+              6.30774
+            ],
+            [
+              -75.7229,
+              6.26668
+            ],
+            [
+              -76.25722,
+              6.83889
+            ],
+            [
+              -76.2975,
+              7.22194
+            ],
+            [
+              -75.81583,
+              7.98861
+            ],
+            [
+              -74.86111,
+              7.63167
+            ],
+            [
+              -74.31833,
+              7.87889
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
         "id": "TMA_MEDELLIN_S",
-        "name": "TMA Medellín - Sector Sur",
+        "name": "TMA Medellín Sector Sur",
         "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.9",
         "atsUnit": "SECTOR SUR MEDELLIN",
         "callsign": "Medellin Aproximacion Sur",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "120.10 MHz",
-        "alternateFrequency": "121.10 MHz",
-        "lateralLimitsRaw": "Desde 060002N/0745840W; 053546N/0751021W; 050920N/0751115W; 050828N/0761331W; 063200N/0761331W; 065020N/0761526W; 061523N/0754243W por arco horario 25NM DVOR RNG; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL245" },
-          { "class": "C", "lower": "13500 FT", "upper": "17500 FT" },
-          { "class": "G", "lower": "GND",       "upper": "9500 FT" }
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Arco 25NM DVOR RNG pendiente de cálculo preciso."
+        "oprHr": "H24",
+        "frequency": "120.10 / 121.10 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "14500 FT",
+            "upper": "24500 FT"
+          },
+          {
+            "class": "D",
+            "lower": "11500 FT",
+            "upper": "14500 FT"
+          },
+          {
+            "class": "G",
+            "lower": "1500 FT",
+            "upper": "11500 FT"
+          }
+        ],
+        "notes": "Arco 25NM horario centrado en DVOR RNG (055850N/0752506W)"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-74.97333,  6.00056],
-          [-75.17028,  5.59222],
-          [-75.18639,  5.15333],
-          [-76.22528,  5.14111],
-          [-76.22528,  6.32000],
-          [-76.27500,  6.52194],
-          [-75.71472,  6.25639],
-          [-74.97333,  6.00056]
-        ]]
+        "coordinates": [
+          [
+            [
+              -74.97778,
+              6.00056
+            ],
+            [
+              -75.1725,
+              5.59611
+            ],
+            [
+              -75.18722,
+              5.28194
+            ],
+            [
+              -75.1875,
+              5.15556
+            ],
+            [
+              -75.49667,
+              5.14111
+            ],
+            [
+              -76.22528,
+              5.14111
+            ],
+            [
+              -76.22528,
+              6.53333
+            ],
+            [
+              -76.25722,
+              6.83889
+            ],
+            [
+              -75.71194,
+              6.25639
+            ],
+            [
+              -75.7229,
+              6.26668
+            ],
+            [
+              -75.67775,
+              6.30774
+            ],
+            [
+              -75.62705,
+              6.34182
+            ],
+            [
+              -75.5719,
+              6.3682
+            ],
+            [
+              -75.51346,
+              6.38631
+            ],
+            [
+              -75.45299,
+              6.39576
+            ],
+            [
+              -75.39178,
+              6.39635
+            ],
+            [
+              -75.33114,
+              6.38807
+            ],
+            [
+              -75.27236,
+              6.37109
+            ],
+            [
+              -75.2167,
+              6.34579
+            ],
+            [
+              -75.16535,
+              6.31269
+            ],
+            [
+              -75.1194,
+              6.27251
+            ],
+            [
+              -75.07983,
+              6.2261
+            ],
+            [
+              -75.04749,
+              6.17446
+            ],
+            [
+              -75.02307,
+              6.11869
+            ],
+            [
+              -75.00708,
+              6.05997
+            ],
+            [
+              -74.99986,
+              5.99957
+            ],
+            [
+              -74.97778,
+              6.00056
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
         "id": "TMA_NEIVA",
         "name": "TMA Neiva",
         "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.10",
         "atsUnit": "APP NEIVA",
         "callsign": "Neiva Aproximacion",
-        "languages": ["ES", "EN"],
-        "oprHr": "1100-0300 Lunes a Vie-rnes / 1100-0100 Sáb-Dom y Festivos",
-        "frequency": "119.20 MHz",
-        "alternateFrequency": "127.10 MHz",
-        "lateralLimitsRaw": "Desde 035208N/0750703W; 035208N/0741557W; 023936N/0744746W; 023618N/0750044W; 020012N/0751306W; 015307N/0752259W por arco horario 71NM VOR NVA; 022201N/0761249W por arco anti-horario 63NM DME CLO; 023527N/0754405W; 031212N/0754401W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL245" },
-          { "class": "D", "lower": "1500 FT",  "upper": "17500 FT" }
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Arcos 71NM VOR NVA y 63NM DME CLO pendientes de cálculo preciso."
+        "oprHr": "1100-0300 L-V / 1100-0100 Sab,Dom,Fest",
+        "frequency": "119.20 / 127.10 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 245"
+          },
+          {
+            "class": "D",
+            "lower": "1500 FT",
+            "upper": "17500 FT"
+          }
+        ],
+        "notes": "Arco 71NM (VOR NVA) + arco 63NM anti-horario (VOR CLO)"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-75.11750,  3.86889],
-          [-74.26583,  3.86889],
-          [-74.79611,  2.65667],
-          [-75.00722,  2.60500],
-          [-75.21833,  2.00333],
-          [-75.37639,  1.55194],
-          [-76.21361,  2.23694],
-          [-76.20917,  3.20028],
-          [-75.73361,  3.20028],
-          [-75.11750,  3.86889]
-        ]]
+        "coordinates": [
+          [
+            [
+              -75.1175,
+              3.86889
+            ],
+            [
+              -74.26583,
+              3.86889
+            ],
+            [
+              -74.79611,
+              2.66
+            ],
+            [
+              -75.01222,
+              2.605
+            ],
+            [
+              -75.21833,
+              2.00333
+            ],
+            [
+              -75.38306,
+              1.88528
+            ],
+            [
+              -75.38303,
+              1.88557
+            ],
+            [
+              -75.44427,
+              1.8938
+            ],
+            [
+              -75.505,
+              1.90521
+            ],
+            [
+              -75.56505,
+              1.91977
+            ],
+            [
+              -75.62426,
+              1.93744
+            ],
+            [
+              -75.68247,
+              1.95816
+            ],
+            [
+              -75.73952,
+              1.9819
+            ],
+            [
+              -75.79526,
+              2.00857
+            ],
+            [
+              -75.84953,
+              2.03811
+            ],
+            [
+              -75.90218,
+              2.07044
+            ],
+            [
+              -75.95308,
+              2.10547
+            ],
+            [
+              -76.00208,
+              2.1431
+            ],
+            [
+              -76.04905,
+              2.18324
+            ],
+            [
+              -76.09387,
+              2.22577
+            ],
+            [
+              -76.13641,
+              2.27057
+            ],
+            [
+              -76.17655,
+              2.31753
+            ],
+            [
+              -76.21419,
+              2.36652
+            ],
+            [
+              -76.21393,
+              2.36868
+            ],
+            [
+              -76.18126,
+              2.3753
+            ],
+            [
+              -76.1488,
+              2.38294
+            ],
+            [
+              -76.11661,
+              2.39161
+            ],
+            [
+              -76.08471,
+              2.4013
+            ],
+            [
+              -76.05313,
+              2.41199
+            ],
+            [
+              -76.0219,
+              2.42368
+            ],
+            [
+              -75.99106,
+              2.43635
+            ],
+            [
+              -75.96064,
+              2.44999
+            ],
+            [
+              -75.93067,
+              2.46458
+            ],
+            [
+              -75.90117,
+              2.48012
+            ],
+            [
+              -75.87218,
+              2.49659
+            ],
+            [
+              -75.84373,
+              2.51396
+            ],
+            [
+              -75.81584,
+              2.53223
+            ],
+            [
+              -75.78855,
+              2.55137
+            ],
+            [
+              -75.76188,
+              2.57137
+            ],
+            [
+              -75.73585,
+              2.5922
+            ],
+            [
+              -75.73361,
+              3.20333
+            ],
+            [
+              -75.1175,
+              3.86889
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
-        "id": "TMA_SAN_ANDRES_1",
-        "name": "TMA San Andrés - Sector 1",
+        "id": "TMA_PEREIRA",
+        "name": "TMA Pereira",
         "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.12",
-        "atsUnit": "APP SAN ANDRES",
-        "callsign": "San Andres Aproximacion",
-        "languages": ["ES", "EN"],
-        "oprHr": "1100-0500",
-        "frequency": "119.30 MHz",
-        "alternateFrequency": "120.30 MHz",
-        "lateralLimitsRaw": "Desde 114315N/0823041W; 113151N/0824236W; 125400N/0824900W; 133330N/0823827W por arco horario 80NM DVOR SPP; 120249N/0802725W; 120617N/0803640W por arco horario 70NM DVOR SPP; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL195" },
-          { "class": "D", "lower": "1500 FT",  "upper": "17500 FT" },
-          { "class": "G", "lower": "GND",       "upper": "1500 FT" }
+        "atsUnit": "APP PEREIRA",
+        "callsign": "Pereira Aproximacion",
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Arcos 80NM y 70NM DVOR SPP pendientes de cálculo preciso."
+        "oprHr": "1000-0400",
+        "frequency": "120.00 / 120.70 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 195"
+          },
+          {
+            "class": "D",
+            "lower": "6500 FT",
+            "upper": "17500 FT"
+          },
+          {
+            "class": "G",
+            "lower": "GND",
+            "upper": "6500 FT"
+          }
+        ],
+        "notes": null
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-82.30417, 11.72083],
-          [-82.40667, 11.53083],
-          [-82.48333, 12.90000],
-          [-82.38056, 13.55833],
-          [-80.45417, 12.04694],
-          [-80.60667, 12.10472],
-          [-82.30417, 11.72083]
-        ]]
+        "coordinates": [
+          [
+            [
+              -76.22528,
+              5.14111
+            ],
+            [
+              -75.49667,
+              5.14111
+            ],
+            [
+              -75.49667,
+              4.26583
+            ],
+            [
+              -76.22528,
+              4.26583
+            ],
+            [
+              -76.22528,
+              5.14111
+            ]
+          ]
+        ]
       }
     },
-
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_SAN_ANDRES_S1",
+        "name": "TMA San Andres Sector 1",
+        "type": "TMA",
+        "atsUnit": "APP SAN ANDRES",
+        "callsign": "San Andres Aproximacion",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "1100-0500",
+        "frequency": "119.30 / 120.30 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 195"
+          },
+          {
+            "class": "D",
+            "lower": "1500 FT",
+            "upper": "17500 FT"
+          },
+          {
+            "class": "G",
+            "lower": "GND",
+            "upper": "1500 FT"
+          }
+        ],
+        "notes": "Arcos 80NM y 70NM horarios centrados en DVOR SPP (123457N/0814219W)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -82.51139,
+              11.72083
+            ],
+            [
+              -82.71,
+              11.53083
+            ],
+            [
+              -82.81667,
+              12.9
+            ],
+            [
+              -82.64083,
+              13.55833
+            ],
+            [
+              -82.63943,
+              13.55688
+            ],
+            [
+              -82.45572,
+              13.69757
+            ],
+            [
+              -82.24988,
+              13.80573
+            ],
+            [
+              -82.02797,
+              13.87816
+            ],
+            [
+              -81.79653,
+              13.91273
+            ],
+            [
+              -81.56239,
+              13.90842
+            ],
+            [
+              -81.33247,
+              13.86535
+            ],
+            [
+              -81.11356,
+              13.78479
+            ],
+            [
+              -80.91212,
+              13.66913
+            ],
+            [
+              -80.73404,
+              13.52178
+            ],
+            [
+              -80.58453,
+              13.34707
+            ],
+            [
+              -80.46789,
+              13.15014
+            ],
+            [
+              -80.38746,
+              12.93675
+            ],
+            [
+              -80.3455,
+              12.71315
+            ],
+            [
+              -80.34313,
+              12.48585
+            ],
+            [
+              -80.3803,
+              12.26145
+            ],
+            [
+              -80.45584,
+              12.04646
+            ],
+            [
+              -80.61111,
+              12.10472
+            ],
+            [
+              -80.61507,
+              12.10646
+            ],
+            [
+              -80.68044,
+              11.9841
+            ],
+            [
+              -80.76007,
+              11.87012
+            ],
+            [
+              -80.85282,
+              11.76612
+            ],
+            [
+              -80.95741,
+              11.67353
+            ],
+            [
+              -81.07237,
+              11.59364
+            ],
+            [
+              -81.1961,
+              11.52757
+            ],
+            [
+              -81.32688,
+              11.47621
+            ],
+            [
+              -81.46289,
+              11.4403
+            ],
+            [
+              -81.60226,
+              11.42031
+            ],
+            [
+              -81.74305,
+              11.41654
+            ],
+            [
+              -81.88332,
+              11.42902
+            ],
+            [
+              -82.02113,
+              11.4576
+            ],
+            [
+              -82.15457,
+              11.50187
+            ],
+            [
+              -82.28179,
+              11.56122
+            ],
+            [
+              -82.40102,
+              11.63482
+            ],
+            [
+              -82.51061,
+              11.72167
+            ],
+            [
+              -82.51139,
+              11.72083
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_SAN_ANDRES_S2",
+        "name": "TMA San Andres Sector 2",
+        "type": "TMA",
+        "atsUnit": "APP SAN ANDRES",
+        "callsign": "San Andres Aproximacion",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "1100-0500",
+        "frequency": "119.30 / 120.30 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 195"
+          },
+          {
+            "class": "D",
+            "lower": "9500 FT",
+            "upper": "17500 FT"
+          },
+          {
+            "class": "G",
+            "lower": "GND",
+            "upper": "9500 FT"
+          }
+        ],
+        "notes": "Arco 150NM horario + 80NM anti-horario, centrados en DVOR SPP"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -82.64083,
+              13.55833
+            ],
+            [
+              -82.2525,
+              15
+            ],
+            [
+              -81.04694,
+              15
+            ],
+            [
+              -81.04717,
+              14.99917
+            ],
+            [
+              -80.78566,
+              14.91722
+            ],
+            [
+              -80.53486,
+              14.80867
+            ],
+            [
+              -80.29767,
+              14.67477
+            ],
+            [
+              -80.07681,
+              14.5171
+            ],
+            [
+              -79.8748,
+              14.33746
+            ],
+            [
+              -79.69391,
+              14.13795
+            ],
+            [
+              -79.53618,
+              13.92086
+            ],
+            [
+              -79.40334,
+              13.68869
+            ],
+            [
+              -79.29683,
+              13.4441
+            ],
+            [
+              -79.21778,
+              13.18988
+            ],
+            [
+              -79.167,
+              12.92893
+            ],
+            [
+              -79.14497,
+              12.6642
+            ],
+            [
+              -79.15186,
+              12.39868
+            ],
+            [
+              -79.18749,
+              12.13537
+            ],
+            [
+              -79.25138,
+              11.87722
+            ],
+            [
+              -79.34274,
+              11.62713
+            ],
+            [
+              -80.45694,
+              12.04694
+            ],
+            [
+              -80.45584,
+              12.04646
+            ],
+            [
+              -80.3803,
+              12.26145
+            ],
+            [
+              -80.34313,
+              12.48585
+            ],
+            [
+              -80.3455,
+              12.71315
+            ],
+            [
+              -80.38746,
+              12.93675
+            ],
+            [
+              -80.46789,
+              13.15014
+            ],
+            [
+              -80.58453,
+              13.34707
+            ],
+            [
+              -80.73404,
+              13.52178
+            ],
+            [
+              -80.91212,
+              13.66913
+            ],
+            [
+              -81.11356,
+              13.78479
+            ],
+            [
+              -81.33247,
+              13.86535
+            ],
+            [
+              -81.56239,
+              13.90842
+            ],
+            [
+              -81.79653,
+              13.91273
+            ],
+            [
+              -82.02797,
+              13.87816
+            ],
+            [
+              -82.24988,
+              13.80573
+            ],
+            [
+              -82.45572,
+              13.69757
+            ],
+            [
+              -82.63943,
+              13.55688
+            ],
+            [
+              -82.64083,
+              13.55833
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_SAN_ANDRES_S3",
+        "name": "TMA San Andres Sector 3",
+        "type": "TMA",
+        "atsUnit": "APP SAN ANDRES",
+        "callsign": "San Andres Aproximacion",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "1100-0500",
+        "frequency": "119.30 / 120.30 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 195"
+          },
+          {
+            "class": "D",
+            "lower": "16500 FT",
+            "upper": "17500 FT"
+          },
+          {
+            "class": "G",
+            "lower": "GND",
+            "upper": "16500 FT"
+          }
+        ],
+        "notes": "Arco 150NM anti-horario centrado en DVOR SPP (123457N/0814219W)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -81.04694,
+              15
+            ],
+            [
+              -77.41667,
+              15
+            ],
+            [
+              -77.41667,
+              10.88833
+            ],
+            [
+              -79.345,
+              11.62806
+            ],
+            [
+              -79.34274,
+              11.62713
+            ],
+            [
+              -79.25138,
+              11.87722
+            ],
+            [
+              -79.18749,
+              12.13537
+            ],
+            [
+              -79.15186,
+              12.39868
+            ],
+            [
+              -79.14497,
+              12.6642
+            ],
+            [
+              -79.167,
+              12.92893
+            ],
+            [
+              -79.21778,
+              13.18988
+            ],
+            [
+              -79.29683,
+              13.4441
+            ],
+            [
+              -79.40334,
+              13.68869
+            ],
+            [
+              -79.53618,
+              13.92086
+            ],
+            [
+              -79.69391,
+              14.13795
+            ],
+            [
+              -79.8748,
+              14.33746
+            ],
+            [
+              -80.07681,
+              14.5171
+            ],
+            [
+              -80.29767,
+              14.67477
+            ],
+            [
+              -80.53486,
+              14.80867
+            ],
+            [
+              -80.78566,
+              14.91722
+            ],
+            [
+              -81.04717,
+              14.99917
+            ],
+            [
+              -81.04694,
+              15
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_PALANQUERO",
+        "name": "TMA Palanquero",
+        "type": "TMA",
+        "atsUnit": "PALANQUERO CONTROL",
+        "callsign": "CONTROL PALANQUERO",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "H24",
+        "frequency": "127.90 MHZ",
+        "verticalLimits": [
+          {
+            "class": "D",
+            "lower": "GND",
+            "upper": "UNL"
+          },
+          {
+            "class": "A",
+            "lower": "FL 245",
+            "upper": "UNL"
+          },
+          {
+            "class": "G",
+            "lower": "GND",
+            "upper": "5000 FT"
+          }
+        ],
+        "notes": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -74.57833,
+              6.49389
+            ],
+            [
+              -73.93333,
+              6.89389
+            ],
+            [
+              -74.19667,
+              5.46389
+            ],
+            [
+              -74.74,
+              5.25389
+            ],
+            [
+              -74.875,
+              5.39056
+            ],
+            [
+              -74.57833,
+              6.49389
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_TRES_ESQUINAS",
+        "name": "TMA Tres Esquinas",
+        "type": "TMA",
+        "atsUnit": "APP TRES ESQUINAS",
+        "callsign": "Tres esquinas Aproximación",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "H24",
+        "frequency": "121.00 MHZ",
+        "verticalLimits": [
+          {
+            "class": "D",
+            "lower": "GND",
+            "upper": "9000 FT"
+          }
+        ],
+        "notes": "Arco 35NM anti-horario + arco 33NM horario"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -75.72306,
+              1.05944
+            ],
+            [
+              -75.72312,
+              1.05948
+            ],
+            [
+              -75.7974,
+              0.89194
+            ],
+            [
+              -75.81602,
+              0.70962
+            ],
+            [
+              -75.77715,
+              0.53053
+            ],
+            [
+              -75.68462,
+              0.37233
+            ],
+            [
+              -75.54758,
+              0.25065
+            ],
+            [
+              -75.37955,
+              0.1775
+            ],
+            [
+              -75.19711,
+              0.16009
+            ],
+            [
+              -75.01828,
+              0.20015
+            ],
+            [
+              -74.8607,
+              0.29371
+            ],
+            [
+              -74.73993,
+              0.43156
+            ],
+            [
+              -74.66788,
+              0.60007
+            ],
+            [
+              -74.65169,
+              0.78262
+            ],
+            [
+              -74.69293,
+              0.96118
+            ],
+            [
+              -74.78757,
+              1.11813
+            ],
+            [
+              -74.92625,
+              1.23797
+            ],
+            [
+              -75.09529,
+              1.30886
+            ],
+            [
+              -75.09528,
+              1.30889
+            ],
+            [
+              -75.0953,
+              1.3089
+            ],
+            [
+              -75.11994,
+              1.27074
+            ],
+            [
+              -75.14765,
+              1.23474
+            ],
+            [
+              -75.17824,
+              1.20114
+            ],
+            [
+              -75.21149,
+              1.17019
+            ],
+            [
+              -75.24718,
+              1.14208
+            ],
+            [
+              -75.28507,
+              1.11702
+            ],
+            [
+              -75.3249,
+              1.09516
+            ],
+            [
+              -75.3664,
+              1.07667
+            ],
+            [
+              -75.40928,
+              1.06166
+            ],
+            [
+              -75.45326,
+              1.05024
+            ],
+            [
+              -75.49802,
+              1.04249
+            ],
+            [
+              -75.54328,
+              1.03846
+            ],
+            [
+              -75.58871,
+              1.03817
+            ],
+            [
+              -75.63401,
+              1.04164
+            ],
+            [
+              -75.67887,
+              1.04883
+            ],
+            [
+              -75.72299,
+              1.05969
+            ],
+            [
+              -75.72306,
+              1.05944
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_VILLAVICENCIO_1",
+        "name": "TMA Villavicencio 1",
+        "type": "TMA",
+        "atsUnit": "FIS VILLAVICENCIO",
+        "callsign": "Villavicencio Aproximacion",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "1100-2300",
+        "frequency": "119.30 / 119.70 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "FL 175",
+            "upper": "FL 245"
+          },
+          {
+            "class": "D",
+            "lower": "1500 FT",
+            "upper": "17500 FT"
+          }
+        ],
+        "notes": "Arco 25NM anti-horario centrado en DVOR ZIP (050106N/0735913W)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -73.56861,
+              5.01833
+            ],
+            [
+              -72.97722,
+              5.01833
+            ],
+            [
+              -72.97722,
+              3.91389
+            ],
+            [
+              -72.41222,
+              3.71139
+            ],
+            [
+              -72.41222,
+              3.20222
+            ],
+            [
+              -73.30278,
+              3.20222
+            ],
+            [
+              -73.36833,
+              3.31306
+            ],
+            [
+              -73.94806,
+              3.31306
+            ],
+            [
+              -73.94806,
+              4.03278
+            ],
+            [
+              -73.66833,
+              4.23944
+            ],
+            [
+              -73.66861,
+              4.44972
+            ],
+            [
+              -73.83389,
+              4.62889
+            ],
+            [
+              -73.83448,
+              4.63039
+            ],
+            [
+              -73.8058,
+              4.64284
+            ],
+            [
+              -73.77813,
+              4.65738
+            ],
+            [
+              -73.75162,
+              4.67395
+            ],
+            [
+              -73.72644,
+              4.69245
+            ],
+            [
+              -73.70271,
+              4.71277
+            ],
+            [
+              -73.68057,
+              4.7348
+            ],
+            [
+              -73.66014,
+              4.75842
+            ],
+            [
+              -73.64154,
+              4.78349
+            ],
+            [
+              -73.62488,
+              4.80988
+            ],
+            [
+              -73.61024,
+              4.83744
+            ],
+            [
+              -73.59771,
+              4.86601
+            ],
+            [
+              -73.58736,
+              4.89544
+            ],
+            [
+              -73.57924,
+              4.92555
+            ],
+            [
+              -73.57341,
+              4.95619
+            ],
+            [
+              -73.56989,
+              4.98717
+            ],
+            [
+              -73.56871,
+              5.01833
+            ],
+            [
+              -73.56861,
+              5.01833
+            ]
+          ]
+        ]
+      }
+    },
     {
       "type": "Feature",
       "properties": {
         "id": "TMA_VILLAVICENCIO_2",
-        "name": "TMA Villavicencio - Polígono 2",
+        "name": "TMA Villavicencio 2",
         "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.13",
         "atsUnit": "FIS VILLAVICENCIO",
         "callsign": "Villavicencio Aproximacion",
-        "languages": ["ES", "EN"],
-        "oprHr": "1100-2300",
-        "frequency": "119.30 MHz",
-        "alternateFrequency": "119.70 MHz",
-        "lateralLimitsRaw": "Desde 050106N/0725838W; 045117N/0720128W; 041750N/0725838W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL245" }
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "generated_from_pdf"
+        "oprHr": "1100-2300",
+        "frequency": "119.30 / 119.70 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 245"
+          }
+        ],
+        "notes": null
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-72.97722,  5.01833],
-          [-72.02444,  4.85472],
-          [-72.97722,  4.29722],
-          [-72.97722,  5.01833]
-        ]]
+        "coordinates": [
+          [
+            [
+              -72.97722,
+              5.01833
+            ],
+            [
+              -72.02444,
+              4.85472
+            ],
+            [
+              -72.97722,
+              4.29722
+            ],
+            [
+              -72.97722,
+              5.01833
+            ]
+          ]
+        ]
       }
     },
-
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TMA_VILLAVICENCIO_3",
+        "name": "TMA Villavicencio 3",
+        "type": "TMA",
+        "atsUnit": "FIS VILLAVICENCIO",
+        "callsign": "Villavicencio Aproximacion",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "1100-2300",
+        "frequency": "119.30 / 119.70 MHZ",
+        "verticalLimits": [
+          {
+            "class": "D",
+            "lower": "1500 FT",
+            "upper": "14500 FT"
+          }
+        ],
+        "notes": "Arco 25NM horario centrado en DVOR ZIP (050106N/0735913W)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -73.94806,
+              4.03278
+            ],
+            [
+              -73.66833,
+              4.23944
+            ],
+            [
+              -73.66861,
+              4.44972
+            ],
+            [
+              -73.83389,
+              4.62889
+            ],
+            [
+              -73.83448,
+              4.63039
+            ],
+            [
+              -73.84133,
+              4.62779
+            ],
+            [
+              -73.84822,
+              4.62531
+            ],
+            [
+              -73.85515,
+              4.62294
+            ],
+            [
+              -73.86213,
+              4.6207
+            ],
+            [
+              -73.86914,
+              4.61858
+            ],
+            [
+              -73.87619,
+              4.61659
+            ],
+            [
+              -73.88327,
+              4.61472
+            ],
+            [
+              -73.89038,
+              4.61297
+            ],
+            [
+              -73.89753,
+              4.61134
+            ],
+            [
+              -73.9047,
+              4.60985
+            ],
+            [
+              -73.9119,
+              4.60847
+            ],
+            [
+              -73.91912,
+              4.60722
+            ],
+            [
+              -73.92636,
+              4.6061
+            ],
+            [
+              -73.93361,
+              4.60511
+            ],
+            [
+              -73.94089,
+              4.60424
+            ],
+            [
+              -73.94818,
+              4.6035
+            ],
+            [
+              -73.94806,
+              4.03278
+            ]
+          ]
+        ]
+      }
+    },
     {
       "type": "Feature",
       "properties": {
         "id": "TMA_VILLAVICENCIO_4",
-        "name": "TMA Villavicencio - Polígono 4",
+        "name": "TMA Villavicencio 4",
         "type": "TMA",
-        "source": "AIP Colombia ENR 2.1",
-        "chartRef": "ENR 6.13",
         "atsUnit": "FIS VILLAVICENCIO",
         "callsign": "Villavicencio Aproximacion",
-        "languages": ["ES", "EN"],
-        "oprHr": "1100-2300",
-        "frequency": "119.30 MHz",
-        "alternateFrequency": "119.70 MHz",
-        "lateralLimitsRaw": "Desde 035450N/0725838W; 034241N/0722444W; 031208N/0722444W; 031208N/0712903W; 044543N/0712903W; 045117N/0720128W; 041750N/0725838W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL245" },
-          { "class": "G", "lower": "1500 FT",  "upper": "17500 FT" }
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "generated_from_pdf"
+        "oprHr": "1100-2300",
+        "frequency": "119.30 / 119.70 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "FL 175",
+            "upper": "FL 245"
+          },
+          {
+            "class": "G",
+            "lower": "1500 FT",
+            "upper": "17500 FT"
+          }
+        ],
+        "notes": null
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-72.97722,  3.91389],
-          [-72.41222,  3.71139],
-          [-72.41222,  3.20222],
-          [-71.48417,  3.20222],
-          [-71.48417,  4.76194],
-          [-72.02444,  4.85472],
-          [-72.97722,  4.29722],
-          [-72.97722,  3.91389]
-        ]]
+        "coordinates": [
+          [
+            [
+              -72.97722,
+              3.91389
+            ],
+            [
+              -72.41222,
+              3.71139
+            ],
+            [
+              -72.41222,
+              3.20222
+            ],
+            [
+              -71.48417,
+              3.20222
+            ],
+            [
+              -71.48417,
+              4.76194
+            ],
+            [
+              -72.02444,
+              4.85472
+            ],
+            [
+              -72.97722,
+              4.29722
+            ],
+            [
+              -72.97722,
+              3.91389
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
         "id": "CTA_BARRANQUILLA_N",
-        "name": "CTA Barranquilla - Sector Norte",
+        "name": "CTA Barranquilla Sector Norte",
         "type": "CTA",
-        "source": "AIP Colombia ENR 2.1",
         "atsUnit": "CONTROL BARRANQUILLA NORTE",
         "callsign": "Barranquilla Control Norte",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "124.20 MHz",
-        "alternateFrequency": "128.40 MHz",
-        "lateralLimitsRaw": "Desde 094310N/0762214W; 090724N/0772500W; 150000N/0772500W; 150000N/0740000W; 141842N/0740000W; 122950N/0712447W; 115950N/0705947W; 115150N/0711947W; 102656N/0725130W; 103916N/0740157W; 113350N/0740348W; 114104N/0752427W; 104430N/0762158W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL245" }
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "generated_from_pdf"
+        "oprHr": "H24",
+        "frequency": "128.40 / 129.10 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 245"
+          }
+        ],
+        "notes": null
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-76.37056,  9.71944],
-          [-77.41667,  9.12333],
-          [-77.41667, 15.00000],
-          [-74.00000, 15.00000],
-          [-74.00000, 14.31167],
-          [-71.41306, 12.49722],
-          [-70.99639, 11.99722],
-          [-71.32972, 11.86389],
-          [-72.85833, 10.44889],
-          [-74.03250, 10.65444],
-          [-74.06333, 11.56389],
-          [-75.40750, 11.68444],
-          [-76.36611, 10.74167],
-          [-76.37056,  9.71944]
-        ]]
+        "coordinates": [
+          [
+            [
+              -76.37056,
+              9.71944
+            ],
+            [
+              -77.41667,
+              9.12333
+            ],
+            [
+              -77.41667,
+              15
+            ],
+            [
+              -74,
+              15
+            ],
+            [
+              -74,
+              14.31167
+            ],
+            [
+              -71.41306,
+              12.49722
+            ],
+            [
+              -70.99639,
+              11.99722
+            ],
+            [
+              -71.32972,
+              11.86389
+            ],
+            [
+              -72.85833,
+              10.44889
+            ],
+            [
+              -74.0325,
+              10.65444
+            ],
+            [
+              -74.06333,
+              11.56389
+            ],
+            [
+              -75.4075,
+              11.68444
+            ],
+            [
+              -76.36611,
+              10.74167
+            ],
+            [
+              -76.37056,
+              9.71944
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
-        "id": "CTA_BARRANQUILLA_SD",
-        "name": "CTA Barranquilla - Sector Sur Parte Derecha",
+        "id": "CTA_BARRANQUILLA_SUR_DER",
+        "name": "CTA Barranquilla Sector Sur Parte Derecha",
         "type": "CTA",
-        "source": "AIP Colombia ENR 2.1",
         "atsUnit": "CONTROL BARRANQUILLA SUR",
         "callsign": "Barranquilla Control Sur",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "128.40 MHz",
-        "alternateFrequency": "124.20 MHz",
-        "lateralLimitsRaw": "Desde 083750N/0723917W; 075244N/0741906W; 092949N/0743755W; 100550N/0740048W; 103916N/0740157W; 102656N/0725130W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL245" }
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "generated_from_pdf"
+        "oprHr": "H24",
+        "frequency": "124.20 / 128.40 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 245"
+          }
+        ],
+        "notes": null
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-72.65472,  8.63056],
-          [-74.31833,  7.87889],
-          [-74.63194,  9.49694],
-          [-74.01333, 10.09722],
-          [-74.03250, 10.65444],
-          [-72.85833, 10.44889],
-          [-72.65472,  8.63056]
-        ]]
+        "coordinates": [
+          [
+            [
+              -72.65472,
+              8.63056
+            ],
+            [
+              -74.31833,
+              7.87889
+            ],
+            [
+              -74.63194,
+              9.49694
+            ],
+            [
+              -74.01333,
+              10.09722
+            ],
+            [
+              -74.0325,
+              10.65444
+            ],
+            [
+              -72.85833,
+              10.44889
+            ],
+            [
+              -72.65472,
+              8.63056
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
-        "id": "CTA_BARRANQUILLA_SI",
-        "name": "CTA Barranquilla - Sector Sur Parte Izquierda",
+        "id": "CTA_BARRANQUILLA_SUR_IZQ",
+        "name": "CTA Barranquilla Sector Sur Parte Izquierda",
         "type": "CTA",
-        "source": "AIP Colombia ENR 2.1",
         "atsUnit": "CONTROL BARRANQUILLA SUR",
         "callsign": "Barranquilla Control Sur",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "124.20 MHz",
-        "alternateFrequency": "128.40 MHz",
-        "lateralLimitsRaw": "Desde 081151N/0762243W; 083450N/0772500W; 090724N/0772500W; 094310N/0762214W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL245" }
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "generated_from_pdf"
+        "oprHr": "H24",
+        "frequency": "124.20 / 128.40 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 245"
+          }
+        ],
+        "notes": null
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-76.37861,  8.19750],
-          [-77.41667,  8.58056],
-          [-77.41667,  9.12333],
-          [-76.37056,  9.71944],
-          [-76.37861,  8.19750]
-        ]]
+        "coordinates": [
+          [
+            [
+              -76.37861,
+              8.1975
+            ],
+            [
+              -77.41667,
+              8.58056
+            ],
+            [
+              -77.41667,
+              9.12333
+            ],
+            [
+              -76.37056,
+              9.71944
+            ],
+            [
+              -76.37861,
+              8.1975
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
         "id": "CTA_CALI",
         "name": "CTA Cali",
         "type": "CTA",
-        "source": "AIP Colombia ENR 2.1",
         "atsUnit": "CONTROL CALI",
         "callsign": "Cali Control",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "125.70 MHz",
-        "alternateFrequency": "126.70 MHz",
-        "lateralLimitsRaw": "Desde 043150N/0825449W; ... 041406N/0770255W por arco anti-horario 63NM DME CLO; ... siguiendo Frontera con Ecuador hasta 012528N/0785027W; 012450N/0825449W; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "17500 FT", "upper": "FL245" },
-          { "class": "E", "lower": "500 FT",   "upper": "17500 FT" },
-          { "class": "G", "lower": "GND",       "upper": "500 FT" }
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Arco 63NM DME CLO y Frontera Ecuador simplificados."
+        "oprHr": "H24",
+        "frequency": "125.70 / 126.70 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 245"
+          },
+          {
+            "class": "E",
+            "lower": "500 FT",
+            "upper": "17500 FT"
+          },
+          {
+            "class": "G",
+            "lower": "GND",
+            "upper": "500 FT"
+          }
+        ],
+        "notes": "Arco 63NM anti-horario centrado en DME CLO (032403N/0762423W)"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-82.91361,  4.53056],
-          [-79.99667,  4.49722],
-          [-79.04667,  6.26389],
-          [-78.78000,  6.46389],
-          [-78.29667,  6.73056],
-          [-77.88000,  7.24722],
-          [-77.00417,  6.12278],
-          [-76.22361,  4.09000],
-          [-76.11361,  2.39194],
-          [-77.39111,  0.03861],
-          [-78.84083,  1.42444],
-          [-82.91361,  1.41389],
-          [-82.91361,  4.53056]
-        ]]
+        "coordinates": [
+          [
+            [
+              -82.91361,
+              4.53056
+            ],
+            [
+              -79.99667,
+              4.49722
+            ],
+            [
+              -79.04667,
+              6.26389
+            ],
+            [
+              -78.78,
+              6.46389
+            ],
+            [
+              -78.29667,
+              6.73056
+            ],
+            [
+              -77.88,
+              7.24722
+            ],
+            [
+              -77.53028,
+              6.10444
+            ],
+            [
+              -76.22528,
+              4.78083
+            ],
+            [
+              -76.22528,
+              4.26583
+            ],
+            [
+              -77.04861,
+              4.235
+            ],
+            [
+              -77.0474,
+              4.23342
+            ],
+            [
+              -77.18151,
+              4.11079
+            ],
+            [
+              -77.29242,
+              3.96694
+            ],
+            [
+              -77.3768,
+              3.80618
+            ],
+            [
+              -77.43215,
+              3.63332
+            ],
+            [
+              -77.45684,
+              3.45353
+            ],
+            [
+              -77.45014,
+              3.27218
+            ],
+            [
+              -77.41227,
+              3.09469
+            ],
+            [
+              -77.34439,
+              2.92636
+            ],
+            [
+              -77.24852,
+              2.77221
+            ],
+            [
+              -77.12753,
+              2.63684
+            ],
+            [
+              -76.98504,
+              2.52428
+            ],
+            [
+              -76.8253,
+              2.43789
+            ],
+            [
+              -76.65307,
+              2.38025
+            ],
+            [
+              -76.4735,
+              2.35308
+            ],
+            [
+              -76.29192,
+              2.35718
+            ],
+            [
+              -76.11375,
+              2.39244
+            ],
+            [
+              -77.39111,
+              0.35528
+            ],
+            [
+              -78.84083,
+              1.42444
+            ],
+            [
+              -82.91361,
+              1.41389
+            ],
+            [
+              -82.91361,
+              4.53056
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
-        "id": "CTA_MEDELLIN_1",
-        "name": "CTA Medellín - Sector 1",
+        "id": "CTA_MEDELLIN",
+        "name": "CTA Medellín",
         "type": "CTA",
-        "source": "AIP Colombia ENR 2.1",
         "atsUnit": "CONTROL MEDELLIN",
         "callsign": "Medellín Control",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "127.20 MHz",
-        "alternateFrequency": "127.40 MHz",
-        "lateralLimitsRaw": "Desde 083454N/0772458W; 075915N/0754849W; 071319N/0761751W; 070040N/0761631W por arco anti-horario 80NM DVOR RNG; 045444N/0761331W; 044651N/0761331W; 060616N/0773149W; 071450N/0775248W siguiendo Frontera con Panama hasta para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "FL175", "upper": "FL245" },
-          { "class": "G", "lower": "GND",    "upper": "FL175" }
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Arco 80NM DVOR RNG y Frontera Panamá simplificados."
+        "oprHr": "H24",
+        "frequency": "127.20 / 127.40 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "1500 FT",
+            "upper": "24500 FT"
+          }
+        ],
+        "notes": "Límite Panamá simplificado"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-77.41278,  8.58167],
-          [-75.81472,  7.59861],
-          [-76.29861,  7.13306],
-          [-76.27500,  6.52194],
-          [-76.22528,  4.78083],
-          [-76.22528,  4.67611],
-          [-77.53028,  6.10444],
-          [-77.88000,  7.24722],
-          [-77.41278,  8.58167]
-        ]]
+        "coordinates": [
+          [
+            [
+              -77.41611,
+              8.58167
+            ],
+            [
+              -75.81361,
+              7.9875
+            ],
+            [
+              -76.2975,
+              7.22194
+            ],
+            [
+              -76.22528,
+              6.53333
+            ],
+            [
+              -76.22528,
+              4.78083
+            ],
+            [
+              -77.53028,
+              6.10444
+            ],
+            [
+              -77.88,
+              7.24722
+            ],
+            [
+              -77.41611,
+              8.58167
+            ]
+          ]
+        ]
       }
     },
-
     {
       "type": "Feature",
       "properties": {
-        "id": "CTA_MEDELLIN_2",
-        "name": "CTA Medellín - Sector 2",
-        "type": "CTA",
-        "source": "AIP Colombia ENR 2.1",
-        "atsUnit": "CONTROL MEDELLIN",
-        "callsign": "Medellín Control",
-        "languages": ["ES", "EN"],
-        "oprHr": "H24",
-        "frequency": "127.20 MHz",
-        "alternateFrequency": "127.40 MHz",
-        "lateralLimitsRaw": "Desde 070040N/0761631W; 063200N/0761331W; 045444N/0761331W por arco horario 80NM DVOR RNG; para el punto de origen",
-        "verticalLimits": [
-          { "class": "A", "lower": "FL175", "upper": "FL245" },
-          { "class": "D", "lower": "FL125", "upper": "FL175" },
-          { "class": "G", "lower": "GND",    "upper": "FL125" }
+        "id": "SECTOR_CENTRAL",
+        "name": "Sector Central",
+        "type": "TMA",
+        "atsUnit": "APP CENTRAL",
+        "callsign": "Bogota Radar Llegadas Bogota",
+        "languages": [
+          "ES",
+          "EN"
         ],
-        "status": "needs_review",
-        "notes": "Arco 80NM DVOR RNG pendiente de cálculo preciso."
+        "oprHr": "0501-1059",
+        "frequency": "119.50 MHZ",
+        "verticalLimits": [
+          {
+            "class": "D",
+            "lower": "1500 FT",
+            "upper": "11500 FT"
+          },
+          {
+            "class": "G",
+            "lower": "12000 FT",
+            "upper": "FL 195"
+          }
+        ],
+        "notes": "Arco 25NM horario centrado en DVOR ZIP (050106N/0735913W)"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-76.27500,  7.00667],
-          [-76.22528,  6.53333],
-          [-76.22528,  4.75722],
-          [-75.71472,  6.25639],
-          [-76.27500,  7.00667]
-        ]]
+        "coordinates": [
+          [
+            [
+              -74.97778,
+              6.00056
+            ],
+            [
+              -74.71111,
+              6.00056
+            ],
+            [
+              -74.57833,
+              6.49389
+            ],
+            [
+              -73.93333,
+              6.89389
+            ],
+            [
+              -74.065,
+              6.18
+            ],
+            [
+              -73.31917,
+              6.18
+            ],
+            [
+              -73.71944,
+              5.34056
+            ],
+            [
+              -73.72038,
+              5.33942
+            ],
+            [
+              -73.67593,
+              5.29695
+            ],
+            [
+              -73.63822,
+              5.24843
+            ],
+            [
+              -73.60809,
+              5.19492
+            ],
+            [
+              -73.58617,
+              5.13758
+            ],
+            [
+              -73.57296,
+              5.07766
+            ],
+            [
+              -73.56872,
+              5.01645
+            ],
+            [
+              -73.57355,
+              4.95529
+            ],
+            [
+              -73.58734,
+              4.8955
+            ],
+            [
+              -73.60979,
+              4.83837
+            ],
+            [
+              -73.64042,
+              4.78515
+            ],
+            [
+              -73.67855,
+              4.73698
+            ],
+            [
+              -73.72336,
+              4.69491
+            ],
+            [
+              -73.77388,
+              4.65986
+            ],
+            [
+              -73.82901,
+              4.63257
+            ],
+            [
+              -73.88756,
+              4.61365
+            ],
+            [
+              -73.94826,
+              4.60349
+            ],
+            [
+              -73.94806,
+              3.86861
+            ],
+            [
+              -75.49667,
+              3.86861
+            ],
+            [
+              -75.49667,
+              5.14083
+            ],
+            [
+              -75.1875,
+              5.14111
+            ],
+            [
+              -75.1875,
+              5.27694
+            ],
+            [
+              -75.1725,
+              5.59611
+            ],
+            [
+              -74.97778,
+              6.00056
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SECTOR_VILLAVICENCIO_E",
+        "name": "Sector Villavicencio E",
+        "type": "FIR",
+        "atsUnit": "FIC SECTOR VILLAVICENCIO",
+        "callsign": "Villavicencio Informacion",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "H24",
+        "frequency": "126.50 / 127.00 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 195"
+          },
+          {
+            "class": "G",
+            "lower": "1500 FT",
+            "upper": "17500 FT"
+          }
+        ],
+        "notes": "Arco 25NM horario centrado en DVOR ZIP (050106N/0735913W)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -72.09639,
+              7.08056
+            ],
+            [
+              -67.64722,
+              3.85278
+            ],
+            [
+              -71.65083,
+              3.43889
+            ],
+            [
+              -72.97722,
+              3.91389
+            ],
+            [
+              -72.97722,
+              3.31222
+            ],
+            [
+              -73.94806,
+              3.31222
+            ],
+            [
+              -73.94806,
+              4.60139
+            ],
+            [
+              -73.94826,
+              4.60349
+            ],
+            [
+              -74.05833,
+              4.60782
+            ],
+            [
+              -74.16345,
+              4.64065
+            ],
+            [
+              -74.25633,
+              4.6997
+            ],
+            [
+              -74.33052,
+              4.78087
+            ],
+            [
+              -74.38088,
+              4.87854
+            ],
+            [
+              -74.40389,
+              4.98592
+            ],
+            [
+              -74.39794,
+              5.09556
+            ],
+            [
+              -74.36344,
+              5.19984
+            ],
+            [
+              -74.30277,
+              5.29152
+            ],
+            [
+              -74.22013,
+              5.36423
+            ],
+            [
+              -74.12126,
+              5.4129
+            ],
+            [
+              -74.01305,
+              5.43414
+            ],
+            [
+              -73.90303,
+              5.42649
+            ],
+            [
+              -73.79884,
+              5.39047
+            ],
+            [
+              -73.70774,
+              5.32858
+            ],
+            [
+              -73.63606,
+              5.24514
+            ],
+            [
+              -72.09639,
+              7.08056
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SECTOR_VILLAVICENCIO_SE",
+        "name": "Sector Villavicencio SE",
+        "type": "FIR",
+        "atsUnit": "FIC SECTOR VILLAVICENCIO",
+        "callsign": "Villavicencio Informacion",
+        "languages": [
+          "ES",
+          "EN"
+        ],
+        "oprHr": "H24",
+        "frequency": "126.20 / 127.30 MHZ",
+        "verticalLimits": [
+          {
+            "class": "A",
+            "lower": "17500 FT",
+            "upper": "FL 195"
+          },
+          {
+            "class": "G",
+            "lower": "1500 FT",
+            "upper": "17500 FT"
+          }
+        ],
+        "notes": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -74.86583,
+              3.51389
+            ],
+            [
+              -73.94806,
+              3.86861
+            ],
+            [
+              -73.94806,
+              3.31222
+            ],
+            [
+              -72.97722,
+              3.31222
+            ],
+            [
+              -72.97722,
+              3.91389
+            ],
+            [
+              -71.65083,
+              3.43889
+            ],
+            [
+              -67.64722,
+              3.85278
+            ],
+            [
+              -69.39639,
+              -1.41389
+            ],
+            [
+              -72.39639,
+              -0.605
+            ],
+            [
+              -74.77556,
+              -0.17861
+            ],
+            [
+              -74.50833,
+              2.56389
+            ],
+            [
+              -74.86583,
+              2.56389
+            ],
+            [
+              -74.86583,
+              3.51389
+            ]
+          ]
+        ]
       }
     }
-
   ]
 }
