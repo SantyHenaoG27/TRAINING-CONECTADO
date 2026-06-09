@@ -2291,6 +2291,10 @@
       else stopSimuladoresLive();
       if (name === 'estudiantes') startEstudiantesLive();
       else stopEstudiantesLive();
+      if (name === 'asignar') {
+        loadStudents();
+        loadAssignedFlights();
+      }
       if (name === 'reportes') loadReportes();
       if (name === 'radar-atc') { initRadarAtc(); startAtcTrafficLive(); }
       else stopAtcTrafficLive();
@@ -5926,12 +5930,17 @@
     function bindAtcPtt() {
       const btn = document.getElementById('atcPttBtn');
       const press = (e) => { e.preventDefault(); atcPttArm(); };
-      const release = (e) => { e.preventDefault(); atcPttRelease(); };
+      const release = (e) => {
+        const isPttTouch = btn.contains(e.target);
+        if (atcState.pttState === 'idle' && !isPttTouch) return;
+        e.preventDefault();
+        atcPttRelease();
+      };
 
       btn.addEventListener('mousedown', press);
       btn.addEventListener('touchstart', press, { passive: false });
       window.addEventListener('mouseup', release);
-      window.addEventListener('touchend', release);
+      window.addEventListener('touchend', release, { passive: false });
       btn.addEventListener('mouseleave', () => { if (atcState.pttState !== 'idle') atcPttRelease(); });
 
       window.addEventListener('keydown', (e) => {
