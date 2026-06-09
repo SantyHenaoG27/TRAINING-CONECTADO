@@ -1854,7 +1854,7 @@ function initDashboardMap(airportsReady, waypointsReady, navaidsReady) {
 
   const dashMap = new maplibregl.Map({
     container,
-    style: DASH_STYLES.liberty,
+    style: DASH_STYLES.dark,
     center: [-74.2973, 4.5709],
     zoom: 5.5,
     attributionControl: true,
