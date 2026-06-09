@@ -122,6 +122,9 @@
       overflow-y: hidden;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
+      position: relative;
+      z-index: 110;
+      touch-action: pan-x;
     }
     .page-tab {
       background: transparent;
@@ -159,6 +162,8 @@
       flex: 1;
       overflow: hidden;
       min-width: 0;
+      position: relative;
+      z-index: 1;
     }
     .tab-panel { display: none; height: 100%; max-width: 100%; overflow-y: auto; overflow-x: hidden; padding: 28px 32px; }
     .tab-panel.active { display: block; }
@@ -2261,7 +2266,18 @@
   <script src="src/scripts/auth-guard.js"></script>
 
   <script>
+    function closeRadarAtcTransientUi() {
+      document.getElementById('atcLayersDrawer')?.classList.remove('open');
+      document.getElementById('atcLayersOverlay')?.classList.remove('open');
+      document.getElementById('atcSettingsModal')?.classList.add('hidden-panel');
+      const airspacePopup = document.getElementById('atcAirspacePopup');
+      if (airspacePopup) airspacePopup.style.display = 'none';
+      const toast = document.getElementById('atcToast');
+      if (toast) toast.style.opacity = '0';
+    }
+
     function switchTab(name, btn) {
+      if (name !== 'radar-atc') closeRadarAtcTransientUi();
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.page-tab').forEach(b => b.classList.remove('active'));
       document.getElementById('panel-' + name).classList.add('active');
