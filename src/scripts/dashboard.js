@@ -1915,6 +1915,7 @@ function initDashboardMap(airportsReady, waypointsReady, navaidsReady) {
 
   function addAllDashLayers() {
     if (!normalWpGeoJSON) return;
+    if (dashMap.getSource("dash-waypoints")) return;
 
     dashMap.addSource("dash-waypoints",     { type: "geojson", data: normalWpGeoJSON });
     dashMap.addSource("dash-gps-waypoints", { type: "geojson", data: gpsWpGeoJSON });
@@ -2007,6 +2008,11 @@ function initDashboardMap(airportsReady, waypointsReady, navaidsReady) {
     if (dashMap.isStyleLoaded()) {
       addAllDashLayers();
       updateRouteLineOnMap();
+    } else {
+      dashMap.once("style.load", () => {
+        addAllDashLayers();
+        updateRouteLineOnMap();
+      });
     }
 
     // Popup
