@@ -88,6 +88,49 @@
       color: var(--muted);
     }
     .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+    .dl-dropdown { position: relative; }
+    .dl-trigger {
+      background: transparent; border: 1px solid var(--border-soft);
+      color: var(--fg-2); font-family: var(--font-mono); font-size: 10px;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 14px;
+      display: inline-flex; align-items: center; gap: 5px; cursor: pointer;
+      transition: border-color var(--motion-fast), color var(--motion-fast);
+    }
+    .dl-dropdown:hover .dl-trigger { border-color: var(--accent); color: var(--accent); }
+    .dl-arrow { font-size: 8px; transition: transform 120ms; }
+    .dl-dropdown:hover .dl-arrow { transform: rotate(180deg); }
+    .dl-panel {
+      position: fixed;
+      min-width: 210px;
+      opacity: 0; pointer-events: none;
+      transform: translateY(-4px);
+      transition: opacity 120ms, transform 120ms;
+      z-index: 9999;
+    }
+    /* panel controlado por JS (portal en body) */
+    .dl-panel-inner {
+      background: var(--surface); border: 1px solid var(--border);
+      box-shadow: 0 28px 84px rgba(0,0,0,0.54);
+      padding: 12px; display: grid; gap: 12px;
+    }
+    .dl-group { display: grid; gap: 4px; }
+    .dl-os {
+      color: var(--muted); font-family: var(--font-mono); font-size: 9px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding-bottom: 6px; border-bottom: 1px solid var(--border-soft);
+    }
+    .dl-btn {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      color: var(--fg-2); font-family: var(--font-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 7px 10px; text-align: left; cursor: pointer;
+      transition: border-color 120ms, color 120ms;
+    }
+    .dl-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .dl-btn.soon { opacity: 0.4; cursor: default; }
+    .dl-btn.soon:hover { border-color: var(--border); color: var(--fg-2); }
+
     .btn-logout {
       background: transparent;
       border: 1px solid var(--border-soft);
@@ -731,6 +774,25 @@
     </div>
     <div class="topbar-center" id="userLabel">Juan García</div>
     <div class="topbar-right">
+      <div class="dl-dropdown" id="studentDlDropdown">
+        <button class="dl-trigger" type="button" id="studentDlTrigger">
+          Descargar plugin <span class="dl-arrow">▾</span>
+        </button>
+        <div class="dl-panel" role="menu">
+          <div class="dl-panel-inner">
+            <div class="dl-group">
+              <span class="dl-os">Windows</span>
+              <button class="dl-btn" type="button" data-dl="win-xplane">X-Plane 11 / 12</button>
+              <button class="dl-btn soon" type="button" disabled>FS9 / FSX · Próximo</button>
+            </div>
+            <div class="dl-group">
+              <span class="dl-os">Mac</span>
+              <button class="dl-btn soon" type="button" disabled>X-Plane 11 / 12 · Próximo</button>
+              <button class="dl-btn soon" type="button" disabled>FS9 / FSX · Próximo</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <button class="btn-logout" onclick="handleLogout()">Cerrar sesión</button>
     </div>
   </header>
@@ -2272,6 +2334,39 @@
     } else {
       window.addEventListener('authReady', initSessionUI);
     }
+  </script>
+  <script>
+    (function () {
+      const dd      = document.getElementById('studentDlDropdown');
+      if (!dd) return;
+      const trigger = dd.querySelector('.dl-trigger');
+      const panel   = dd.querySelector('.dl-panel');
+
+      // Portal: mover el panel al body escapa el stacking context del topbar
+      document.body.appendChild(panel);
+
+      function positionPanel() {
+        const r = trigger.getBoundingClientRect();
+        panel.style.top   = (r.bottom + 4) + 'px';
+        panel.style.right = (window.innerWidth - r.right) + 'px';
+        panel.style.left  = 'auto';
+      }
+
+      let hideTimer;
+      function showPanel() { clearTimeout(hideTimer); positionPanel(); panel.style.opacity = '1'; panel.style.pointerEvents = 'auto'; panel.style.transform = 'translateY(0)'; }
+      function hidePanel() { hideTimer = setTimeout(() => { panel.style.opacity = '0'; panel.style.pointerEvents = 'none'; panel.style.transform = 'translateY(-4px)'; }, 80); }
+
+      dd.addEventListener('mouseenter', showPanel);
+      dd.addEventListener('mouseleave', hidePanel);
+      panel.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+      panel.addEventListener('mouseleave', hidePanel);
+
+      panel.querySelectorAll('.dl-btn:not(.soon)').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          alert('Descarga próximamente disponible para ' + btn.textContent.trim());
+        });
+      });
+    })();
   </script>
 </body>
 </html>

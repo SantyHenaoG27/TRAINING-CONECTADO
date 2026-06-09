@@ -87,6 +87,49 @@
       font-weight: 700;
     }
     .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+    .dl-dropdown { position: relative; }
+    .dl-trigger {
+      background: transparent; border: 1px solid var(--border-soft);
+      color: var(--fg-2); font-family: var(--font-mono); font-size: 10px;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 14px;
+      display: inline-flex; align-items: center; gap: 5px; cursor: pointer;
+      transition: border-color var(--motion-fast), color var(--motion-fast);
+    }
+    .dl-dropdown:hover .dl-trigger { border-color: var(--accent); color: var(--accent); }
+    .dl-arrow { font-size: 8px; transition: transform 120ms; }
+    .dl-dropdown:hover .dl-arrow { transform: rotate(180deg); }
+    .dl-panel {
+      position: fixed;
+      min-width: 210px;
+      opacity: 0; pointer-events: none;
+      transform: translateY(-4px);
+      transition: opacity 120ms, transform 120ms;
+      z-index: 9999;
+    }
+    /* panel controlado por JS (portal en body) */
+    .dl-panel-inner {
+      background: var(--surface); border: 1px solid var(--border);
+      box-shadow: 0 28px 84px rgba(0,0,0,0.54);
+      padding: 12px; display: grid; gap: 12px;
+    }
+    .dl-group { display: grid; gap: 4px; }
+    .dl-os {
+      color: var(--muted); font-family: var(--font-mono); font-size: 9px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding-bottom: 6px; border-bottom: 1px solid var(--border-soft);
+    }
+    .dl-btn {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      color: var(--fg-2); font-family: var(--font-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 7px 10px; text-align: left; cursor: pointer;
+      transition: border-color 120ms, color 120ms;
+    }
+    .dl-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .dl-btn.soon { opacity: 0.4; cursor: default; }
+    .dl-btn.soon:hover { border-color: var(--border); color: var(--fg-2); }
+
     .btn-logout {
       background: transparent;
       border: 1px solid var(--border-soft);
@@ -1387,6 +1430,25 @@
       <span class="role-badge">Instructor</span>
     </div>
     <div class="topbar-right">
+      <div class="dl-dropdown" id="adminDlDropdown">
+        <button class="dl-trigger" type="button" id="adminDlTrigger">
+          Descargar plugin <span class="dl-arrow">▾</span>
+        </button>
+        <div class="dl-panel" role="menu">
+          <div class="dl-panel-inner">
+            <div class="dl-group">
+              <span class="dl-os">Windows</span>
+              <button class="dl-btn" type="button" data-dl="win-xplane">X-Plane 11 / 12</button>
+              <button class="dl-btn soon" type="button" disabled>FS9 / FSX · Próximo</button>
+            </div>
+            <div class="dl-group">
+              <span class="dl-os">Mac</span>
+              <button class="dl-btn soon" type="button" disabled>X-Plane 11 / 12 · Próximo</button>
+              <button class="dl-btn soon" type="button" disabled>FS9 / FSX · Próximo</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <button class="btn-logout" onclick="handleLogout()">Cerrar sesión</button>
     </div>
   </header>
@@ -4757,7 +4819,7 @@
         supabaseClient.from('profiles').select('id, nombre, session_code').eq('role', 'estudiante'),
         supabaseClient
           .from('flight_telemetry')
-          .select('session_code, flight_id, sim_time, altitude_ft, ias_kt, heading_deg, latitude, longitude, on_ground')
+          .select('session_code, flight_id, sim_time, altitude_ft, ias_kt, heading_deg, vs_fpm, latitude, longitude, on_ground')
           .not('flight_id', 'is', null)
           .neq('flight_id', '')
           .order('sim_time', { ascending: false })
@@ -4809,21 +4871,39 @@
 
       const flights = [...byFlightId.entries()].map(([flightId, group]) => {
         const sorted = [...group].sort((a, b) => new Date(a.sim_time) - new Date(b.sim_time));
+        const first = sorted[0];
         const last = sorted[sorted.length - 1];
         const session = sessionsByCode[last.session_code];
         const student = studentsByCode[last.session_code] || null;
         const assignment = student ? (assignmentByStudent[student.id] || null) : null;
+        const startedMs = new Date(first.sim_time).getTime();
+        const lastMs = new Date(last.sim_time).getTime();
+        const coords = getRouteCoordinates(sorted);
+        const maxAlt = Math.max(...sorted.map(p => Number(p.altitude_ft)).filter(Number.isFinite));
+        const maxIas = Math.max(...sorted.map(p => Number(p.ias_kt)).filter(Number.isFinite));
+        const lastSeenMs = session ? new Date(session.last_seen).getTime() : lastMs;
         return {
           id: flightId,
+          session_code: last.session_code,
           student: student?.nombre || 'Sin estudiante asignado',
           altitude_ft: Number(last.altitude_ft),
           ias_kt: Number(last.ias_kt),
           heading_deg: Number(last.heading_deg),
+          vs_fpm: Number(last.vs_fpm),
           on_ground: !!last.on_ground,
           lat: Number(last.latitude),
           lng: Number(last.longitude),
           assignment: assignment ? { origen: assignment.origen, destino: assignment.destino } : null,
-          last_seen_ms: session ? new Date(session.last_seen).getTime() : new Date(last.sim_time).getTime(),
+          last_seen_ms: lastSeenMs,
+          last_signal: session ? timeSince(session.last_seen) : timeSince(last.sim_time),
+          last_report_at: last.sim_time,
+          duration_seconds: Number.isFinite(startedMs) && Number.isFinite(lastMs)
+            ? Math.max(0, (Math.min(now, lastMs) - startedMs) / 1000)
+            : 0,
+          point_count: sorted.length,
+          distance_nm: coords.length > 1 ? routeDistanceNm(coords) : 0,
+          max_altitude_ft: Number.isFinite(maxAlt) ? maxAlt : null,
+          max_ias_kt: Number.isFinite(maxIas) ? maxIas : null,
         };
       }).sort((a, b) => b.last_seen_ms - a.last_seen_ms);
 
@@ -5818,12 +5898,16 @@
       const assignmentLine = f.assignment
         ? `${escSim(f.assignment.origen)} → ${escSim(f.assignment.destino)}`
         : 'Libre — sin vuelo asignado activo';
+      const liveLabel = f.last_signal === 'ahora' ? 'En vivo' : `Señal ${f.last_signal || '—'}`;
+      const coordText = Number.isFinite(f.lat) && Number.isFinite(f.lng)
+        ? `${f.lat.toFixed(5)}, ${f.lng.toFixed(5)}`
+        : '—';
 
       panel.innerHTML = `
         <div class="atc-detail-head">
           <div>
             <div class="atc-detail-callsign">${escSim(f.id)}</div>
-            <div class="atc-detail-sub">${escSim(f.student)}</div>
+            <div class="atc-detail-sub">${escSim(f.student)} · ${escSim(f.session_code || 'Sin sesión')}</div>
           </div>
           <span class="atc-status-pill ${f.on_ground ? 'warning' : 'normal'}">${f.on_ground ? 'En tierra' : 'En vuelo'}</span>
         </div>
@@ -5832,6 +5916,15 @@
             <div class="atc-detail-item"><div class="k">Altitud</div><div class="v">${Number.isFinite(f.altitude_ft) ? f.altitude_ft.toLocaleString('es-CO') : '—'} ft</div></div>
             <div class="atc-detail-item"><div class="k">Velocidad indicada (IAS)</div><div class="v">${Number.isFinite(f.ias_kt) ? f.ias_kt : '—'} kt</div></div>
             <div class="atc-detail-item"><div class="k">Rumbo</div><div class="v">${Number.isFinite(f.heading_deg) ? String(Math.round(f.heading_deg)).padStart(3, '0') + '°' : '—'}</div></div>
+            <div class="atc-detail-item"><div class="k">V/S</div><div class="v ${Number.isFinite(f.vs_fpm) && f.vs_fpm < 0 ? 'warn' : ''}">${formatNumber(f.vs_fpm, ' FT/MIN')}</div></div>
+            <div class="atc-detail-item"><div class="k">Altitud máxima</div><div class="v">${formatNumber(f.max_altitude_ft, ' FT')}</div></div>
+            <div class="atc-detail-item"><div class="k">IAS máxima</div><div class="v">${formatNumber(f.max_ias_kt, ' KT')}</div></div>
+            <div class="atc-detail-item"><div class="k">Duración</div><div class="v">${escSim(formatDuration(f.duration_seconds))}</div></div>
+            <div class="atc-detail-item"><div class="k">Puntos recibidos</div><div class="v">${Number(f.point_count || 0).toLocaleString('es-CO')}</div></div>
+            <div class="atc-detail-item"><div class="k">Distancia</div><div class="v">${Number.isFinite(f.distance_nm) ? f.distance_nm.toFixed(1) : '0.0'} NM</div></div>
+            <div class="atc-detail-item"><div class="k">Última señal</div><div class="v accent">${escSim(liveLabel)}</div></div>
+            <div class="atc-detail-item"><div class="k">Último reporte</div><div class="v">${escSim(formatDateTime(f.last_report_at))}</div></div>
+            <div class="atc-detail-item"><div class="k">Coordenadas</div><div class="v">${escSim(coordText)}</div></div>
           </div>
 
           <div>
@@ -5839,7 +5932,7 @@
             <div class="atc-route-line"><span>Origen → Destino:</span> ${assignmentLine}</div>
           </div>
 
-          <div class="hint">El plan de ruta, procedimiento y alertas se conectarán aquí cuando exista la planeación IFR del estudiante.</div>
+          <div class="hint">Estos datos se actualizan con la telemetría activa de la aeronave seleccionada en el radar.</div>
         </div>
       `;
     }
@@ -6034,6 +6127,39 @@
 
       document.getElementById('atcCfgRangeLabel').textContent = atcState.range + ' NM';
     }
+  </script>
+  <script>
+    (function () {
+      const dd      = document.getElementById('adminDlDropdown');
+      if (!dd) return;
+      const trigger = dd.querySelector('.dl-trigger');
+      const panel   = dd.querySelector('.dl-panel');
+
+      // Portal: mover el panel al body escapa el stacking context del topbar
+      document.body.appendChild(panel);
+
+      function positionPanel() {
+        const r = trigger.getBoundingClientRect();
+        panel.style.top   = (r.bottom + 4) + 'px';
+        panel.style.right = (window.innerWidth - r.right) + 'px';
+        panel.style.left  = 'auto';
+      }
+
+      let hideTimer;
+      function showPanel() { clearTimeout(hideTimer); positionPanel(); panel.style.opacity = '1'; panel.style.pointerEvents = 'auto'; panel.style.transform = 'translateY(0)'; }
+      function hidePanel() { hideTimer = setTimeout(() => { panel.style.opacity = '0'; panel.style.pointerEvents = 'none'; panel.style.transform = 'translateY(-4px)'; }, 80); }
+
+      dd.addEventListener('mouseenter', showPanel);
+      dd.addEventListener('mouseleave', hidePanel);
+      panel.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+      panel.addEventListener('mouseleave', hidePanel);
+
+      panel.querySelectorAll('.dl-btn:not(.soon)').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          alert('Descarga próximamente disponible para ' + btn.textContent.trim());
+        });
+      });
+    })();
   </script>
 </body>
 </html>

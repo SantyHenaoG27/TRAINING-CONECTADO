@@ -123,6 +123,49 @@
     .nav-links { display: flex; align-items: center; gap: var(--space-6); color: var(--fg-2); font-size: var(--text-sm); text-transform: uppercase; }
     .nav-links a:hover { color: var(--accent); }
 
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-trigger {
+      background: transparent; border: 0; padding: 0;
+      color: var(--fg-2); font-size: var(--text-sm); font-family: var(--font-body);
+      text-transform: uppercase; letter-spacing: inherit;
+      display: inline-flex; align-items: center; gap: 5px; cursor: pointer;
+    }
+    .nav-dropdown-trigger:hover { color: var(--accent); }
+    .nav-dropdown-arrow { font-size: 9px; transition: transform var(--motion-fast) var(--ease-standard); }
+    .nav-dropdown.open .nav-dropdown-arrow { transform: rotate(180deg); }
+    .nav-dropdown-panel {
+      position: absolute; top: calc(100% + 14px); left: 50%;
+      transform: translateX(-50%) translateY(-4px);
+      min-width: 220px;
+      background: var(--surface); border: 1px solid var(--border);
+      box-shadow: var(--elev-raised);
+      padding: var(--space-4);
+      display: grid; gap: var(--space-4);
+      opacity: 0; pointer-events: none;
+      transition: opacity var(--motion-fast) var(--ease-standard), transform var(--motion-fast) var(--ease-standard);
+      z-index: 50;
+    }
+    .nav-dropdown.open .nav-dropdown-panel {
+      opacity: 1; pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+    .nav-dropdown-group { display: grid; gap: var(--space-2); }
+    .nav-dropdown-os {
+      color: var(--muted); font-family: var(--font-mono); font-size: 10px;
+      letter-spacing: 0.12em; padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .nav-dl-btn {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      color: var(--fg-2); font-family: var(--font-body); font-size: var(--text-xs);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 8px var(--space-3); text-align: left; cursor: pointer;
+      transition: border-color var(--motion-fast) var(--ease-standard), color var(--motion-fast) var(--ease-standard);
+    }
+    .nav-dl-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .nav-dl-btn.soon { opacity: 0.4; cursor: default; }
+    .nav-dl-btn.soon:hover { border-color: var(--border); color: var(--fg-2); }
+
     .btn {
       min-height: 33px;
       display: inline-flex;
@@ -142,6 +185,7 @@
     .btn-primary:hover { background: var(--accent-hover); }
     .btn-secondary { background: transparent; color: var(--fg); border-color: color-mix(in oklab, var(--fg), transparent 58%); }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-soon { background: transparent; color: var(--muted); border-color: color-mix(in oklab, var(--border), transparent 20%); pointer-events: none; opacity: 0.55; }
     .btn:focus-visible, .faq-trigger:focus-visible, input:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
     .eyebrow {
@@ -368,6 +412,23 @@
         <a href="#beneficios">Beneficios</a>
         <a href="map.html">Mapa IFR</a>
         <a href="#faq">FAQ</a>
+        <div class="nav-dropdown" id="downloadDropdown">
+          <button class="nav-dropdown-trigger" type="button" aria-haspopup="true" aria-expanded="false" id="downloadTrigger">
+            Descargar <span class="nav-dropdown-arrow">▾</span>
+          </button>
+          <div class="nav-dropdown-panel" role="menu">
+            <div class="nav-dropdown-group">
+              <span class="nav-dropdown-os">Windows</span>
+              <button class="nav-dl-btn" type="button" role="menuitem" data-dl="win-xplane">X-Plane 11 / 12</button>
+              <button class="nav-dl-btn soon" type="button" role="menuitem" aria-disabled="true" disabled>FS9 / FSX · Próximo</button>
+            </div>
+            <div class="nav-dropdown-group">
+              <span class="nav-dropdown-os">Mac</span>
+              <button class="nav-dl-btn soon" type="button" role="menuitem" aria-disabled="true" disabled>X-Plane 11 / 12 · Próximo</button>
+              <button class="nav-dl-btn soon" type="button" role="menuitem" aria-disabled="true" disabled>FS9 / FSX · Próximo</button>
+            </div>
+          </div>
+        </div>
       </nav>
       <a class="btn btn-primary" href="login.html">INGRESAR</a>
     </div>
@@ -702,6 +763,33 @@
     }
 
     initLandingIfrMap();
+
+    (function () {
+      const dropdown = document.getElementById('downloadDropdown');
+      const trigger  = document.getElementById('downloadTrigger');
+      if (!dropdown || !trigger) return;
+
+      function openDropdown()  { dropdown.classList.add('open');    trigger.setAttribute('aria-expanded', 'true'); }
+      function closeDropdown() { dropdown.classList.remove('open'); trigger.setAttribute('aria-expanded', 'false'); }
+      function toggleDropdown() { dropdown.classList.contains('open') ? closeDropdown() : openDropdown(); }
+
+      trigger.addEventListener('click', (e) => { e.stopPropagation(); toggleDropdown(); });
+
+      dropdown.querySelectorAll('.nav-dl-btn:not(.soon)').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          // TODO: sustituir este alert por window.location cuando tengas la URL real
+          alert('Descarga próximamente disponible para ' + btn.textContent.trim());
+          closeDropdown();
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target)) closeDropdown();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeDropdown();
+      });
+    })();
 
     document.querySelectorAll('.faq-trigger').forEach((trigger) => {
       trigger.addEventListener('click', () => {
