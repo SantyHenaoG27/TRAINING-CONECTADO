@@ -1688,14 +1688,6 @@
             <!-- Centro: radar -->
             <section class="atc-panel atc-radar-panel">
               <div class="atc-radar-toolbar">
-                <div class="atc-layer-toggles" id="atcLayerToggles">
-                  <label class="atc-toggle-chip is-on" data-layer="trails"><input type="checkbox" checked><span>Trails</span></label>
-                  <label class="atc-toggle-chip is-on" data-layer="labels"><input type="checkbox" checked><span>Etiquetas</span></label>
-                  <label class="atc-toggle-chip is-on" data-layer="waypoints"><input type="checkbox" checked><span>Waypoints</span></label>
-                  <label class="atc-toggle-chip is-on" data-layer="sectors"><input type="checkbox" checked><span>Sectores</span></label>
-                  <label class="atc-toggle-chip" data-layer="weather"><input type="checkbox"><span>Clima</span></label>
-                  <label class="atc-toggle-chip" data-layer="terrain"><input type="checkbox"><span>Terreno</span></label>
-                </div>
                 <div class="atc-zoom-controls">
                   <button class="atc-icon-btn small" id="atcZoomOut" type="button">−</button>
                   <span class="atc-zoom-value" id="atcZoomValue">1.0×</span>
@@ -4666,15 +4658,6 @@
         btn.classList.add('active');
         atcState.filter = btn.dataset.atcFilter;
         atcRenderFlightList();
-      });
-
-      // Capas (chips visuales): el área central ahora es el mapa real, así que
-      // estos controles quedan como referencia visual de cómo lucirían los
-      // selectores de capas de un panel ATC, sin acción sobre el mapa.
-      document.getElementById('atcLayerToggles').addEventListener('change', (e) => {
-        const input = e.target.closest('input[type="checkbox"]');
-        if (!input) return;
-        input.closest('.atc-toggle-chip').classList.toggle('is-on', input.checked);
       });
 
       // Demo de estado vacío (alterna entre tráfico simulado y panel sin vuelos)
