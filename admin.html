@@ -4033,7 +4033,7 @@
       });
 
       // Capa invisible de puntos de la trayectoria, solo para detectar el
-      // punto más cercano al cursor y mostrar su velocidad/rumbo al pasar el mouse.
+      // punto más cercano al cursor y mostrar sus datos al pasar el mouse.
       flightRouteMap.addLayer({
         id: 'flight-route-track-hit',
         type: 'circle',
@@ -4066,7 +4066,9 @@
 
         const ias = Number(nearest.properties.ias_kt);
         const hdg = Number(nearest.properties.heading_deg);
+        const alt = Number(nearest.properties.altitude_ft);
         const html = `
+          <div class="route-hover-row"><span>Altitud</span><strong>${Number.isFinite(alt) ? Math.round(alt).toLocaleString('es-CO') + ' FT' : '—'}</strong></div>
           <div class="route-hover-row"><span>Velocidad</span><strong>${Number.isFinite(ias) ? Math.round(ias) + ' KT' : '—'}</strong></div>
           <div class="route-hover-row"><span>Rumbo</span><strong>${Number.isFinite(hdg) ? Math.round(hdg) + '°' : '—'}</strong></div>
         `;
@@ -4187,7 +4189,7 @@
       return routeTrackGeoJSON([]);
     }
 
-    // Un punto por cada lectura de telemetría con su velocidad y rumbo —
+    // Un punto por cada lectura de telemetría con su altitud, velocidad y rumbo.
     // alimenta la capa invisible que detecta el punto más cercano al cursor
     // para mostrar el tooltip al pasar el mouse sobre la trayectoria.
     function routeTrackGeoJSON(points) {
@@ -4200,9 +4202,11 @@
             if (!Number.isFinite(lng) || !Number.isFinite(lat) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
             const ias = Number(p.ias_kt);
             const hdg = Number(p.heading_deg);
+            const alt = Number(p.altitude_ft);
             return {
               type: 'Feature',
               properties: {
+                altitude_ft: Number.isFinite(alt) ? alt : null,
                 ias_kt: Number.isFinite(ias) ? ias : null,
                 heading_deg: Number.isFinite(hdg) ? hdg : null,
               },
