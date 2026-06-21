@@ -886,6 +886,21 @@
     .tag-info { color: var(--muted); border-color: var(--border); }
 
     /* REPORTES */
+    .rep-filter-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      cursor: pointer;
+      transition: all 120ms;
+      white-space: nowrap;
+    }
+    .rep-filter-btn:hover { color: var(--fg); border-color: var(--border-soft); }
+    .rep-filter-btn.active { background: var(--accent); border-color: var(--accent); color: var(--accent-on); font-weight: 700; }
     .report-session {
       font-family: var(--font-mono);
       font-size: var(--text-xs);
@@ -1719,6 +1734,22 @@
           <div class="stat-card">
             <div class="stat-label">Estudiantes con vuelos</div>
             <div class="stat-value" id="repStudentCount" style="color:var(--success);">—</div>
+          </div>
+        </div>
+
+        <!-- Búsqueda y filtros -->
+        <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <div style="position:relative;flex:1;min-width:220px;">
+            <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;">⌕</span>
+            <input id="repSearch" type="text" placeholder="Buscar estudiante, SKBO, SKPE…"
+              oninput="filterReportFlights()"
+              style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:9px 14px 9px 34px;font-family:var(--font-body);font-size:13px;outline:none;"
+              onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button id="repFilterAll"   class="rep-filter-btn active" onclick="setRepDateFilter('all')">Todos</button>
+            <button id="repFilterToday" class="rep-filter-btn"        onclick="setRepDateFilter('today')">Hoy</button>
+            <button id="repFilterWeek"  class="rep-filter-btn"        onclick="setRepDateFilter('week')">Esta semana</button>
           </div>
         </div>
 
@@ -3985,6 +4016,46 @@
     }
     const FLIGHT_ROUTE_STYLE_URL = 'https://tiles.openfreemap.org/styles/dark';
 
+    let repDateFilter = 'all';
+
+    function setRepDateFilter(val) {
+      repDateFilter = val;
+      document.querySelectorAll('.rep-filter-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById({ all: 'repFilterAll', today: 'repFilterToday', week: 'repFilterWeek' }[val])?.classList.add('active');
+      filterReportFlights();
+    }
+
+    function filterReportFlights() {
+      const q = (document.getElementById('repSearch')?.value || '').trim().toUpperCase();
+
+      const now = new Date();
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const startOfWeek  = new Date(startOfToday);
+      startOfWeek.setDate(startOfToday.getDate() - startOfToday.getDay());
+
+      const filtered = reportFlights.filter(f => {
+        // Filtro fecha
+        if (repDateFilter === 'today') {
+          if (!f.started_at || new Date(f.started_at) < startOfToday) return false;
+        } else if (repDateFilter === 'week') {
+          if (!f.started_at || new Date(f.started_at) < startOfWeek) return false;
+        }
+
+        // Filtro búsqueda: nombre estudiante, origen o destino
+        if (q) {
+          const nombre   = (f.student?.nombre || '').toUpperCase();
+          const origen   = (f.assignment?.origen || '').toUpperCase();
+          const destino  = (f.assignment?.destino || '').toUpperCase();
+          const session  = (f.session_code || '').toUpperCase();
+          if (!nombre.includes(q) && !origen.includes(q) && !destino.includes(q) && !session.includes(q)) return false;
+        }
+
+        return true;
+      });
+
+      renderReportRows(filtered);
+    }
+
     async function loadReportes() {
       const body = document.getElementById('repFlightsBody');
       body.innerHTML = '<tr><td colspan="9" class="flights-loading">Cargando vuelos...</td></tr>';
@@ -4046,7 +4117,7 @@
       }));
 
       renderReportStats(reportFlights);
-      renderReportRows(reportFlights);
+      filterReportFlights();
     }
 
     function normalizeSummaryReport(f) {
@@ -4176,7 +4247,7 @@
 
       reportFlights = reportFlights.filter(f => f.report_key !== reportKey);
       renderReportStats(reportFlights);
-      renderReportRows(reportFlights);
+      filterReportFlights();
     }
 
     async function openFlightDetail(reportKey) {
