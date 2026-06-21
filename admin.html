@@ -3262,21 +3262,26 @@
     }
 
     async function deleteStudent(studentId, nombre) {
-      if (!confirm(`¿Eliminar a "${nombre}"?\n\nSe eliminará su perfil y todos sus datos de la plataforma. Esta acción no se puede deshacer.`)) return;
+      if (!confirm(`¿Eliminar a "${nombre}"?\n\nSe eliminará su cuenta y todos sus datos de la plataforma. Esta acción no se puede deshacer.`)) return;
 
       const btn = document.getElementById('sd-btn-delete');
-      btn.disabled = true;
-      btn.textContent = 'Eliminando...';
+      if (btn) { btn.disabled = true; btn.textContent = 'Eliminando...'; }
 
-      const { error } = await supabaseClient
-        .from('profiles')
-        .delete()
-        .eq('id', studentId);
-
-      if (error) {
-        alert('Error al eliminar: ' + error.message);
-        btn.disabled = false;
-        btn.textContent = 'Eliminar estudiante';
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const resp = await fetch(`${SUPABASE_URL}/functions/v1/admin-delete-student`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ studentId }),
+        });
+        const result = await resp.json();
+        if (!resp.ok || result.error) throw new Error(result.error || 'Error al eliminar');
+      } catch (err) {
+        alert('Error al eliminar: ' + err.message);
+        if (btn) { btn.disabled = false; btn.textContent = 'Eliminar estudiante'; }
         return;
       }
 
