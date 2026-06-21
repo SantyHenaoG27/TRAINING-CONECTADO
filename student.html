@@ -1351,7 +1351,7 @@
     // queremos reintentarla en cada loadFlights() y quedar en un bucle.
     const autoCompleteAttempted = new Set();
 
-    const FINISHED_GRACE_MS = 3 * 60 * 1000; // sin telemetría nueva por 3+ min ⇒ vuelo terminado
+    const FINISHED_GRACE_MS = 5 * 60 * 1000; // sin telemetría nueva por 5+ min ⇒ vuelo terminado
 
     // Si ya existe telemetría de un vuelo asociado a la asignación (assignment_id
     // se estampa en flight_telemetry al volar) y ese vuelo terminó hace rato, lo
@@ -2246,6 +2246,7 @@
 
     // ── SIMULADOR EN TIEMPO REAL ──────────────────────────────────────────────
     let simTimeout = null;
+    let flyingNowTimeout = null;
     let _simChannel = null;
 
     function setSimOnline(point) {
@@ -2257,10 +2258,28 @@
         document.getElementById('simDot').classList.remove('online');
         document.getElementById('simStatus').textContent = 'Primero conecta un simulador';
       }, 5000);
+
+      // Cada paquete de telemetría reinicia el temporizador de 5 minutos.
+      // Si no llega nada en ese tiempo, libera la asignación activa.
+      clearTimeout(flyingNowTimeout);
+      flyingNowTimeout = setTimeout(releaseFlyingNowAfterInactivity, FINISHED_GRACE_MS);
+    }
+
+    async function releaseFlyingNowAfterInactivity() {
+      if (!window.currentUser?.active_assignment_id) return;
+      const { error } = await supabaseClient
+        .from('profiles')
+        .update({ active_assignment_id: null })
+        .eq('id', window.currentUser.id);
+      if (!error) {
+        window.currentUser.active_assignment_id = null;
+        loadFlights();
+      }
     }
 
     function subscribeToSim(sessionCode) {
       if (_simChannel) supabaseClient.removeChannel(_simChannel);
+      clearTimeout(flyingNowTimeout);
       if (!sessionCode) return;
       _simChannel = supabaseClient
         .channel('sim:' + sessionCode)
