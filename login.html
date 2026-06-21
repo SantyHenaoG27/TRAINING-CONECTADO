@@ -461,23 +461,30 @@
 
       if (!name || !email || !pw || !pw2) { showMsg('Completa todos los campos.', true); return; }
       if (pw !== pw2)    { showMsg('Las contraseñas no coinciden.', true); return; }
-      if (pw.length < 8) { showMsg('La contraseña debe tener al menos 8 caracteres.', true); return; }
+      if (pw.length < 6) { showMsg('La contraseña debe tener al menos 6 caracteres.', true); return; }
 
       setLoading('btn-register', true);
-      const { error } = await supabaseClient.auth.signUp({
-        email,
-        password: pw,
-        options: { data: { full_name: name } },
-      });
+
+      try {
+        const resp = await fetch(`${SUPABASE_URL}/functions/v1/register-student`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nombre: name, email, password: pw }),
+        });
+        const result = await resp.json();
+        if (!resp.ok || result.error) throw new Error(result.error || 'Error al crear la cuenta');
+
+        showMsg('Cuenta creada. Ya puedes iniciar sesión.', false);
+        document.getElementById('reg-name').value  = '';
+        document.getElementById('reg-email').value = '';
+        document.getElementById('reg-pw').value    = '';
+        document.getElementById('reg-pw2').value   = '';
+        setTimeout(() => switchTab('login', document.querySelectorAll('.tab-btn')[0]), 1500);
+      } catch (err) {
+        showMsg(err.message, true);
+      }
+
       setLoading('btn-register', false);
-
-      if (error) { showMsg(error.message, true); return; }
-
-      showMsg('Cuenta creada. Revisa tu correo para confirmar tu acceso.', false);
-      document.getElementById('reg-name').value  = '';
-      document.getElementById('reg-email').value = '';
-      document.getElementById('reg-pw').value    = '';
-      document.getElementById('reg-pw2').value   = '';
     }
   </script>
 </body>

@@ -905,18 +905,18 @@
       z-index: 200;
       display: grid;
       place-items: center;
-      padding: 28px;
+      padding: 12px;
       background: rgba(0,0,0,0.72);
     }
     .hidden-panel { display: none; }
     .flight-modal {
-      width: min(980px, 100%);
-      max-height: calc(100vh - 56px);
+      width: min(1440px, 100%);
+      max-height: calc(100vh - 24px);
       overflow-y: auto;
       background: var(--surface);
       border: 1px solid var(--border-soft);
       box-shadow: 0 28px 84px rgba(0,0,0,0.54);
-      padding: 24px;
+      padding: 20px 24px;
     }
     .flight-modal-head {
       display: flex;
@@ -1008,13 +1008,13 @@
     }
     .flight-detail-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      grid-template-columns: minmax(0, 2fr) minmax(260px, 0.75fr);
       gap: 16px;
-      margin-top: 18px;
+      margin-top: 14px;
       align-items: stretch;
     }
     .flight-map-wrap {
-      min-height: 360px;
+      min-height: 520px;
       background: var(--bg);
       border: 1px solid var(--border);
       position: relative;
@@ -1051,6 +1051,48 @@
       max-width: calc(100% - 24px);
     }
     .flight-map-summary .tag { background: rgba(13,13,15,0.82); }
+    .form-input {
+      width: 100%;
+      box-sizing: border-box;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 12px;
+      font-size: var(--text-sm);
+      font-family: var(--font-sans);
+      border-radius: 4px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus { border-color: var(--accent); }
+    .form-input::placeholder { color: var(--muted); }
+
+    .fd-layer-bar {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      z-index: 3;
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      max-width: calc(100% - 50px);
+    }
+    .fd-layer-btn {
+      padding: 3px 9px;
+      border: 1px solid rgba(248,250,252,0.18);
+      border-radius: 4px;
+      background: rgba(13,13,15,0.78);
+      color: var(--muted);
+      font-size: 0.6875rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+      letter-spacing: 0.04em;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+      white-space: nowrap;
+    }
+    .fd-layer-btn.is-active { border-color: var(--fd-c, var(--accent)); color: var(--fd-c, var(--accent)); background: var(--fd-bg, rgba(2,132,199,0.14)); }
+    .fd-layer-btn:hover { border-color: rgba(248,250,252,0.4); color: var(--text); }
     .flight-route-map .maplibregl-ctrl-attrib {
       background: rgba(13,13,15,0.72);
       color: var(--muted);
@@ -1507,9 +1549,10 @@
             <div class="tech-label">Panel / Instructor / Estudiantes</div>
             <h1 class="panel-title">Gestión de Estudiantes</h1>
           </div>
-          <button class="btn-primary" onclick="switchTab('asignar', document.querySelectorAll('.page-tab')[2])">
-            + Asignar vuelo
-          </button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-outline" onclick="openCreateStudentModal()">+ Crear estudiante</button>
+            <button class="btn-primary" onclick="switchTab('asignar', document.querySelectorAll('.page-tab')[2])">+ Asignar vuelo</button>
+          </div>
         </div>
 
         <div class="est-toolbar">
@@ -1768,13 +1811,6 @@
               </div>
 
               <div class="atc-radar-footer">
-                <div class="atc-legend">
-                  <span><i class="atc-dot normal"></i>Normal</span>
-                  <span><i class="atc-dot warning"></i>Atención</span>
-                  <span><i class="atc-dot critical"></i>Crítico</span>
-                  <span><i class="atc-dot selected"></i>Seleccionada</span>
-                </div>
-                <div class="atc-coords" id="atcCoords">4°42'N 74°09'W · Sector BOG-3 · Rango 40 NM · 5 escuadras visibles</div>
               </div>
             </section>
 
@@ -1782,79 +1818,6 @@
             <aside class="atc-panel atc-detail-panel" id="atcDetailPanel"></aside>
           </div>
 
-          <!-- Inferior: tiras de progreso / alertas / bitácora / replay / PTT -->
-          <div class="atc-panel atc-bottom">
-            <div class="atc-bottom-tabs" id="atcBottomTabs">
-              <button class="atc-bottom-tab active" data-atc-bottom="strips">Flight Strips</button>
-              <button class="atc-bottom-tab" data-atc-bottom="alerts">Centro de alertas <span class="atc-badge-dot critical" id="atcAlertDot"></span></button>
-              <button class="atc-bottom-tab" data-atc-bottom="log">Bitácora de eventos</button>
-              <button class="atc-bottom-tab" data-atc-bottom="replay">Timeline / Replay</button>
-              <button class="atc-bottom-tab" data-atc-bottom="ptt">PTT — Comunicación</button>
-            </div>
-            <div class="atc-bottom-body">
-              <div class="atc-bottom-pane active" id="atcPaneStrips">
-                <div class="atc-strips" id="atcStripsList"></div>
-              </div>
-              <div class="atc-bottom-pane" id="atcPaneAlerts">
-                <div id="atcAlertsList"></div>
-              </div>
-              <div class="atc-bottom-pane" id="atcPaneLog">
-                <div id="atcLogList"></div>
-              </div>
-              <div class="atc-bottom-pane" id="atcPaneReplay">
-                <div class="atc-replay-mock">
-                  <div class="icon" style="font-size:30px; opacity:.35;">⏵</div>
-                  <div class="ttl">Reproducción de sesión — vista previa</div>
-                  <p style="max-width:440px; line-height:1.6; font-size:var(--text-xs);">
-                    Aquí se podrá reproducir la trayectoria histórica de cada vuelo, instrucciones enviadas y eventos
-                    marcados durante la sesión. Esta sección es un mockup visual: aún no reproduce datos reales.
-                  </p>
-                  <div class="atc-replay-bar"><div class="atc-replay-progress"></div></div>
-                  <div class="atc-replay-controls">
-                    <button class="atc-icon-btn small" type="button">⏮</button>
-                    <button class="atc-icon-btn small is-active" type="button">⏸ Reproduciendo</button>
-                    <button class="atc-icon-btn small" type="button">⏭</button>
-                    <button class="atc-icon-btn small" type="button">1×</button>
-                  </div>
-                  <div class="tech-label">14:38:02 — IFR204 inició ascenso inicial · 00:14:26 transcurridos</div>
-                </div>
-              </div>
-              <div class="atc-bottom-pane" id="atcPanePtt">
-                <div class="atc-ptt">
-                  <div class="atc-ptt-button-wrap">
-                    <button class="atc-ptt-btn" id="atcPttBtn" type="button">
-                      <span class="ic">🎙</span>
-                      <span id="atcPttBtnLabel">Mantener para hablar</span>
-                    </button>
-                    <span class="atc-ptt-state" id="atcPttState">En espera</span>
-                    <p class="atc-ptt-hint">
-                      Mantén presionado el botón o la tecla asignada <span class="atc-ptt-key" id="atcPttKey">␣ Espacio</span>
-                      para simular una transmisión hacia el estudiante seleccionado.
-                    </p>
-                  </div>
-                  <div class="atc-ptt-meter-wrap">
-                    <span class="atc-ptt-meter-label">Nivel de transmisión simulado</span>
-                    <div class="atc-ptt-meter" id="atcPttMeter">
-                      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-                    </div>
-                    <span class="tech-label" id="atcPttTransmitInfo">Sin transmisión activa</span>
-                  </div>
-                  <div class="atc-ptt-target">
-                    <span class="atc-settings-field lbl" style="margin-bottom:2px;">Destinatario de la transmisión</span>
-                    <label class="atc-ptt-target-opt selected" data-target="selected">
-                      <input type="radio" name="atcPttTarget" checked> Estudiante seleccionado — IFR204
-                    </label>
-                    <label class="atc-ptt-target-opt" data-target="group">
-                      <input type="radio" name="atcPttTarget"> Grupo activo (5 estudiantes)
-                    </label>
-                    <label class="atc-ptt-target-opt" data-target="all">
-                      <input type="radio" name="atcPttTarget"> Frecuencia general (todos)
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
         </div>
       </div>
@@ -2189,6 +2152,12 @@
         <div class="flight-map-wrap">
           <div id="fdRouteMap" class="flight-route-map" aria-label="Mapa de ruta recorrida"></div>
           <div id="fdRouteMapEmpty" class="flight-map-empty">Cargando ruta recorrida...</div>
+          <div class="fd-layer-bar">
+            <button class="fd-layer-btn is-active" data-fd-layer="AIRPORTS" style="--fd-c:#22d3ee;--fd-bg:rgba(34,211,238,0.13)" onclick="toggleFdLayer('AIRPORTS', this)">✈ Aeropuertos</button>
+            <button class="fd-layer-btn is-active" data-fd-layer="NAVAIDS" style="--fd-c:#a3e635;--fd-bg:rgba(163,230,53,0.13)" onclick="toggleFdLayer('NAVAIDS', this)">◉ Nav Aids</button>
+            <button class="fd-layer-btn is-active" data-fd-layer="WAYPOINTS" style="--fd-c:#7dd3fc;--fd-bg:rgba(125,211,252,0.13)" onclick="toggleFdLayer('WAYPOINTS', this)">△ Waypoints</button>
+            <button class="fd-layer-btn is-active" data-fd-layer="RNAV" style="--fd-c:#fbbf24;--fd-bg:rgba(251,191,36,0.13)" onclick="toggleFdLayer('RNAV', this)">◆ RNAV Wpts</button>
+          </div>
           <div class="flight-map-summary">
             <span class="tag tag-info">Inicio <strong id="fdRouteStart">--</strong></span>
             <span class="tag tag-info">Fin <strong id="fdRouteEnd">--</strong></span>
@@ -2308,6 +2277,7 @@
         <div style="display:flex;gap:10px;">
           <button class="btn-outline" id="sd-btn-assign">Asignar vuelo</button>
           <button class="btn-danger-outline" id="sd-btn-suspend">Suspender</button>
+          <button class="btn-danger-outline" id="sd-btn-delete">Eliminar estudiante</button>
         </div>
       </div>
 
@@ -2315,6 +2285,39 @@
         <div class="tech-label" style="margin-bottom:10px;">Historial de vuelos recientes</div>
         <div id="sdFlightHistory"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal: Crear estudiante -->
+  <div id="createStudentModal" class="flight-modal-overlay hidden-panel" onclick="if(event.target===this) closeCreateStudentModal()">
+    <div class="flight-modal" style="width:min(480px,100%);">
+      <div class="flight-modal-head">
+        <div>
+          <div class="tech-label">Panel / Instructor / Estudiantes</div>
+          <h2 class="panel-title" style="font-size:var(--text-lg);">Crear estudiante</h2>
+        </div>
+        <button class="btn-outline" onclick="closeCreateStudentModal()">✕ Cerrar</button>
+      </div>
+
+      <form id="createStudentForm" onsubmit="submitCreateStudent(event)" style="margin-top:20px;display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <label class="tech-label" style="display:block;margin-bottom:6px;">Nombre completo</label>
+          <input id="csNombre" type="text" class="form-input" placeholder="Ej. Juan Pérez" required autocomplete="off" />
+        </div>
+        <div>
+          <label class="tech-label" style="display:block;margin-bottom:6px;">Correo electrónico</label>
+          <input id="csEmail" type="email" class="form-input" placeholder="correo@ejemplo.com" required autocomplete="off" />
+        </div>
+        <div>
+          <label class="tech-label" style="display:block;margin-bottom:6px;">Contraseña</label>
+          <input id="csPassword" type="password" class="form-input" placeholder="Mínimo 6 caracteres" required minlength="6" autocomplete="new-password" />
+        </div>
+        <div id="csError" style="display:none;color:var(--danger);font-size:var(--text-sm);padding:8px 12px;border:1px solid var(--danger);border-radius:4px;"></div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px;">
+          <button type="button" class="btn-outline" onclick="closeCreateStudentModal()">Cancelar</button>
+          <button type="submit" class="btn-primary" id="csSubmitBtn">Crear estudiante</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -3107,6 +3110,7 @@
             <td style="display:flex; gap:8px;">
               <button class="btn-outline" onclick="event.stopPropagation(); switchTab('asignar', document.querySelectorAll('.page-tab')[2])">Asignar</button>
               ${actionBtn}
+              <button class="btn-danger-outline" onclick="event.stopPropagation(); deleteStudent('${escAttr(s.id)}', '${escAttr(s.nombre)}')">Eliminar</button>
             </td>
           </tr>
         `;
@@ -3157,6 +3161,9 @@
       suspendBtn.className = student.suspended ? 'btn-outline' : 'btn-danger-outline';
       suspendBtn.onclick = () => toggleSuspendStudent(student.id, !student.suspended, suspendBtn);
 
+      const deleteBtn = document.getElementById('sd-btn-delete');
+      deleteBtn.onclick = () => deleteStudent(student.id, student.nombre);
+
       const flights = (estudiantesSummariesById[studentId] || [])
         .slice()
         .sort((a, b) => new Date(b.started_at || b.ended_at || 0) - new Date(a.started_at || a.ended_at || 0))
@@ -3204,6 +3211,76 @@
         return;
       }
 
+      await loadEstudiantes();
+    }
+
+    function openCreateStudentModal() {
+      document.getElementById('createStudentForm').reset();
+      document.getElementById('csError').style.display = 'none';
+      document.getElementById('csSubmitBtn').disabled = false;
+      document.getElementById('csSubmitBtn').textContent = 'Crear estudiante';
+      document.getElementById('createStudentModal').classList.remove('hidden-panel');
+    }
+
+    function closeCreateStudentModal() {
+      document.getElementById('createStudentModal').classList.add('hidden-panel');
+    }
+
+    async function submitCreateStudent(e) {
+      e.preventDefault();
+      const nombre   = document.getElementById('csNombre').value.trim();
+      const email    = document.getElementById('csEmail').value.trim();
+      const password = document.getElementById('csPassword').value;
+      const errBox   = document.getElementById('csError');
+      const btn      = document.getElementById('csSubmitBtn');
+
+      errBox.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Creando...';
+
+      try {
+        const session = (await supabaseClient.auth.getSession()).data.session;
+        const resp = await fetch(`${SUPABASE_URL}/functions/v1/admin-create-student`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session?.access_token}`,
+          },
+          body: JSON.stringify({ nombre, email, password }),
+        });
+        const result = await resp.json();
+        if (!resp.ok || result.error) throw new Error(result.error || 'Error al crear el estudiante');
+
+        closeCreateStudentModal();
+        await loadEstudiantes();
+      } catch (err) {
+        errBox.textContent = err.message;
+        errBox.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Crear estudiante';
+      }
+    }
+
+    async function deleteStudent(studentId, nombre) {
+      if (!confirm(`¿Eliminar a "${nombre}"?\n\nSe eliminará su perfil y todos sus datos de la plataforma. Esta acción no se puede deshacer.`)) return;
+
+      const btn = document.getElementById('sd-btn-delete');
+      btn.disabled = true;
+      btn.textContent = 'Eliminando...';
+
+      const { error } = await supabaseClient
+        .from('profiles')
+        .delete()
+        .eq('id', studentId);
+
+      if (error) {
+        alert('Error al eliminar: ' + error.message);
+        btn.disabled = false;
+        btn.textContent = 'Eliminar estudiante';
+        return;
+      }
+
+      closeStudentDetail();
       await loadEstudiantes();
     }
 
@@ -3764,6 +3841,143 @@
     let flightRouteMapReady = false;
     let flightRouteHoverBound = false;
     let flightRouteHoverPopup = null;
+
+    let fdAviationLoaded = false;
+    let fdAviationDataPromise = null;
+    const fdLayerState = { AIRPORTS: true, NAVAIDS: true, WAYPOINTS: true, RNAV: true };
+
+    function toggleFdLayer(key, btn) {
+      fdLayerState[key] = !fdLayerState[key];
+      btn.classList.toggle('is-active', fdLayerState[key]);
+      if (!flightRouteMap || !flightRouteMapReady || !fdAviationLoaded) return;
+      const vis = fdLayerState[key] ? 'visible' : 'none';
+      const groups = {
+        AIRPORTS:  ['fd-airports-layer'],
+        NAVAIDS:   ['fd-vor-layer', 'fd-ndb-layer'],
+        WAYPOINTS: ['fd-fixes-layer'],
+        RNAV:      ['fd-rnav-layer'],
+      };
+      (groups[key] || []).forEach(id => {
+        if (flightRouteMap.getLayer(id)) flightRouteMap.setLayoutProperty(id, 'visibility', vis);
+      });
+    }
+
+    async function fdLoadAviationImages() {
+      const VOR_SVG  = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><polygon points="14,2 24.4,8 24.4,20 14,26 3.6,20 3.6,8" fill="none" stroke="#a3e635" stroke-width="1.3"/><circle cx="14" cy="14" r="5" fill="none" stroke="#a3e635" stroke-width="1"/><line x1="14" y1="9" x2="14" y2="2" stroke="#a3e635" stroke-width="1"/><line x1="18.3" y1="11.5" x2="24.4" y2="8" stroke="#a3e635" stroke-width="1"/><line x1="18.3" y1="16.5" x2="24.4" y2="20" stroke="#a3e635" stroke-width="1"/><line x1="14" y1="19" x2="14" y2="26" stroke="#a3e635" stroke-width="1"/><line x1="9.7" y1="16.5" x2="3.6" y2="20" stroke="#a3e635" stroke-width="1"/><line x1="9.7" y1="11.5" x2="3.6" y2="8" stroke="#a3e635" stroke-width="1"/><circle cx="14" cy="14" r="2.5" fill="#a3e635"/></svg>`;
+      const NDB_SVG  = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"><circle cx="11" cy="11" r="9" fill="rgba(249,115,22,0.08)" stroke="#f97316" stroke-width="1.2" stroke-dasharray="3,2"/><circle cx="11" cy="11" r="3.5" fill="#f97316"/></svg>`;
+      const APT_SVG  = `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"><circle cx="13" cy="13" r="10" fill="rgba(34,211,238,0.1)" stroke="#22d3ee" stroke-width="1.5"/><rect x="11.5" y="3" width="3" height="20" rx="1.5" fill="#22d3ee"/></svg>`;
+      const WPT_SVG  = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><polygon points="8,1 15.5,15 0.5,15" fill="rgba(125,211,252,0.08)" stroke="#7dd3fc" stroke-width="1.5" stroke-linejoin="round"/></svg>`;
+      const RNAV_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"><polygon points="7,1 13,7 7,13 1,7" fill="rgba(251,191,36,0.08)" stroke="#fbbf24" stroke-width="1.4" stroke-linejoin="round"/></svg>`;
+      const [vorImg, ndbImg, aptImg, wptImg, rnavImg] = await Promise.all([
+        atcSvgToImage(VOR_SVG, 28, 28), atcSvgToImage(NDB_SVG, 22, 22),
+        atcSvgToImage(APT_SVG, 26, 26), atcSvgToImage(WPT_SVG, 16, 16),
+        atcSvgToImage(RNAV_SVG, 14, 14),
+      ]);
+      if (!flightRouteMap.hasImage('fd-vor-icon'))  flightRouteMap.addImage('fd-vor-icon',  vorImg);
+      if (!flightRouteMap.hasImage('fd-ndb-icon'))  flightRouteMap.addImage('fd-ndb-icon',  ndbImg);
+      if (!flightRouteMap.hasImage('fd-apt-icon'))  flightRouteMap.addImage('fd-apt-icon',  aptImg);
+      if (!flightRouteMap.hasImage('fd-wpt-icon'))  flightRouteMap.addImage('fd-wpt-icon',  wptImg);
+      if (!flightRouteMap.hasImage('fd-rnav-icon')) flightRouteMap.addImage('fd-rnav-icon', rnavImg);
+    }
+
+    async function fdAviationLayersInit() {
+      if (fdAviationLoaded) return;
+      fdAviationLoaded = true;
+      try {
+        if (!fdAviationDataPromise) fdAviationDataPromise = atcLoadAviationData();
+        await fdLoadAviationImages();
+        const { navaidsGJ, airportsGJ, fixGJ, rnavGJ } = await fdAviationDataPromise;
+        const V = fdLayerState;
+        const before = 'flight-route-line-glow';
+
+        if (!flightRouteMap.getSource('fd-navaids'))  flightRouteMap.addSource('fd-navaids',  { type: 'geojson', data: navaidsGJ });
+        if (!flightRouteMap.getSource('fd-airports')) flightRouteMap.addSource('fd-airports', { type: 'geojson', data: airportsGJ });
+        if (!flightRouteMap.getSource('fd-fixes'))    flightRouteMap.addSource('fd-fixes',    { type: 'geojson', data: fixGJ });
+        if (!flightRouteMap.getSource('fd-rnav'))     flightRouteMap.addSource('fd-rnav',     { type: 'geojson', data: rnavGJ });
+
+        if (!flightRouteMap.getLayer('fd-vor-layer')) {
+          flightRouteMap.addLayer({
+            id: 'fd-vor-layer', type: 'symbol', source: 'fd-navaids',
+            filter: ['==', ['get', 'navType'], 'VOR'],
+            layout: {
+              'icon-image': 'fd-vor-icon', 'icon-size': 0.9,
+              'icon-allow-overlap': true, 'icon-ignore-placement': true,
+              'text-field': ['concat', ['get', 'name'], '\n', ['get', 'freq']],
+              'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+              'text-size': 9, 'text-offset': [0, 2.2], 'text-anchor': 'top',
+              'text-allow-overlap': false,
+              visibility: V.NAVAIDS ? 'visible' : 'none',
+            },
+            paint: { 'text-color': '#a3e635', 'text-halo-color': 'rgba(0,0,0,0.8)', 'text-halo-width': 1 },
+          }, before);
+        }
+        if (!flightRouteMap.getLayer('fd-ndb-layer')) {
+          flightRouteMap.addLayer({
+            id: 'fd-ndb-layer', type: 'symbol', source: 'fd-navaids',
+            filter: ['==', ['get', 'navType'], 'NDB'],
+            layout: {
+              'icon-image': 'fd-ndb-icon', 'icon-size': 0.9,
+              'icon-allow-overlap': true, 'icon-ignore-placement': true,
+              'text-field': ['concat', ['get', 'name'], '\n', ['get', 'freq']],
+              'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+              'text-size': 9, 'text-offset': [0, 1.8], 'text-anchor': 'top',
+              'text-allow-overlap': false,
+              visibility: V.NAVAIDS ? 'visible' : 'none',
+            },
+            paint: { 'text-color': '#f97316', 'text-halo-color': 'rgba(0,0,0,0.8)', 'text-halo-width': 1 },
+          }, before);
+        }
+        if (!flightRouteMap.getLayer('fd-airports-layer')) {
+          flightRouteMap.addLayer({
+            id: 'fd-airports-layer', type: 'symbol', source: 'fd-airports',
+            layout: {
+              'icon-image': 'fd-apt-icon', 'icon-size': 0.9,
+              'icon-allow-overlap': true, 'icon-ignore-placement': true,
+              'icon-rotate': ['get', 'rwyHdg'], 'icon-rotation-alignment': 'map',
+              'text-field': ['get', 'icao'],
+              'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+              'text-size': 9, 'text-offset': [0, 2], 'text-anchor': 'top',
+              'text-allow-overlap': false,
+              visibility: V.AIRPORTS ? 'visible' : 'none',
+            },
+            paint: { 'text-color': '#22d3ee', 'text-halo-color': 'rgba(0,0,0,0.8)', 'text-halo-width': 1 },
+          }, before);
+        }
+        if (!flightRouteMap.getLayer('fd-fixes-layer')) {
+          flightRouteMap.addLayer({
+            id: 'fd-fixes-layer', type: 'symbol', source: 'fd-fixes',
+            layout: {
+              'icon-image': 'fd-wpt-icon', 'icon-size': 1,
+              'icon-allow-overlap': false,
+              'text-field': ['get', 'name'],
+              'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+              'text-size': 8, 'text-offset': [0, 1.4], 'text-anchor': 'top',
+              'text-allow-overlap': false,
+              visibility: V.WAYPOINTS ? 'visible' : 'none',
+            },
+            paint: { 'text-color': '#7dd3fc', 'text-halo-color': 'rgba(0,0,0,0.8)', 'text-halo-width': 1 },
+          }, before);
+        }
+        if (!flightRouteMap.getLayer('fd-rnav-layer')) {
+          flightRouteMap.addLayer({
+            id: 'fd-rnav-layer', type: 'symbol', source: 'fd-rnav',
+            layout: {
+              'icon-image': 'fd-rnav-icon', 'icon-size': 1,
+              'icon-allow-overlap': false,
+              'text-field': ['get', 'name'],
+              'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+              'text-size': 8, 'text-offset': [0, 1.3], 'text-anchor': 'top',
+              'text-allow-overlap': false,
+              visibility: V.RNAV ? 'visible' : 'none',
+            },
+            paint: { 'text-color': '#fbbf24', 'text-halo-color': 'rgba(0,0,0,0.8)', 'text-halo-width': 1 },
+          }, before);
+        }
+      } catch (err) {
+        fdAviationLoaded = false;
+        console.warn('[FD] Aviation layers error:', err);
+      }
+    }
     const FLIGHT_ROUTE_STYLE_URL = 'https://tiles.openfreemap.org/styles/dark';
 
     async function loadReportes() {
@@ -3934,9 +4148,30 @@
             <td>${maxAlt}</td>
             <td>${maxIas}</td>
             <td>${points}</td>
-            <td><button class="btn-outline" onclick="openFlightDetail('${escAttr(f.report_key)}')">Detalle</button></td>
+            <td style="display:flex;gap:6px;align-items:center;">
+              <button class="btn-outline" onclick="openFlightDetail('${escAttr(f.report_key)}')">Detalle</button>
+              <button class="btn-danger-outline" onclick="deleteReport('${escAttr(f.report_key)}')">Eliminar</button>
+            </td>
           </tr>`;
       }).join('');
+    }
+
+    async function deleteReport(reportKey) {
+      if (!confirm('¿Eliminar este reporte? Se borrarán todos los puntos de telemetría de este vuelo. Esta acción no se puede deshacer.')) return;
+
+      const flight = reportFlights.find(f => f.report_key === reportKey);
+      if (!flight) return;
+
+      const { error } = await supabaseClient
+        .from('flight_telemetry')
+        .delete()
+        .eq('flight_id', flight.flight_id);
+
+      if (error) { alert('Error al eliminar: ' + error.message); return; }
+
+      reportFlights = reportFlights.filter(f => f.report_key !== reportKey);
+      renderReportStats(reportFlights);
+      renderReportRows(reportFlights);
     }
 
     async function openFlightDetail(reportKey) {
@@ -4100,7 +4335,26 @@
         paint: { 'circle-radius': 9, 'circle-opacity': 0, 'circle-stroke-width': 0 },
       });
 
+      // Cursor sincronizado desde la gráfica — punto visible sobre el mapa
+      flightRouteMap.addSource('flight-route-cursor', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      });
+      flightRouteMap.addLayer({
+        id: 'flight-route-cursor-glow',
+        type: 'circle',
+        source: 'flight-route-cursor',
+        paint: { 'circle-radius': 14, 'circle-color': '#facc15', 'circle-opacity': 0.25 },
+      });
+      flightRouteMap.addLayer({
+        id: 'flight-route-cursor-dot',
+        type: 'circle',
+        source: 'flight-route-cursor',
+        paint: { 'circle-radius': 6, 'circle-color': '#facc15', 'circle-stroke-color': '#0f172a', 'circle-stroke-width': 2 },
+      });
+
       setupFlightRouteHoverInteraction();
+      fdAviationLayersInit();
     }
 
     function setupFlightRouteHoverInteraction() {
@@ -4141,11 +4395,22 @@
           });
         }
         flightRouteHoverPopup.setLngLat(nearest.geometry.coordinates).setHTML(html).addTo(flightRouteMap);
+
+        // Sincronizar crosshair en la gráfica
+        const idx = nearest.properties.idx;
+        if (Number.isFinite(idx) && idx !== altitudeChartHoverIndex) {
+          altitudeChartHoverIndex = idx;
+          renderAltitudeChart();
+        }
       });
 
       flightRouteMap.on('mouseleave', hitLayer, () => {
         flightRouteMap.getCanvas().style.cursor = '';
         if (flightRouteHoverPopup) flightRouteHoverPopup.remove();
+        if (altitudeChartHoverIndex !== null) {
+          altitudeChartHoverIndex = null;
+          renderAltitudeChart();
+        }
       });
     }
 
@@ -4181,6 +4446,8 @@
       flightRouteMap.getSource('flight-route-line').setData(routeLineGeoJSON(coordinates));
       flightRouteMap.getSource('flight-route-points').setData(routePointsGeoJSON(coordinates));
       flightRouteMap.getSource('flight-route-track').setData(routeTrackGeoJSON(points || []));
+      const cursorSrc = flightRouteMap.getSource('flight-route-cursor');
+      if (cursorSrc) cursorSrc.setData({ type: 'FeatureCollection', features: [] });
     }
 
     function updateFlightRouteSummary(coordinates) {
@@ -4255,7 +4522,7 @@
       return {
         type: 'FeatureCollection',
         features: points
-          .map(p => {
+          .map((p, i) => {
             const lng = Number(p.longitude);
             const lat = Number(p.latitude);
             if (!Number.isFinite(lng) || !Number.isFinite(lat) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
@@ -4265,6 +4532,7 @@
             return {
               type: 'Feature',
               properties: {
+                idx: i,
                 altitude_ft: Number.isFinite(alt) ? alt : null,
                 ias_kt: Number.isFinite(ias) ? ias : null,
                 heading_deg: Number.isFinite(hdg) ? hdg : null,
@@ -4333,17 +4601,57 @@
         if (idx === null || idx === altitudeChartHoverIndex) return;
         altitudeChartHoverIndex = idx;
         renderAltitudeChart();
+        syncChartHoverToMap(idx);
       };
 
       const handleLeave = () => {
         if (altitudeChartHoverIndex === null) return;
         altitudeChartHoverIndex = null;
         renderAltitudeChart();
+        syncChartHoverToMap(null);
       };
 
       canvas.addEventListener('pointermove', handleHover);
       canvas.addEventListener('pointerdown', handleHover);
       canvas.addEventListener('pointerleave', handleLeave);
+    }
+
+    function syncChartHoverToMap(idx) {
+      if (!flightRouteMap || !flightRouteMapReady) return;
+      const cursorSrc = flightRouteMap.getSource('flight-route-cursor');
+      if (!cursorSrc) return;
+
+      if (idx === null) {
+        cursorSrc.setData({ type: 'FeatureCollection', features: [] });
+        if (flightRouteHoverPopup) flightRouteHoverPopup.remove();
+        return;
+      }
+
+      const point = altitudeChartPoints[idx];
+      if (!point) return;
+      const lng = Number(point.longitude);
+      const lat = Number(point.latitude);
+      if (!Number.isFinite(lng) || !Number.isFinite(lat)) return;
+
+      cursorSrc.setData({
+        type: 'FeatureCollection',
+        features: [{ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: [lng, lat] } }],
+      });
+
+      const alt = Number(point.altitude_ft);
+      const ias = Number(point.ias_kt);
+      const hdg = Number(point.heading_deg);
+      const html = `
+        <div class="route-hover-row"><span>Altitud</span><strong>${Number.isFinite(alt) ? Math.round(alt).toLocaleString('es-CO') + ' FT' : '—'}</strong></div>
+        <div class="route-hover-row"><span>Velocidad</span><strong>${Number.isFinite(ias) ? Math.round(ias) + ' KT' : '—'}</strong></div>
+        <div class="route-hover-row"><span>Rumbo</span><strong>${Number.isFinite(hdg) ? Math.round(hdg) + '°' : '—'}</strong></div>
+      `;
+      if (!flightRouteHoverPopup) {
+        flightRouteHoverPopup = new maplibregl.Popup({
+          closeButton: false, closeOnClick: false, offset: 14, className: 'route-hover-popup',
+        });
+      }
+      flightRouteHoverPopup.setLngLat([lng, lat]).setHTML(html).addTo(flightRouteMap);
     }
 
     function hideAltitudeTooltip() {
@@ -4747,30 +5055,6 @@
       document.getElementById('atcSettingsBtn').addEventListener('click', openAtcSettings);
       bindAtcSettingsModalControls();
 
-      // Pestañas del panel inferior
-      document.getElementById('atcBottomTabs').addEventListener('click', (e) => {
-        const btn = e.target.closest('.atc-bottom-tab');
-        if (!btn) return;
-        atcState.bottomTab = btn.dataset.atcBottom;
-        document.querySelectorAll('#atcBottomTabs .atc-bottom-tab').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.atc-bottom-pane').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('atcPane' + ({
-          strips: 'Strips', alerts: 'Alerts', log: 'Log', replay: 'Replay', ptt: 'Ptt',
-        }[atcState.bottomTab])).classList.add('active');
-      });
-
-      // Selector de destinatario PTT
-      document.querySelectorAll('.atc-ptt-target-opt').forEach(opt => {
-        opt.addEventListener('click', () => {
-          document.querySelectorAll('.atc-ptt-target-opt').forEach(o => o.classList.remove('selected'));
-          opt.classList.add('selected');
-          opt.querySelector('input').checked = true;
-          atcState.pttTarget = opt.dataset.target;
-        });
-      });
-
-      bindAtcPtt();
       atcRenderAll();
       initAtcMap();
       atcLayersInitControls();
@@ -4933,18 +5217,11 @@
     function atcRenderAll() {
       atcRenderFlightList();
       atcRenderDetail();
-      atcRenderStrips();
-      atcRenderAlerts();
-      atcRenderLog();
       atcRenderCoords();
       atcSyncMapMarkers(atcState.flights);
     }
 
-    function atcRenderCoords() {
-      const visible = atcFilteredFlights().length;
-      document.getElementById('atcCoords').textContent =
-        `4°42'N 74°09'W · Sector BOG-3 · Rango ${atcState.range} NM · ${visible} escuadra${visible === 1 ? '' : 's'} visible${visible === 1 ? '' : 's'}`;
-    }
+    function atcRenderCoords() {}
 
     function atcRenderFlightList() {
       const list = document.getElementById('atcFlightList');
@@ -5645,22 +5922,22 @@
             },
           })),
       };
-      // Waypoints: nombre alfabético = fix convencional
+      // Waypoints: solo dígitos (ej. "416") o solo letras (ej. "BOGOT", "OKIRO")
       const fixGJ = {
         type: 'FeatureCollection',
         features: wayptsRaw
-          .filter(w => /^[A-Z]/.test(w.name))
+          .filter(w => /^\d+$/.test(w.name) || /^[A-Za-z]+$/.test(w.name))
           .map(w => ({
             type: 'Feature',
             geometry: { type: 'Point', coordinates: [w.longitude, w.latitude] },
             properties: { name: w.name },
           })),
       };
-      // RNAV: nombre empieza con número
+      // RNAV: nombre mezcla letras y dígitos (ej. "BOO416", "CLO123R")
       const rnavGJ = {
         type: 'FeatureCollection',
         features: wayptsRaw
-          .filter(w => /^[0-9]/.test(w.name))
+          .filter(w => /[A-Za-z]/.test(w.name) && /\d/.test(w.name))
           .map(w => ({
             type: 'Feature',
             geometry: { type: 'Point', coordinates: [w.longitude, w.latitude] },
@@ -5937,163 +6214,6 @@
       `;
     }
 
-    function atcRenderStrips() {
-      const wrap = document.getElementById('atcStripsList');
-      if (atcState.emptyDemo) {
-        wrap.innerHTML = `
-          <div class="atc-empty-block">
-            <div class="icon">🗂️</div>
-            <div class="ttl">No hay tiras de progreso activas</div>
-            <div class="hint">Cuando existan vuelos en curso, cada uno generará aquí una tira con su ruta, procedimiento, prioridad e instructor asignado.</div>
-          </div>`;
-        return;
-      }
-      wrap.innerHTML = ATC_STRIPS.map(s => `
-        <div class="atc-strip priority-${s.priority}">
-          <span class="cs">${s.cs}</span>
-          <span class="route"><span>${s.from}</span> → <span>${s.to}</span> · ${s.proc}</span>
-          <span><span class="lbl">Altitud</span><span class="val">${s.alt}</span></span>
-          <span><span class="lbl">Veloc.</span><span class="val">${s.spd}</span></span>
-          <span><span class="lbl">Estado</span><span class="val">${s.status}</span></span>
-          <span><span class="lbl">Pista</span><span class="val">${s.runway}</span></span>
-          <span><span class="lbl">Instructor</span><span class="val">${s.instructor}</span></span>
-          <button class="pin" type="button" title="Fijar tira (vista previa)" onclick="showToast('Vista previa: la tira de ${s.cs} se fijaría en la parte superior.', 'info')">📌</button>
-        </div>
-      `).join('');
-    }
-
-    function atcRenderAlerts() {
-      const wrap = document.getElementById('atcAlertsList');
-      const dot = document.getElementById('atcAlertDot');
-      const hasCritical = ATC_ALERTS.some(a => a.severity === 'critical') && !atcState.emptyDemo;
-      dot.style.display = hasCritical ? '' : 'none';
-
-      if (atcState.emptyDemo) {
-        wrap.innerHTML = `
-          <div class="atc-empty-block">
-            <div class="icon">🛎️</div>
-            <div class="ttl">Centro de alertas despejado</div>
-            <div class="hint">No se han generado eventos ni alertas operacionales recientes. Aquí aparecerán notificaciones de pérdida de altitud, desviaciones de ruta, conflictos estimados y más.</div>
-          </div>`;
-        return;
-      }
-
-      wrap.innerHTML = ATC_ALERTS.map(a => `
-        <div class="atc-alert-table-row">
-          <span class="sev ${a.severity}">${a.severity === 'critical' ? 'Crítico' : a.severity === 'warning' ? 'Atención' : 'Info'}</span>
-          <span class="fl">${a.flight}</span>
-          <span class="tm">${a.time}</span>
-          <span class="desc"><b>${a.kind}</b><span>${a.detail}</span></span>
-        </div>
-      `).join('');
-    }
-
-    function atcRenderLog() {
-      const wrap = document.getElementById('atcLogList');
-      if (atcState.emptyDemo) {
-        wrap.innerHTML = `
-          <div class="atc-empty-block">
-            <div class="icon">📜</div>
-            <div class="ttl">La bitácora está vacía</div>
-            <div class="hint">Las instrucciones enviadas, observaciones marcadas y eventos del sistema aparecerán aquí en orden cronológico durante la sesión.</div>
-          </div>`;
-        return;
-      }
-      wrap.innerHTML = ATC_LOG.map(l => `
-        <div class="atc-event-row">
-          <span class="atc-event-time">${l.time}</span>
-          <span class="atc-event-text"><span class="atc-event-actor">${l.actor}:</span> ${l.text}</span>
-        </div>
-      `).join('');
-    }
-
-    // ── PTT (Push To Talk) — interacción simulada, sin audio ni captura real ──
-    function bindAtcPtt() {
-      const btn = document.getElementById('atcPttBtn');
-      const press = (e) => { e.preventDefault(); atcPttArm(); };
-      const release = (e) => {
-        const isPttTouch = btn.contains(e.target);
-        if (atcState.pttState === 'idle' && !isPttTouch) return;
-        e.preventDefault();
-        atcPttRelease();
-      };
-
-      btn.addEventListener('mousedown', press);
-      btn.addEventListener('touchstart', press, { passive: false });
-      window.addEventListener('mouseup', release);
-      window.addEventListener('touchend', release, { passive: false });
-      btn.addEventListener('mouseleave', () => { if (atcState.pttState !== 'idle') atcPttRelease(); });
-
-      window.addEventListener('keydown', (e) => {
-        if (e.code !== 'Space') return;
-        const tag = (e.target && e.target.tagName || '').toLowerCase();
-        if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
-        if (!document.getElementById('panel-radar-atc').classList.contains('active')) return;
-        if (atcState.pttState === 'idle') { e.preventDefault(); atcPttArm(); }
-      });
-      window.addEventListener('keyup', (e) => {
-        if (e.code !== 'Space') return;
-        if (atcState.pttState !== 'idle') { e.preventDefault(); atcPttRelease(); }
-      });
-    }
-
-    let atcPttTimer = null;
-
-    function atcPttArm() {
-      if (atcState.pttState !== 'idle') return;
-      atcState.pttState = 'armed';
-      atcUpdatePttUI();
-      clearTimeout(atcPttTimer);
-      atcPttTimer = setTimeout(() => {
-        if (atcState.pttState === 'armed') {
-          atcState.pttState = 'transmitting';
-          atcUpdatePttUI();
-        }
-      }, 180);
-    }
-
-    function atcPttRelease() {
-      if (atcState.pttState === 'idle') return;
-      clearTimeout(atcPttTimer);
-      const wasTransmitting = atcState.pttState === 'transmitting';
-      atcState.pttState = 'idle';
-      atcUpdatePttUI();
-      if (wasTransmitting) {
-        const targetLabel = { selected: 'el estudiante seleccionado', group: 'el grupo activo', all: 'la frecuencia general' }[atcState.pttTarget];
-        showToast(`Vista previa: se transmitiría un mensaje simulado hacia ${targetLabel}. (Sin audio real)`, 'info');
-      }
-    }
-
-    function atcUpdatePttUI() {
-      const btn = document.getElementById('atcPttBtn');
-      const label = document.getElementById('atcPttBtnLabel');
-      const state = document.getElementById('atcPttState');
-      const meter = document.getElementById('atcPttMeter');
-      const info = document.getElementById('atcPttTransmitInfo');
-
-      btn.classList.remove('armed', 'transmitting');
-      meter.classList.remove('live');
-
-      if (atcState.pttState === 'armed') {
-        btn.classList.add('armed');
-        label.textContent = 'Activando…';
-        state.textContent = 'Armado';
-        state.className = 'atc-ptt-state armed';
-        info.textContent = 'Preparando transmisión simulada…';
-      } else if (atcState.pttState === 'transmitting') {
-        btn.classList.add('transmitting');
-        label.textContent = 'Transmitiendo…';
-        state.textContent = 'Transmitiendo';
-        state.className = 'atc-ptt-state transmitting';
-        meter.classList.add('live');
-        info.textContent = 'Transmisión simulada en curso — sin audio real';
-      } else {
-        label.textContent = 'Mantener para hablar';
-        state.textContent = 'En espera';
-        state.className = 'atc-ptt-state';
-        info.textContent = 'Sin transmisión activa';
-      }
-    }
 
     // ── Modal de configuración (vista previa, sin persistencia real) ──
     function openAtcSettings() {

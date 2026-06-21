@@ -485,6 +485,59 @@
     .btn-outline:hover { border-color: var(--accent); background: rgba(56,189,248,0.07); }
     .btn-outline:disabled { color: var(--muted); border-color: var(--border); cursor: not-allowed; background: transparent; }
     .btn-outline:disabled:hover { border-color: var(--border); background: transparent; }
+    .btn-primary {
+      background: var(--accent);
+      border: 1px solid var(--accent);
+      color: #0d0d0f;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 7px 18px;
+      cursor: pointer;
+      transition: background var(--motion-fast);
+    }
+    .btn-primary:hover { background: var(--accent-hover, #38bdf8); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .settings-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 20px 24px;
+      max-width: 480px;
+    }
+    .settings-card-title { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--fg); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .settings-input {
+      width: 100%;
+      box-sizing: border-box;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      padding: 8px 12px;
+      font-size: 13px;
+      font-family: var(--font-body);
+      border-radius: 0;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .settings-input:focus { border-color: var(--accent); }
+    .settings-input::placeholder { color: var(--muted); }
+    .sim-list-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .sim-list-row:last-child { border-bottom: none; }
+    .sim-list-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--muted);
+    }
+    .sim-list-dot.active { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.5); }
 
     /* ── SIM WIDGET ── */
     .sim-widget {
@@ -828,10 +881,17 @@
 
       <div class="sidebar-spacer"></div>
 
-<div class="sidebar-status">
+      <div class="sidebar-section" style="padding-bottom:8px;">
+        <button class="nav-item" onclick="switchPanel('ajustes', this)">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Ajustes</span>
+        </button>
+      </div>
+
+      <div class="sidebar-status">
         <div class="conn-indicator">
           <div class="conn-dot" id="simDot"></div>
-          <span id="simStatus">Sin simulador</span>
+          <span id="simStatus">Primero conecta un simulador</span>
         </div>
       </div>
     </aside>
@@ -849,17 +909,6 @@
             </div>
             <span class="count-badge" id="assignedBadge">2 pendientes</span>
           </div>
-        </div>
-
-        <div class="sim-widget" id="simWidget">
-          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-            <div style="flex:1;min-width:160px;">
-              <div class="sim-widget-title">Simulador no vinculado</div>
-              <div class="sim-widget-hint">Abre X-Plane en este PC, luego haz clic en conectar</div>
-            </div>
-            <button class="btn-connect-sim" id="btnLinkSim" onclick="linkSimulator()">Conectar simulador</button>
-          </div>
-          <div class="link-msg" id="linkMsg"></div>
         </div>
 
         <div class="flights-list" id="flightsList">
@@ -1042,6 +1091,37 @@
             <div class="stat-label" id="statsLastFlightDate" style="color:var(--border-soft);">--</div>
           </div>
         </div>
+      </div>
+
+      <!-- AJUSTES -->
+      <div class="tab-panel" id="panel-ajustes">
+        <div class="panel-head">
+          <div>
+            <div class="tech-label">Panel / Estudiante / Ajustes</div>
+            <h1 class="panel-title">Ajustes</h1>
+          </div>
+        </div>
+
+        <!-- Estado simulador actual -->
+        <div class="settings-card">
+          <div class="settings-card-title">Mi simulador</div>
+          <div id="simWidget" style="margin-top:4px;">
+            <div class="sim-widget-hint" style="color:var(--muted);">Cargando estado...</div>
+          </div>
+        </div>
+
+        <!-- Lista de simuladores -->
+        <div class="settings-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <div>
+              <div class="settings-card-title" style="margin-bottom:2px;">Simuladores</div>
+              <div class="sim-widget-hint">Lista de todos los equipos registrados en la plataforma</div>
+            </div>
+            <button class="btn-outline" onclick="loadSimList(this)" style="white-space:nowrap;">Ver simuladores</button>
+          </div>
+          <div id="simListContent"></div>
+        </div>
+
       </div>
 
     </main>
@@ -1411,6 +1491,7 @@
       ];
 
       if (window.currentUser.session_code) {
+        const since48h = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
         telemetryQueries.push(
           supabaseClient
             .from('flight_telemetry')
@@ -1419,6 +1500,7 @@
             .is('student_id', null)
             .not('flight_id', 'is', null)
             .neq('flight_id', '')
+            .gte('sim_time', since48h)
             .order('sim_time', { ascending: false })
             .limit(10000)
         );
@@ -2149,7 +2231,7 @@
       clearTimeout(simTimeout);
       simTimeout = setTimeout(() => {
         document.getElementById('simDot').classList.remove('online');
-        document.getElementById('simStatus').textContent = 'Sin simulador';
+        document.getElementById('simStatus').textContent = 'Primero conecta un simulador';
       }, 5000);
     }
 
@@ -2158,17 +2240,25 @@
       if (!sessionCode) return;
       _simChannel = supabaseClient
         .channel('sim:' + sessionCode)
+        // Telemetría en tiempo real → actualizar estado en widget y sidebar
         .on('postgres_changes', {
           event: 'INSERT', schema: 'public', table: 'flight_telemetry',
           filter: `session_code=eq.${sessionCode}`
         }, (payload) => {
-          setSimOnline(payload.new);
+          const p = payload.new;
+          setSimOnline(p);
           const hint = document.getElementById('simWidgetHint');
-          if (hint) {
-            const p = payload.new;
-            hint.textContent = `${p.on_ground ? 'En tierra' : 'En vuelo'} · ${Math.round(p.altitude_ft).toLocaleString()} ft · ${Math.round(p.ias_kt)} kt`;
-          }
-          document.querySelectorAll('#simWidget .conn-dot').forEach(d => d.classList.add('online'));
+          if (hint) hint.textContent = `${p.on_ground ? 'En tierra' : 'En vuelo'} · ${Math.round(p.altitude_ft).toLocaleString()} ft · ${Math.round(p.ias_kt)} kt`;
+          // Punto del widget
+          document.querySelectorAll('#simWidget .sim-list-dot').forEach(d => d.classList.add('active'));
+        })
+        // flight_sessions UPDATE → detectar cuando el simulador prende/apaga
+        .on('postgres_changes', {
+          event: '*', schema: 'public', table: 'flight_sessions',
+          filter: `session_code=eq.${sessionCode}`
+        }, (payload) => {
+          const s = payload.new || payload.old;
+          if (s) renderSimLinked(sessionCode, s);
         })
         .subscribe();
     }
@@ -2177,7 +2267,7 @@
     async function checkSimulatorLink() {
       try {
         const code = window.currentUser?.session_code;
-        if (!code) return; // HTML default already shows unlinked state
+        if (!code) { renderSimUnlinked(); return; }
 
         const { data: session } = await supabaseClient
           .from('flight_sessions')
@@ -2185,40 +2275,37 @@
           .eq('session_code', code)
           .single();
 
-        if (session) {
-          renderSimLinked(code, session);
-          subscribeToSim(code);
-        }
-        // else: HTML default already shows unlinked state
+        renderSimLinked(code, session || { last_seen: new Date(0).toISOString(), on_ground: false });
+        subscribeToSim(code);
       } catch (e) {
-        // leave the default unlinked state visible
+        renderSimUnlinked();
       }
     }
 
     function renderSimUnlinked() {
       document.getElementById('simWidget').innerHTML = `
-        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-          <div style="flex:1;min-width:160px;">
-            <div class="sim-widget-title">Simulador no vinculado</div>
-            <div class="sim-widget-hint">Abre X-Plane en este PC, luego haz clic en conectar</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="sim-list-dot"></div>
+          <div>
+            <div class="sim-widget-title">Primero conecta un simulador vinculado</div>
+            <div class="sim-widget-hint">Usa "Ver simuladores" para conectarte a uno activo</div>
           </div>
-          <button class="btn-connect-sim" id="btnLinkSim" onclick="linkSimulator()">Conectar simulador</button>
         </div>
         <div class="link-msg" id="linkMsg"></div>`;
     }
 
     function renderSimLinked(code, session) {
-      const isLive = Date.now() - new Date(session.last_seen).getTime() < 10000;
+      const isLive = Date.now() - new Date(session.last_seen).getTime() < 60000;
       document.getElementById('simWidget').innerHTML = `
-        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-          <div class="conn-dot ${isLive ? 'online' : ''}" style="flex-shrink:0;"></div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <div class="sim-list-dot ${isLive ? 'active' : ''}"></div>
           <div style="flex:1;">
             <div class="sim-widget-machine">${escapeHtml(code)}</div>
             <div class="sim-widget-hint" id="simWidgetHint">
-              ${isLive ? (session.on_ground ? 'En tierra' : 'En vuelo') : 'Abre X-Plane para iniciar sesión'}
+              ${isLive ? (session.on_ground ? 'En tierra' : 'En vuelo') : 'Apagado · abre X-Plane para iniciar'}
             </div>
           </div>
-          <button class="btn-outline" onclick="linkSimulator()" style="font-size:10px;padding:6px 14px;">Cambiar</button>
+          <button class="btn-outline" style="font-size:10px;padding:5px 12px;color:var(--danger);border-color:var(--danger);" onclick="disconnectSimulator()">Desconectar</button>
         </div>
         <div class="link-msg" id="linkMsg"></div>`;
       if (isLive) {
@@ -2227,75 +2314,94 @@
       }
     }
 
-    async function linkSimulator() {
-      const btn = document.getElementById('btnLinkSim') || document.querySelector('.btn-connect-sim');
-      if (btn) { btn.disabled = true; btn.textContent = 'Buscando...'; }
-      setLinkMsg('', false);
-
-      const since = new Date(Date.now() - 60000).toISOString();
-      const { data: recent, error } = await supabaseClient
-        .from('flight_sessions')
-        .select('session_code, last_seen, on_ground')
-        .gte('last_seen', since)
-        .order('last_seen', { ascending: false });
-
-      if (error || !recent?.length) {
-        if (btn) { btn.disabled = false; btn.textContent = 'Conectar simulador'; }
-        setLinkMsg('No se detectó X-Plane activo. Ábrelo y vuelve a intentar.', true);
-        return;
-      }
-
-      const { data: claimed } = await supabaseClient
+    async function disconnectSimulator() {
+      const { error } = await supabaseClient
         .from('profiles')
-        .select('session_code, id')
-        .in('session_code', recent.map(s => s.session_code));
+        .update({ session_code: null, active_assignment_id: null })
+        .eq('id', window.currentUser.id);
 
-      const claimedByOthers = new Set(
-        (claimed || []).filter(p => p.id !== window.currentUser.id).map(p => p.session_code)
-      );
+      if (error) { setLinkMsg('Error al desconectar: ' + error.message, true); return; }
 
-      const candidates = recent.filter(s => !claimedByOthers.has(s.session_code));
-      if (!candidates.length) {
-        if (btn) { btn.disabled = false; btn.textContent = 'Conectar simulador'; }
-        setLinkMsg('Todas las sesiones activas están asignadas a otros estudiantes.', true);
-        return;
-      }
-
-      renderSimSelection(candidates);
+      window.currentUser.session_code = null;
+      window.currentUser.active_assignment_id = null;
+      if (_simChannel) { supabaseClient.removeChannel(_simChannel); _simChannel = null; }
+      document.getElementById('simDot').classList.remove('online');
+      document.getElementById('simStatus').textContent = 'Primero conecta un simulador';
+      renderSimUnlinked();
+      if (document.getElementById('simListContent')?.innerHTML) loadSimList(null);
     }
 
-    // Muestra la lista de equipos detectados para que el ESTUDIANTE confirme
-    // cuál es el suyo (comparando con el código de MI_CODIGO_DE_SESION.txt que
-    // el plugin escribe en su carpeta), en vez de que el sistema adivine y
-    // arriesgue vincular el equipo de otra persona.
-    function renderSimSelection(candidates) {
-      const rows = candidates.map(s => `
-        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
-          <div style="flex:1;min-width:120px;">
-            <div class="sim-widget-machine">${escapeHtml(s.session_code)}</div>
-            <div class="sim-widget-hint">${s.on_ground ? 'En tierra' : 'En vuelo'} · visto hace ${Math.max(0, Math.round((Date.now() - new Date(s.last_seen).getTime()) / 1000))}s</div>
-          </div>
-          <button class="btn-connect-sim" style="font-size:11px;padding:8px 16px;" onclick="confirmSimulatorLink('${escapeHtml(s.session_code).replace(/'/g, "\\'")}')">Es mi equipo</button>
-        </div>`).join('');
+    async function loadSimList(btn) {
+      const content = document.getElementById('simListContent');
+      if (btn) { btn.disabled = true; btn.textContent = 'Cargando...'; }
+      content.innerHTML = '<div class="sim-widget-hint" style="margin-top:12px;">Cargando...</div>';
 
-      document.getElementById('simWidget').innerHTML = `
-        <div style="margin-bottom:6px;">
-          <div class="sim-widget-title">Confirma cuál es tu equipo</div>
-          <div class="sim-widget-hint">
-            Revisa el archivo <strong>MI_CODIGO_DE_SESION.txt</strong> en la carpeta del plugin
-            (IFRTraining) y elige el código que coincida EXACTAMENTE. No selecciones uno que no
-            reconozcas: podrías vincular tu cuenta al equipo de otro estudiante.
-          </div>
-        </div>
-        ${rows}
-        <div style="margin-top:10px;">
-          <button class="btn-outline" style="font-size:10px;padding:6px 14px;" onclick="checkSimulatorLink()">Cancelar</button>
-        </div>
-        <div class="link-msg" id="linkMsg"></div>`;
+      const { data: sessions, error } = await supabaseClient
+        .from('flight_sessions')
+        .select('session_code, last_seen, on_ground')
+        .order('last_seen', { ascending: false })
+        .limit(50);
+
+      if (btn) { btn.disabled = false; btn.textContent = 'Ver simuladores'; }
+
+      if (error || !sessions?.length) {
+        content.innerHTML = '<div class="sim-widget-hint" style="margin-top:12px;color:var(--muted);">No hay simuladores registrados aún.</div>';
+        return;
+      }
+
+      // Quién tiene cada session_code asignado
+      const codes = sessions.map(s => s.session_code);
+      const { data: owners } = await supabaseClient
+        .from('profiles')
+        .select('session_code, nombre, id')
+        .in('session_code', codes);
+
+      const ownerMap = {};
+      (owners || []).forEach(p => { ownerMap[p.session_code] = p; });
+
+      const now = Date.now();
+      const rows = sessions.map(s => {
+        const active = (now - new Date(s.last_seen).getTime()) < 60000;
+        const secsAgo = Math.max(0, Math.round((now - new Date(s.last_seen).getTime()) / 1000));
+        const lastSeen = active ? (s.on_ground ? 'En tierra' : 'En vuelo') : (secsAgo < 3600 ? `Hace ${secsAgo}s` : 'Inactivo');
+        const owner = ownerMap[s.session_code];
+        const isMe = owner?.id === window.currentUser?.id;
+        const isMine = window.currentUser?.session_code === s.session_code;
+        const takenByOther = owner && !isMe;
+
+        let badge = '';
+        if (isMine) badge = `<span style="font-family:var(--font-mono);font-size:10px;color:var(--accent);border:1px solid var(--accent);padding:1px 6px;border-radius:3px;">Conectado</span>`;
+        else if (takenByOther) badge = `<span style="font-family:var(--font-mono);font-size:10px;color:var(--muted);border:1px solid var(--border);padding:1px 6px;border-radius:3px;">En uso · ${escapeHtml(owner.nombre)}</span>`;
+
+        const canConnect = !takenByOther && !isMine;
+        const connectBtn = canConnect
+          ? `<button class="btn-outline" style="font-size:10px;padding:5px 12px;white-space:nowrap;" onclick="confirmSimulatorLink('${escapeHtml(s.session_code).replace(/'/g, "\\'")}')">Conectar</button>`
+          : '';
+
+        return `
+          <div class="sim-list-row">
+            <div class="sim-list-dot ${active ? 'active' : ''}"></div>
+            <div style="flex:1;min-width:0;">
+              <div class="sim-widget-machine" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(s.session_code)}</div>
+              <div class="sim-widget-hint">${lastSeen}</div>
+            </div>
+            ${badge}
+            ${connectBtn}
+          </div>`;
+      }).join('');
+
+      content.innerHTML = `<div style="margin-top:10px;">${rows}</div>`;
     }
 
     async function confirmSimulatorLink(code) {
       setLinkMsg('Vinculando...', false);
+
+      // Liberar este simulador de cualquier otro estudiante que lo tuviera
+      await supabaseClient
+        .from('profiles')
+        .update({ session_code: null, active_assignment_id: null })
+        .eq('session_code', code)
+        .neq('id', window.currentUser.id);
 
       const { error: upErr } = await supabaseClient
         .from('profiles')
@@ -2314,8 +2420,10 @@
         .single();
 
       window.currentUser.session_code = code;
-      renderSimLinked(code, session || { last_seen: new Date().toISOString(), on_ground: false });
+      renderSimLinked(code, session || { last_seen: new Date(0).toISOString(), on_ground: false });
       subscribeToSim(code);
+      // Refrescar lista para que muestre "Conectado" en vez del botón
+      if (document.getElementById('simListContent')?.innerHTML) loadSimList(null);
     }
 
     function setLinkMsg(text, isError) {
@@ -2367,6 +2475,41 @@
         });
       });
     })();
+
+    async function changeStudentPassword() {
+      const newPwd  = document.getElementById('settingsNewPassword').value;
+      const confPwd = document.getElementById('settingsConfirmPassword').value;
+      const msg     = document.getElementById('settingsPasswordMsg');
+
+      msg.style.display = 'none';
+
+      if (!newPwd || newPwd.length < 6) {
+        showSettingsMsg('La contraseña debe tener al menos 6 caracteres.', 'error'); return;
+      }
+      if (newPwd !== confPwd) {
+        showSettingsMsg('Las contraseñas no coinciden.', 'error'); return;
+      }
+
+      const { error } = await supabaseClient.auth.updateUser({ password: newPwd });
+      if (error) {
+        showSettingsMsg('Error: ' + error.message, 'error');
+      } else {
+        document.getElementById('settingsNewPassword').value = '';
+        document.getElementById('settingsConfirmPassword').value = '';
+        showSettingsMsg('Contraseña actualizada correctamente.', 'ok');
+      }
+    }
+
+    function showSettingsMsg(text, type) {
+      const el = document.getElementById('settingsPasswordMsg');
+      el.textContent = text;
+      el.style.display = 'block';
+      el.style.color      = type === 'ok' ? 'var(--success, #22c55e)' : 'var(--danger, #ef4444)';
+      el.style.borderColor = type === 'ok' ? 'var(--success, #22c55e)' : 'var(--danger, #ef4444)';
+      el.style.border     = '1px solid';
+      el.style.borderRadius = '4px';
+      el.style.padding    = '8px 12px';
+    }
   </script>
 </body>
 </html>
