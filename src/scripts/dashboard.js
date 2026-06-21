@@ -1140,7 +1140,7 @@ function setupAirportSearch() {
     });
     input.addEventListener("focus", () => renderAirportSuggestions(input));
     input.addEventListener("blur", () => {
-      setTimeout(() => closeAirportSuggestions(), 120);
+      setTimeout(() => closeAirportSuggestions(), 300);
       updateRouteAirportClearButtons();
     });
     input.addEventListener("keydown", (event) => {
@@ -1151,12 +1151,12 @@ function setupAirportSearch() {
       }
     });
 
-    input.parentElement.addEventListener("click", (event) => {
+    // mousedown en vez de click: previene que el blur del input cierre
+    // el dropdown antes de que se procese la selección
+    input.parentElement.addEventListener("mousedown", (event) => {
       const item = event.target.closest(".airport-suggestion-item");
-
-      if (!item) {
-        return;
-      }
+      if (!item) return;
+      event.preventDefault(); // evita blur en el input
 
       input.value = item.dataset.value;
       if (requiresSelection) {
