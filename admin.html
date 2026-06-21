@@ -76,6 +76,7 @@
       color: var(--fg-2);
       font-family: var(--font-mono);
       font-size: var(--text-2xs);
+      font-weight: 700;
       flex-shrink: 0;
     }
     .brand-name {
@@ -140,15 +141,20 @@
     .dl-btn.soon:hover { border-color: var(--border); color: var(--fg-2); }
 
     .btn-logout {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       background: transparent;
       border: 1px solid var(--border-soft);
+      border-radius: var(--radius-control);
       color: var(--fg-2);
-      font-family: var(--font-mono);
+      font-family: var(--font-body);
       font-size: var(--text-2xs);
-      letter-spacing: 0.08em;
+      font-weight: 600;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      padding: 6px 14px;
-      transition: border-color var(--motion-fast), color var(--motion-fast);
+      padding: 6px 12px;
+      transition: border-color var(--motion-fast) var(--ease-standard), color var(--motion-fast) var(--ease-standard);
     }
     .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
 
@@ -1522,7 +1528,7 @@
           </div>
         </div>
       </div>
-      <button class="btn-logout" onclick="handleLogout()">Cerrar sesión</button>
+      <button class="btn-logout" onclick="handleLogout()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-3"/><path d="M10 12h9M16 8l3 4-3 4"/></svg>Salir</button>
     </div>
   </header>
 
@@ -1531,21 +1537,27 @@
     <!-- HORIZONTAL TABS -->
     <nav class="page-tabs">
       <button class="page-tab active" onclick="switchTab('estudiantes', this)">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 5.5a3 3 0 0 1 0 5M21 20a6 6 0 0 0-4-5.6"/></svg>
         Estudiantes <span class="tab-count" id="estudiantesCount">0</span>
       </button>
       <button class="page-tab" onclick="switchTab('vuelos-activos', this)">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5L21 16Z"/></svg>
         Vuelos activos <span class="tab-count" id="activeFlightsCount">0</span>
       </button>
       <button class="page-tab" onclick="switchTab('asignar', this)">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="4" width="8" height="3" rx="1"/><path d="M9 4H6a1 1 0 0 0-1 1v15a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-3"/><path d="M8 12h8M8 16h5"/></svg>
         Asignar vuelo
       </button>
       <button class="page-tab" onclick="switchTab('simuladores', this)">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="1"/><path d="M8 21h8M12 17v4M7 9l3 3-3 3M13 15h4"/></svg>
         Simuladores <span class="tab-count" id="simActiveCount">0</span>
       </button>
       <button class="page-tab" onclick="switchTab('radar-atc', this)">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12 19 6"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>
         Radar ATC
       </button>
       <button class="page-tab" onclick="switchTab('reportes', this)">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l3 3v15a0 0 0 0 1 0 0H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v4h4M9 13h6M9 17h6M9 9h2"/></svg>
         Reportes
       </button>
     </nav>
@@ -1582,7 +1594,7 @@
           </div>
           <div style="display:flex;gap:8px;">
             <button class="btn-outline" onclick="openCreateStudentModal()">+ Crear estudiante</button>
-            <button class="btn-primary" onclick="switchTab('asignar', document.querySelectorAll('.page-tab')[2])">+ Asignar vuelo</button>
+            <button class="btn-primary" onclick="switchTab('asignar', document.querySelectorAll('.page-tab')[2])" style="display:inline-flex;align-items:center;gap:6px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Asignar vuelo</button>
           </div>
         </div>
 
