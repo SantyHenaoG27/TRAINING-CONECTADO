@@ -2227,7 +2227,7 @@
         <div class="flight-chart-wrap">
           <div class="chart-legend">
             <span><i style="background:#38bdf8;"></i> Altitud (FT)</span>
-            <span><i style="background:var(--accent);"></i> Velocidad (KT)</span>
+            <span><i style="background:#e879f9;"></i> Velocidad (KT)</span>
           </div>
           <canvas id="fdAltitudeChart" height="110"></canvas>
           <div class="chart-tooltip" id="fdAltitudeTooltip"></div>
@@ -4850,9 +4850,9 @@
       const iasScaleMin = 0;
       const iasRange = Math.max(1, iasScaleMax - iasScaleMin);
 
-      ctx.strokeStyle = '#38bdf8';
+      ctx.strokeStyle = '#e879f9';
       ctx.lineWidth = 2;
-      ctx.shadowColor = 'rgba(56,189,248,0.55)';
+      ctx.shadowColor = 'rgba(232,121,249,0.55)';
       ctx.shadowBlur = 8;
       ctx.beginPath();
       iasValues.forEach((ias, i) => {
@@ -4867,12 +4867,12 @@
       const lastIas = iasValues[iasValues.length - 1];
       const lastIasX = padX + plotW;
       const lastIasY = padTop + (1 - ((lastIas - iasScaleMin) / iasRange)) * plotH;
-      ctx.fillStyle = '#38bdf8';
+      ctx.fillStyle = '#e879f9';
       ctx.beginPath();
       ctx.arc(lastIasX, lastIasY, 4, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#38bdf8';
+      ctx.fillStyle = '#e879f9';
       ctx.font = '11px monospace';
       ctx.fillText(`${Math.round(iasRawMax).toLocaleString('es-CO')} KT MAX`, padX, h - 14);
 
