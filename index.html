@@ -4,6 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>IFR TRAINING COL | Planificacion IFR y cartas Aerocivil</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" />
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" />
   <style>
     /* design-systems/lamborghini/tokens.css
@@ -29,9 +32,9 @@
       --success: #4ade80;
       --warn: #7dd3fc;
       --danger: #e63946;
-      --font-display: "Lamborghini", "Eurostile", Arial, sans-serif;
-      --font-body: "Inter", Arial, sans-serif;
-      --font-mono: "SF Mono", ui-monospace, Menlo, monospace;
+      --font-display: "Saira", "Eurostile", "Arial Narrow", Arial, sans-serif;
+      --font-body: "Inter", system-ui, Arial, sans-serif;
+      --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
       --text-xs: 12px;
       --text-sm: 14px;
       --text-base: 16px;
@@ -56,6 +59,7 @@
       --section-y-phone: 56px;
       --radius-sm: 2px;
       --radius-md: 6px;
+      --radius-control: 8px;
       --radius-lg: 10px;
       --radius-pill: 9999px;
       --elev-flat: none;
@@ -173,7 +177,7 @@
       justify-content: center;
       gap: var(--space-2);
       padding: 9px 17px;
-      border-radius: 8px;
+      border-radius: var(--radius-control);
       border: 1px solid transparent;
       font-size: 11px;
       line-height: 1;

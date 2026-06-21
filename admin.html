@@ -5,13 +5,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>IFR TRAINING COL | Panel Instructor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" />
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" />
   <style>body { visibility: hidden; }</style>
   <style>
     :root {
       --bg: #0d0d0f;
+      --panel-deep: #0a0a0c;
       --surface: #161618;
       --surface-warm: #1e1e22;
+      --field: #111116;
       --fg: #f0f0f2;
       --fg-2: #b0b0be;
       --muted: #9a9aaa;
@@ -23,9 +28,13 @@
       --success: #4ade80;
       --danger: #ef4452;
       --amber: #fb923c;
-      --font-display: "Eurostile", "Arial Narrow", Arial, sans-serif;
-      --font-body: "Inter", Arial, sans-serif;
-      --font-mono: "SF Mono", ui-monospace, Menlo, monospace;
+      --font-display: "Saira", "Eurostile", "Arial Narrow", Arial, sans-serif;
+      --font-body: "Inter", system-ui, Arial, sans-serif;
+      --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+      --radius-control: 8px;
+      --radius-md: 6px;
+      --radius-sm: 2px;
+      --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
       --text-2xs: 0.75rem;
       --text-xs: 0.8125rem;
       --text-sm: 0.875rem;
@@ -49,7 +58,7 @@
       position: fixed;
       top: 0; left: 0; right: 0;
       height: var(--topbar-h);
-      background: var(--surface);
+      background: var(--panel-deep);
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -242,37 +251,42 @@
       background: var(--accent);
       color: #040408;
       border: 1px solid var(--accent);
-      font-family: var(--font-display);
+      border-radius: var(--radius-control);
+      font-family: var(--font-body);
       font-size: var(--text-xs);
       font-weight: 800;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       padding: 9px 20px;
-      transition: background var(--motion-fast), border-color var(--motion-fast);
+      transition: background var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard);
     }
     .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
     .btn-outline {
       background: transparent;
       border: 1px solid var(--border-soft);
+      border-radius: var(--radius-control);
       color: var(--fg-2);
-      font-family: var(--font-mono);
+      font-family: var(--font-body);
       font-size: var(--text-2xs);
-      letter-spacing: 0.08em;
+      font-weight: 600;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
       padding: 7px 14px;
-      transition: border-color var(--motion-fast), color var(--motion-fast);
+      transition: border-color var(--motion-fast) var(--ease-standard), color var(--motion-fast) var(--ease-standard);
     }
     .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
     .btn-danger-outline {
       background: transparent;
       border: 1px solid var(--border-soft);
+      border-radius: var(--radius-control);
       color: var(--muted);
-      font-family: var(--font-mono);
+      font-family: var(--font-body);
       font-size: var(--text-2xs);
-      letter-spacing: 0.08em;
+      font-weight: 600;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
       padding: 7px 14px;
-      transition: border-color var(--motion-fast), color var(--motion-fast);
+      transition: border-color var(--motion-fast) var(--ease-standard), color var(--motion-fast) var(--ease-standard);
     }
     .btn-danger-outline:hover { border-color: var(--danger); color: var(--danger); }
 
@@ -366,7 +380,7 @@
       background: var(--bg);
       border: 1px solid var(--border);
       color: var(--fg);
-      border-radius: 0;
+      border-radius: var(--radius-md);
       padding: 9px 14px;
       font-family: var(--font-body);
       font-size: var(--text-sm);
@@ -581,7 +595,7 @@
       background: var(--bg);
       border: 1px solid var(--border);
       color: var(--fg);
-      border-radius: 0;
+      border-radius: var(--radius-md);
       padding: 10px 14px;
       font-family: var(--font-body);
       font-size: var(--text-sm);
@@ -834,7 +848,7 @@
       align-items: center;
       justify-content: space-between;
       transition: border-color var(--motion-fast);
-      border-radius: 0;
+      border-radius: var(--radius-md);
     }
     .multi-select-trigger:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(56,189,248,0.12); }
     .trigger-arrow { color: var(--muted); font-size: var(--text-2xs); transition: transform var(--motion-fast); }
@@ -889,14 +903,16 @@
     .rep-filter-btn {
       background: transparent;
       border: 1px solid var(--border);
+      border-radius: var(--radius-control);
       color: var(--muted);
-      font-family: var(--font-mono);
+      font-family: var(--font-body);
       font-size: 11px;
-      letter-spacing: 0.07em;
+      font-weight: 600;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
       padding: 7px 14px;
       cursor: pointer;
-      transition: all 120ms;
+      transition: all var(--motion-fast) var(--ease-standard);
       white-space: nowrap;
     }
     .rep-filter-btn:hover { color: var(--fg); border-color: var(--border-soft); }
@@ -1743,7 +1759,7 @@
             <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;">⌕</span>
             <input id="repSearch" type="text" placeholder="Buscar estudiante, SKBO, SKPE…"
               oninput="filterReportFlights()"
-              style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:9px 14px 9px 34px;font-family:var(--font-body);font-size:13px;outline:none;"
+              style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--fg);padding:9px 14px 9px 34px;font-family:var(--font-body);font-size:13px;outline:none;"
               onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
           </div>
           <div style="display:flex;gap:6px;">

@@ -5,18 +5,24 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>IFR TRAINING COL | Panel Estudiante</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" />
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" />
   <style>body { visibility: hidden; }</style>
   <style>
     :root {
       --bg: #0d0d0f;
+      --panel-deep: #0a0a0c;
       --surface: #161618;
       --surface-warm: #1e1e22;
+      --field: #111116;
       --fg: #f0f0f2;
       --fg-2: #b0b0be;
       --muted: #9a9aaa;
       --border: #2a2a30;
       --border-soft: #38383f;
+      --border-strong: #38383f;
       --accent: #38bdf8;
       --accent-on: #040408;
       --accent-hover: #7dd3fc;
@@ -24,12 +30,16 @@
       --danger: #e63946;
       --magenta: #e879f9;
       --amber: #fb923c;
-      --font-display: "Eurostile", "Arial Narrow", Arial, sans-serif;
-      --font-body: "Inter", Arial, sans-serif;
-      --font-mono: "SF Mono", ui-monospace, Menlo, monospace;
+      --font-display: "Saira", "Eurostile", "Arial Narrow", Arial, sans-serif;
+      --font-body: "Inter", system-ui, Arial, sans-serif;
+      --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
       --focus-ring: 0 0 0 4px rgba(56,189,248,0.22);
       --motion-fast: 120ms;
       --ease: cubic-bezier(0.16,1,0.3,1);
+      --ease-standard: cubic-bezier(0.16,1,0.3,1);
+      --radius-control: 8px;
+      --radius-md: 6px;
+      --radius-sm: 2px;
       --topbar-h: 54px;
       --sidebar-w: 248px;
     }
@@ -43,7 +53,7 @@
       position: fixed;
       top: 0; left: 0; right: 0;
       height: var(--topbar-h);
-      background: var(--surface);
+      background: var(--panel-deep);
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -155,7 +165,7 @@
     .sidebar {
       width: var(--sidebar-w);
       flex-shrink: 0;
-      background: var(--bg);
+      background: var(--surface);
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
@@ -177,21 +187,23 @@
       align-items: center;
       gap: 10px;
       padding: 9px 12px;
-      border-radius: 0;
+      padding-left: 10px;
+      border-radius: var(--radius-md);
       color: var(--fg-2);
       font-size: 13px;
       cursor: pointer;
-      border: 1px solid transparent;
-      transition: background var(--motion-fast), color var(--motion-fast), border-color var(--motion-fast);
+      border: none;
+      border-left: 2px solid transparent;
+      transition: background var(--motion-fast) var(--ease-standard), color var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard);
       background: none;
       width: 100%;
       text-align: left;
     }
-    .nav-item:hover { background: var(--surface); color: var(--fg); }
+    .nav-item:hover { background: var(--surface-warm); color: var(--fg); }
     .nav-item.active {
-      background: var(--surface-warm);
+      background: rgba(56, 189, 248, 0.06);
       color: var(--accent);
-      border-color: var(--border);
+      border-left-color: var(--accent);
     }
     .nav-item .nav-icon { font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
     .nav-item .nav-label { font-family: var(--font-body); font-size: 13px; }
@@ -347,6 +359,7 @@
     .flight-card {
       background: var(--surface);
       border: 1px solid var(--border);
+      border-radius: var(--radius-md);
       overflow: hidden;
     }
     .flight-card.is-flying {
@@ -474,13 +487,15 @@
     .btn-outline {
       background: transparent;
       border: 1px solid var(--border-soft);
+      border-radius: var(--radius-control);
       color: var(--accent);
-      font-family: var(--font-mono);
+      font-family: var(--font-body);
       font-size: 10px;
-      letter-spacing: 0.08em;
+      font-weight: 600;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       padding: 7px 16px;
-      transition: border-color var(--motion-fast), background var(--motion-fast);
+      transition: border-color var(--motion-fast) var(--ease-standard), background var(--motion-fast) var(--ease-standard);
     }
     .btn-outline:hover { border-color: var(--accent); background: rgba(56,189,248,0.07); }
     .btn-outline:disabled { color: var(--muted); border-color: var(--border); cursor: not-allowed; background: transparent; }
@@ -488,15 +503,16 @@
     .btn-primary {
       background: var(--accent);
       border: 1px solid var(--accent);
+      border-radius: var(--radius-control);
       color: #0d0d0f;
-      font-family: var(--font-mono);
+      font-family: var(--font-body);
       font-size: 10px;
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       padding: 7px 18px;
       cursor: pointer;
-      transition: background var(--motion-fast);
+      transition: background var(--motion-fast) var(--ease-standard);
     }
     .btn-primary:hover { background: var(--accent-hover, #38bdf8); }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -516,9 +532,9 @@
       padding: 8px 12px;
       font-size: 13px;
       font-family: var(--font-body);
-      border-radius: 0;
+      border-radius: var(--radius-md);
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s var(--ease-standard);
     }
     .settings-input:focus { border-color: var(--accent); }
     .settings-input::placeholder { color: var(--muted); }
@@ -541,8 +557,9 @@
 
     /* ── SIM WIDGET ── */
     .sim-widget {
-      background: var(--surface);
+      background: var(--field);
       border: 1px solid var(--border);
+      border-radius: var(--radius-md);
       padding: 16px 20px;
       margin-bottom: 20px;
     }

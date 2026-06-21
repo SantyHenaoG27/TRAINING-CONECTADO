@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Saira:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap");
+
 :root {
   --bg: #0d0d0f;
   --panel: #161618;
@@ -13,6 +15,35 @@
   --magenta: #e879f9;
   --amber: #fb923c;
   --green: #4ade80;
+
+  /* Design system aliases */
+  --surface: #161618;
+  --surface-warm: #1e1e22;
+  --field: #111116;
+  --fg: #f0f0f2;
+  --fg-2: #b0b0be;
+  --accent: #38bdf8;
+  --accent-on: #040408;
+  --accent-hover: #7dd3fc;
+  --success: #4ade80;
+  --danger: #e63946;
+  --danger-strong: #dc2626;
+
+  --font-display: "Saira", "Eurostile", "Arial Narrow", Arial, sans-serif;
+  --font-body: "Inter", system-ui, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+
+  --radius-none: 0;
+  --radius-sm: 2px;
+  --radius-md: 6px;
+  --radius-control: 8px;
+  --radius-pill: 9999px;
+
+  --motion-fast: 120ms;
+  --motion-base: 210ms;
+  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --focus-ring: 0 0 0 4px rgba(56, 189, 248, 0.28);
 }
 
 * {
@@ -28,9 +59,9 @@ body {
 }
 
 body.dashboard-page {
-  --font-display: "Lamborghini", "Eurostile", Arial, sans-serif;
-  --font-body: "Inter", Arial, sans-serif;
-  --font-mono: "SF Mono", ui-monospace, Menlo, monospace;
+  --font-display: "Saira", "Eurostile", "Arial Narrow", Arial, sans-serif;
+  --font-body: "Inter", system-ui, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
   --accent: #38bdf8;
   --accent-on: #040408;
   --accent-hover: #7dd3fc;
@@ -378,7 +409,7 @@ code,
 .doc {
   cursor: default;
   border: 1px solid var(--border-strong);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
 }
 
 .btn {
@@ -2622,7 +2653,7 @@ body.map-page {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border-radius: 0;
+  border-radius: var(--radius-control);
   font-family: var(--font-body);
   font-size: 14px;
   line-height: 1;
