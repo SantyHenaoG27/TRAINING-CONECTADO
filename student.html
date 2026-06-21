@@ -1758,7 +1758,7 @@
 
       const points = (data || []).filter(p =>
         p.student_id === window.currentUser.id ||
-        (!p.student_id && p.session_code === window.currentUser.session_code)
+        (!p.student_id && p.session_code === flight.session_code)
       );
       drawPerformanceChart(points);
       renderStudentRouteMap(points);
