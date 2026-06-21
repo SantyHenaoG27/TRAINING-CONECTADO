@@ -1550,7 +1550,8 @@
       const summaryFlights = summaryRes.error ? [] : (summaryRes.data || [])
         .filter(f => f.flight_id && (
           f.student_id === window.currentUser.id ||
-          (!f.student_id && f.session_code === window.currentUser.session_code)
+          (f.assignment_id && assignmentsById[f.assignment_id]) ||
+          (!f.student_id && !f.assignment_id && f.session_code === window.currentUser.session_code)
         ))
         .map(normalizeStudentFlight);
 
