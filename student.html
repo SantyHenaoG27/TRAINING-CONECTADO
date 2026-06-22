@@ -1364,10 +1364,21 @@
       if (!candidates.length || !summaries || !summaries.length) return false;
 
       const now = Date.now();
+      // Para cada assignment_id, tomar solo el ended_at MÁS RECIENTE.
+      // Filas antiguas del mismo assignment (vuelos previos) no deben
+      // disparar el auto-completado si hay telemetría nueva en progreso.
+      const latestEndedAt = {};
+      summaries.forEach(s => {
+        if (!s.assignment_id || !s.ended_at) return;
+        const ts = new Date(s.ended_at).getTime();
+        if (!latestEndedAt[s.assignment_id] || ts > latestEndedAt[s.assignment_id]) {
+          latestEndedAt[s.assignment_id] = ts;
+        }
+      });
       const finishedAssignmentIds = new Set(
-        summaries
-          .filter(s => s.assignment_id && s.ended_at && (now - new Date(s.ended_at).getTime()) > FINISHED_GRACE_MS)
-          .map(s => s.assignment_id)
+        Object.entries(latestEndedAt)
+          .filter(([, ts]) => (now - ts) > FINISHED_GRACE_MS)
+          .map(([id]) => id)
       );
 
       const toComplete = candidates.filter(f => finishedAssignmentIds.has(f.id));
