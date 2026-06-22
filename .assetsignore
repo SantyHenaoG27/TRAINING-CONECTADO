@@ -12,3 +12,7 @@ database
 tools
 docs
 config
+storage
+supabase
+.wrangler
+.claude

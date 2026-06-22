@@ -2185,7 +2185,10 @@
           <div class="tech-label">Detalle del vuelo</div>
           <h2 class="panel-title" id="fdTitle" style="font-size:var(--text-lg);">—</h2>
         </div>
-        <button class="btn-outline" onclick="closeFlightDetail()">✕ Cerrar</button>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn-outline" style="font-size:11px;opacity:0.6;" onclick="openFlightDebugTab()" title="Ver datos crudos del vuelo">🔍 Debug datos</button>
+          <button class="btn-outline" onclick="closeFlightDetail()">✕ Cerrar</button>
+        </div>
       </div>
 
       <div class="stats-row" style="grid-template-columns:repeat(4,1fr);margin-top:12px;">
@@ -4278,6 +4281,90 @@
       filterReportFlights();
     }
 
+    let _debugFlightData = null;
+
+    function openFlightDebugTab() {
+      if (!_debugFlightData) { alert('Abre primero el detalle de un vuelo.'); return; }
+      const { flight, points, fetchedAt } = _debugFlightData;
+
+      const rows = points.map((p, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${p.sim_time ?? '—'}</td>
+          <td>${p.latitude ?? '—'}</td>
+          <td>${p.longitude ?? '—'}</td>
+          <td>${p.altitude_ft ?? '—'}</td>
+          <td>${p.ias_kt ?? '—'}</td>
+          <td>${p.heading_deg ?? '—'}</td>
+        </tr>`).join('');
+
+      const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Debug vuelo · ${flight.report_key}</title>
+  <style>
+    body { font-family: monospace; background: #0f172a; color: #e2e8f0; padding: 24px; font-size: 13px; }
+    h1 { color: #38bdf8; margin-bottom: 4px; font-size: 18px; }
+    h2 { color: #7dd3fc; margin: 28px 0 10px; font-size: 14px; border-bottom: 1px solid #1e3a5f; padding-bottom: 6px; }
+    .meta { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; margin-bottom: 8px; }
+    .field { background: #1e293b; border-radius: 6px; padding: 8px 12px; }
+    .field .k { color: #94a3b8; font-size: 11px; margin-bottom: 2px; }
+    .field .v { color: #f1f5f9; word-break: break-all; }
+    .null { color: #475569; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th { background: #1e3a5f; color: #7dd3fc; padding: 6px 10px; text-align: left; position: sticky; top: 0; }
+    td { padding: 4px 10px; border-bottom: 1px solid #1e293b; color: #cbd5e1; }
+    tr:hover td { background: #1e293b; }
+    .badge { display: inline-block; background: #0f4c75; color: #38bdf8; border-radius: 4px; padding: 2px 8px; font-size: 11px; margin-right: 6px; }
+    .fetched { color: #475569; font-size: 11px; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Debug · Detalle del vuelo</h1>
+  <p class="fetched">Datos capturados: ${fetchedAt}</p>
+
+  <h2>Resumen del vuelo (objeto <code>flight</code>)</h2>
+  <div class="meta">
+    ${Object.entries(flight).map(([k, v]) => {
+      let display;
+      if (v === null || v === undefined) display = `<span class="null">null</span>`;
+      else if (typeof v === 'object') display = `<pre style="margin:0;white-space:pre-wrap;">${JSON.stringify(v, null, 2)}</pre>`;
+      else display = String(v);
+      return `<div class="field"><div class="k">${k}</div><div class="v">${display}</div></div>`;
+    }).join('')}
+  </div>
+
+  <h2>Telemetría cargada · <span class="badge">${points.length} puntos</span> <span style="color:#475569;font-size:11px;">(límite actual: 10 000 · X-Plane ≈ 1pt/s)</span></h2>
+  <div style="overflow-x:auto;">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>sim_time</th>
+          <th>latitude</th>
+          <th>longitude</th>
+          <th>altitude_ft</th>
+          <th>ias_kt</th>
+          <th>heading_deg</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>
+  <p style="margin-top:16px;color:#475569;font-size:11px;">
+    Nota: la consulta filtra por <code>flight_id = '${flight.detail_filter_value}'</code>, ordena por <code>sim_time ASC</code>.
+    Se paginó en bloques de 1 000 filas hasta obtener los ${points.length} puntos totales del vuelo.
+    Columnas traídas: sim_time, altitude_ft, ias_kt, heading_deg, latitude, longitude.
+  </p>
+</body>
+</html>`;
+
+      const tab = window.open('', '_blank');
+      tab.document.write(html);
+      tab.document.close();
+    }
+
     async function openFlightDetail(reportKey) {
       const flight = reportFlights.find(f => f.report_key === reportKey);
       if (!flight) return;
@@ -4294,21 +4381,35 @@
       setFlightRouteMapStatus('Cargando ruta recorrida...');
       document.getElementById('flightDetailModal').classList.remove('hidden-panel');
 
-      const { data, error } = await supabaseClient
-        .from('flight_telemetry')
-        .select('sim_time, altitude_ft, ias_kt, heading_deg, latitude, longitude')
-        .eq('flight_id', flight.detail_filter_value)
-        .order('sim_time', { ascending: true })
-        .limit(3000);
+      // Supabase limita a 1000 filas por petición (max_rows por defecto).
+      // Paginamos con .range() hasta obtener todos los puntos del vuelo.
+      const PAGE = 1000;
+      let allPoints = [];
+      let fetchError = null;
+      for (let from = 0; ; from += PAGE) {
+        const { data: page, error: pageErr } = await supabaseClient
+          .from('flight_telemetry')
+          .select('sim_time, altitude_ft, ias_kt, heading_deg, latitude, longitude')
+          .eq('flight_id', flight.detail_filter_value)
+          .order('sim_time', { ascending: true })
+          .range(from, from + PAGE - 1);
+        if (pageErr) { fetchError = pageErr; break; }
+        if (!page || page.length === 0) break;
+        allPoints = allPoints.concat(page);
+        if (page.length < PAGE) break;
+      }
 
-      if (error) {
+      if (fetchError) {
         drawAltitudeChart([]);
         renderFlightRouteMap([]);
         setFlightRouteMapStatus('Error al cargar la ruta recorrida');
         return;
       }
 
-      const points = data || [];
+      const points = allPoints;
+      _debugFlightData = { flight, points, fetchedAt: new Date().toLocaleString('es-CO') };
+      const debugBtn = document.querySelector('#flightDetailModal .btn-outline[onclick="openFlightDebugTab()"]');
+      if (debugBtn) debugBtn.textContent = `🔍 Debug datos (${points.length} pts)`;
       drawAltitudeChart(points);
       renderFlightRouteMap(points);
     }
