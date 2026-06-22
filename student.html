@@ -1351,7 +1351,7 @@
     // queremos reintentarla en cada loadFlights() y quedar en un bucle.
     const autoCompleteAttempted = new Set();
 
-    const FINISHED_GRACE_MS = 5 * 60 * 1000; // sin telemetría nueva por 5+ min ⇒ vuelo terminado
+    const FINISHED_GRACE_MS = 20 * 60 * 1000; // sin telemetría nueva por 20+ min ⇒ vuelo terminado
 
     // Si ya existe telemetría de un vuelo asociado a la asignación (assignment_id
     // se estampa en flight_telemetry al volar) y ese vuelo terminó hace rato, lo
