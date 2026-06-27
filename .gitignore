@@ -1,5 +1,6 @@
 # PDFs de cartas aeronáuticas (solo en local)
 storage/uploads/pdfs/
+storage/uploads/pdfs.zip
 storage/uploads/temp/
 
 # Archivos procesados generados
@@ -18,6 +19,12 @@ yarn-error.log
 
 # Supabase CLI local state
 receiver/supabase/.temp/
+supabase/.temp/
+
+# Tooling/local caches
+.wrangler/
+.agents/
+skills-lock.json
 
 # Variables de entorno
 .env
